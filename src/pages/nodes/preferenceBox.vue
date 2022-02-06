@@ -1,0 +1,55 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { SendOutlined } from '@ant-design/icons-vue'
+import { isAdmin, splitMessageToVNodes } from '../../common/helper'
+import { RouterMetadata } from '../../common/packetHandler'
+
+
+const props = defineProps<{
+    router: RouterMetadata,
+    nextStep: Function,
+    preferenceForm: {
+        asn: string,
+        linkType: string,
+        bgpExtensions: ("mp-bgp" | "extended-nexthop")[]
+    }
+}>()
+
+const t = useI18n().t
+</script>
+
+<template>
+    <a-alert :message="splitMessageToVNodes(t('pages.peering.step1Introduction'))" type="info" />
+    <br />
+    <a-form :model="props.preferenceForm" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+        <a-form-item v-if="isAdmin" name="peerAsn" :label="t('pages.peering.asn')">
+            <a-input type="number" v-model:value="props.preferenceForm.asn" addon-before="AS" :placeholder="`${t('pages.signIn.pleaseInput')} ${t('pages.peering.asn')}`"></a-input>
+        </a-form-item>
+
+        <a-form-item :label="t('pages.peering.linkType')">
+            <a-radio-group v-model:value="props.preferenceForm.linkType">
+                <a-radio v-for="linkType in props.router.linkTypes" :key="`linkType_${linkType}`" :value="linkType">
+                    {{ t(`pages.peering.${linkType}`) }}
+                </a-radio>
+            </a-radio-group>
+        </a-form-item>
+        <a-form-item :label="t('pages.peering.bgpExtensions')">
+            <a-checkbox-group v-model:value="props.preferenceForm.bgpExtensions">
+                <a-checkbox v-for="extension in props.router.extensions" :key="`extension_${extension}`" :value="extension">{{ t(`pages.peering['${extension}']`) }}</a-checkbox>
+            </a-checkbox-group>
+        </a-form-item>
+        <br />
+        <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
+            <a-button type="primary" @click="props.nextStep()">
+                <template #icon>
+                    <send-outlined />
+                </template>
+                {{ t('pages.signIn.continue') }}
+            </a-button>
+        </a-form-item>
+    </a-form>
+</template>
+
+<style scoped>
+</style>
