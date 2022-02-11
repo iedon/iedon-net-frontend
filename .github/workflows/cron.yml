@@ -42,8 +42,9 @@ jobs:
           git reset --hard 3db3705148566c96400e7a712bbd301d00e81e1e
           git clean -fxd :/
           popd
-          cp -r dist/* pages/
+          cp -rf dist/* pages/
           cp CNAME pages/
+          cp -f 404.html pages/
           pushd pages
           git add .
           git commit --allow-empty -m "Generated at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
