@@ -43,6 +43,15 @@ const interfaceForm = computed(() => {
     return result
 })
 
+const preferenceForm = computed(() => {
+    const result = {}
+    for (const key in props.preferenceForm) {
+        const data: string | ("mp-bgp" | "extended-nexthop")[] = props.preferenceForm[key]
+        if (key !== 'asn') Object.assign(result, { [key]: data })
+    }
+    return result
+})
+
 const loading = computed(() => props.loading)
 </script>
 
@@ -50,7 +59,7 @@ const loading = computed(() => props.loading)
     <a-spin :spinning="loading">
         <h2 class="header">{{ t('pages.peering.step3Introduction') }}</h2>
         <a-descriptions layout="vertical" bordered size="small" :column="2" class="summary">
-            <a-descriptions-item v-for="data, key in props.preferenceForm" :key="`preferenceForm_${key}`" :label="t(`pages.peering['${key}']`)">
+            <a-descriptions-item v-for="data, key in preferenceForm" :key="`preferenceForm_${key}`" :label="t(`pages.peering['${key}']`)">
                 <template v-if="key === 'linkType'">
                     {{ t(`pages.peering['${data}']`) }}
                 </template>

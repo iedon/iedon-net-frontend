@@ -1,0 +1,52 @@
+name: Generate HTML
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Generate HTML
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/checkout@v2
+        with:
+          path: pages
+          ref: pages
+          ssh-key: ${{ secrets.KEY }}
+          repository: iedon/iedon-net-frontend
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - run: npm install
+
+      - run: |
+          set -ex
+          npm run build
+          pushd pages
+          git config user.email "bot@github.com"
+          git config user.name "bot"
+          git fetch --unshallow
+          git reset --hard ___
+          git clean -fxd :/
+          popd
+          cp -r dist/* pages/
+          cp CNAME pages/
+          pushd pages
+          git add .
+          git commit --allow-empty -m "Generated at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          git push --force origin pages
+          popd

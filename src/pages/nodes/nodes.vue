@@ -78,7 +78,7 @@ const redirectToPeering = async (r: RouterMetadata) => {
         router.replace({ path: '/signin' })
         return
     }
-    router.push({ path: `/nodes/${r.uuid}` })
+    await router.push({ path: `/nodes/${r.uuid}` })
     window.scrollTo(0, 0)
 }
 
