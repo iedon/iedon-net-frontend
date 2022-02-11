@@ -79,10 +79,14 @@ const checkAndContinue = () => {
             throw new Error('Invalid IP')
         }
 
-        if (props.interfaceForm.endpoint.indexOf(':') === -1) throw new Error('Invalid endpoint')
+        if (props.interfaceForm.endpoint.trim() !== '') {
+            if (props.interfaceForm.endpoint.indexOf(':') === -1) throw new Error('Invalid endpoint')
 
-        const url = new URL(`https://${props.interfaceForm.endpoint}`)
-        props.interfaceForm.endpoint = url.host
+            const url = new URL(`https://${props.interfaceForm.endpoint}`)
+            props.interfaceForm.endpoint = url.host
+        } else {
+            props.interfaceForm.endpoint = ''
+        }
 
     } catch /*(error)*/ {
         Modal.error({
