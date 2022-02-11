@@ -41,7 +41,7 @@ const checkAndContinue = () => {
         return
     }
 
-    if (props.preferenceForm.linkType !== 'direct' && (!props.interfaceForm.endpoint || !props.interfaceForm.credential)) {
+    if (props.preferenceForm.linkType !== 'direct' && !props.interfaceForm.credential) {
         Modal.error({
             title: t('pages.peering.step2'),
             content: t('pages.peering.mustEnterTunnelInformation'),
