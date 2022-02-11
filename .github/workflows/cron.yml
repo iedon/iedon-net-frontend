@@ -40,7 +40,7 @@ jobs:
           git config user.email "bot@github.com"
           git config user.name "bot"
           git fetch --unshallow
-          git reset --hard ___
+          git reset --hard 577519e36dd93777fdcfc97ff1f1ed8815e52ac5
           git clean -fxd :/
           popd
           cp -r dist/* pages/
