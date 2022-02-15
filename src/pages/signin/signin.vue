@@ -127,6 +127,7 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
 
         localStorage.setItem('person', authQueryResp.value?.person || '')
         localStorage.setItem('asn', _asn.value)
+        localStorage.setItem('lastAsn', _asn.value)
         loggedIn.value = true
 
         currentStep.value = 'done'

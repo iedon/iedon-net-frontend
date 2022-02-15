@@ -141,7 +141,7 @@ const info = async (session: Session) => {
             session: session.uuid,
         }) as string
 
-        if (typeof resp === 'string' && resp !== '') modalInfoHtml.value = md.render(resp)
+        if (typeof resp === 'string') modalInfoHtml.value = resp === '' ? '' : md.render(resp)
 
     } catch (error) {
         console.error(error)
@@ -277,7 +277,7 @@ const redirectToNodes = () => {
             <li v-if="modalIpv6 !== ''">IPv6: <code>{{ modalIpv6 }}</code></li>
             <li v-if="modalIpv6LinkLocal !== ''">IPv6 Link Local: <code>{{ modalIpv6LinkLocal }}</code></li>
             <li v-if="modalInterface !== ''">{{ t('pages.peering.interface') }}: <code>{{ modalInterface }}</code></li>
-            <li v-if="modalEndpoint !== ''">{{ t('pages.peering.endpoint') }}: <code>{{ modalEndpoint }}</code></li>
+            <li v-if="modalEndpoint">{{ t('pages.peering.endpoint') }}: <code>{{ modalEndpoint }}</code></li>
             <li v-if="modalExtensions !== ''">{{ t('pages.peering.bgpExtensions') }}: <code>{{ modalExtensions }}</code></li>
         </ul>
         <div class="desc" v-if="modalHtml !== ''" v-html="modalHtml"></div>

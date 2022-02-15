@@ -10,7 +10,7 @@ const props = defineProps<{
 }>()
 
 const t = useI18n().t
-const asnForm = ref({ asn: 424242 })
+const asnForm = ref({ asn: Number(localStorage.getItem('lastAsn') || '424242') })
 const isLoading = computed(() => props.loading)
 </script>
 
