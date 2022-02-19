@@ -12,11 +12,19 @@ import "ant-design-vue/es/message/style/css"
 
 //@ts-ignore
 import markdown_it from 'markdown-it'
+//@ts-ignore
+import mila from 'markdown-it-link-attributes'
 
 const t = useI18n().t
 const router = useRouter()
 
 const md = new markdown_it()
+md.use(mila, {
+  attrs: {
+    target: "_blank"
+  },
+})
+
 const loading = ref(false)
 const routers: Ref<RouterMetadata[]> = ref([])
 

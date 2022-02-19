@@ -9,12 +9,20 @@ import './post.css'
 
 //@ts-ignore
 import markdown_it from 'markdown-it'
+//@ts-ignore
+import mila from 'markdown-it-link-attributes'
 
 const t = useI18n().t
 const router = useRouter()
 const desiredPostId = router.currentRoute.value.params.id as string || null
 
 const md = new markdown_it()
+md.use(mila, {
+  attrs: {
+    target: "_blank"
+  },
+})
+
 const loading = ref(false)
 const currentPost: Ref<Post | null> = ref(null)
 

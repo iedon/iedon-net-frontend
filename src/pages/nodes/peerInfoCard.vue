@@ -5,8 +5,15 @@ import { siteConfig } from '../../common/helper'
 
 //@ts-ignore
 import markdown_it from 'markdown-it'
+//@ts-ignore
+import mila from 'markdown-it-link-attributes'
 
 const md = new markdown_it()
+md.use(mila, {
+  attrs: {
+    target: "_blank"
+  },
+})
 
 const props = defineProps<{
     router: RouterMetadata,
