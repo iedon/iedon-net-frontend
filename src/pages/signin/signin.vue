@@ -12,9 +12,9 @@ import doneBox from './doneBox.vue'
 import "ant-design-vue/es/modal/style/css"
 import "ant-design-vue/es/message/style/css"
 
-const onMounted(() => {
+const onMounted = () => {
     window.scrollTo(0, 0)
-})
+}
 
 const ASN_MIN = 0
 const ASN_MAX = 4294967295
