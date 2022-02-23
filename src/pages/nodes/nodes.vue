@@ -66,7 +66,7 @@ const copyRouterDescription = async (r: RouterMetadata) => {
     }
 }
 
-const redirectToPeering = async (r: RouterMetadata) => {
+const redirectToPeering = (r: RouterMetadata) => {
     if (!r.openPeering) {
         Modal.error({
             title: r.name,
@@ -86,8 +86,7 @@ const redirectToPeering = async (r: RouterMetadata) => {
         router.replace({ path: '/signin' })
         return
     }
-    await router.push({ path: `/nodes/${r.uuid}` })
-    window.scrollTo(0, 0)
+    router.push({ path: `/nodes/${r.uuid}` })
 }
 
 </script>

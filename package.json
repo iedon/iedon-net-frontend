@@ -11,7 +11,7 @@
     "iso-3166": "^4.0.1",
     "markdown-it": "^12.3.2",
     "markdown-it-link-attributes": "^4.0.0",
-    "unplugin-vue-components": "^0.17.18",
+    "unplugin-vue-components": "^0.17.20",
     "vue": "^3.2.31",
     "vue-country-flag-next": "^2.3.2",
     "vue-i18n": "^9.1.9",

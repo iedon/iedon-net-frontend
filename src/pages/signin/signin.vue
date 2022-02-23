@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Ref, ref } from 'vue'
+import { Ref, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
 import { AuthQueryResponse, AuthRequestResponse, AuthChallengeResponse, makeRequest } from '../../common/packetHandler'
@@ -11,6 +11,10 @@ import challengeBox from './challengeBox.vue'
 import doneBox from './doneBox.vue'
 import "ant-design-vue/es/modal/style/css"
 import "ant-design-vue/es/message/style/css"
+
+const onMounted(() => {
+    window.scrollTo(0, 0)
+})
 
 const ASN_MIN = 0
 const ASN_MAX = 4294967295

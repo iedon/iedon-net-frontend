@@ -30,6 +30,7 @@ try {
 const currentStep: Ref<'preference' | 'interface' | 'setup' | 'done'> = ref('preference')
 
 onMounted(() => {
+    window.scrollTo(0, 0)
     if (!loggedIn.value) {
         message.info(t('pages.nodes.pleaseSignIn'))
         router.replace({ path: '/signin' })
