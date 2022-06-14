@@ -7,21 +7,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "ant-design-vue": "^3.0.0-beta.6",
+    "ant-design-vue": "^3.2.7",
     "iso-3166": "^4.0.1",
-    "markdown-it": "^12.3.2",
+    "markdown-it": "^13.0.1",
     "markdown-it-link-attributes": "^4.0.0",
-    "unplugin-vue-components": "^0.17.20",
-    "vue": "^3.2.31",
+    "unplugin-vue-components": "^0.19.6",
+    "vue": "^3.2.37",
     "vue-country-flag-next": "^2.3.2",
-    "vue-i18n": "^9.1.9",
-    "vue-router": "^4.0.12"
+    "vue-i18n": "^9.1.10",
+    "vue-router": "^4.0.16"
   },
   "devDependencies": {
-    "@intlify/vite-plugin-vue-i18n": "^3.3.0",
-    "@vitejs/plugin-vue": "^2.2.2",
-    "typescript": "^4.5.5",
-    "vite": "^2.8.4",
-    "vue-tsc": "^0.31.4"
+    "@intlify/vite-plugin-vue-i18n": "^3.4.0",
+    "@vitejs/plugin-vue": "^2.3.3",
+    "typescript": "^4.7.3",
+    "vite": "^2.9.12",
+    "vue-tsc": "^0.37.8"
   }
 }
