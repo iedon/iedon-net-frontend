@@ -133,7 +133,7 @@ const startPeering = async () => {
 
 <template>
     <h1 class="header" v-if="node">
-        <router-location-avatar :router="node" class="avatar"></router-location-avatar>
+        <div class="avatar"><router-location-avatar :router="node"></router-location-avatar></div>
         {{ node?.name }}
     </h1>
     <a-layout-content id="peering" v-if="node">
@@ -168,8 +168,7 @@ const startPeering = async () => {
 }
 .header:deep(.avatar), .header:deep(.ant-badge-status) {
     margin-right: 20px;
-    vertical-align: text-bottom;
-    height: 39px;
+    vertical-align: text-top;
     overflow: visible;
     display: inline-block;
 }

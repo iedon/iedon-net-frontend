@@ -111,6 +111,7 @@ export default {
             settings: '设置',
             allSessions: '所有会话',
             session: {
+                search: '按 ASN 或 IP 地址搜索...',
                 node: '节点',
                 type: '接口类型',
                 status: '状态',

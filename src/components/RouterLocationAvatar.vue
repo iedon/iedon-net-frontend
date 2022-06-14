@@ -24,7 +24,7 @@ defineProps<{
 
 <style scoped>
 .country-flag {
-    border-radius: 5px;
+    border-radius: 4px;
     border: 1px solid #eee;
     vertical-align: middle;
 }

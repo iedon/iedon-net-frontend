@@ -56,16 +56,14 @@ const getLocaleName = (locale: SupportedLocale) => {
         case 'en_US': default: return 'English'
         case 'de_DE': return 'Deutsch übersetzt (German)'
         case 'ja_JP': return '日本語 (Japanese)'
-        case 'zh_TW': return '正体字 (Traditional Chinese)'
-        case 'zh_CN': return '简化字 (Simplified Chinese)'
+        case 'zh_TW': return '繁體中文 (Traditional Chinese)'
+        case 'zh_CN': return '简体中文 (Simplified Chinese)'
     }
 }
 
 const getLocaleCodeAlias = (locale: SupportedLocale) => {
-    // PREVENT CONTENTIOUS
-    // better world pls
     switch (locale) {
-        case 'en_US': default: return 'gb'
+        case 'en_US': default: return 'us'
         case 'ja_JP': return 'jp'
         case 'zh_TW': return 'hk'
         case 'zh_CN': return 'sg'

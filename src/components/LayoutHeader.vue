@@ -103,7 +103,7 @@ const redirectToManagePage = () => {
                 <template #title>
                     {{ getLocaleName(locale) }}
                 </template>
-                <a-menu-item-group title="Choose your language...">
+                <a-menu-item-group title="Choose language of your region...">
                     <a-menu-item v-for="_locale in SupportedLocales" :key="`lang_${_locale}`" @click="setLocale(_locale)">
                         <template #icon>
                             <country-flag :country="getLocaleCodeAlias(_locale)" size="small" class="flag" />

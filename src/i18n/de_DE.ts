@@ -111,6 +111,7 @@ export default {
             settings: 'Einstellungen',
             allSessions: 'Alle Sitzungen',
             session: {
+                search: 'Suche nach ASN oder IP-Adresse...',
                 node: 'Knoten',
                 type: 'Link Type',
                 status: 'Status',

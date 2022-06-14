@@ -111,6 +111,7 @@ export default {
             settings: '設定',
             allSessions: 'すべてのピアリング',
             session: {
+                search: 'ASN または IPアドレス で検索...',
                 node: 'サーバー',
                 type: 'インターフェースの種類',
                 status: 'ステータス',

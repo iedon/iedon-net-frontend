@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref } from 'vue'
+import { computed, onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
@@ -96,11 +96,11 @@ const simpleActionHandler = async (session: Session, action: 'deleteSession' | '
 
 const enable = (session: Session) => simpleActionHandler(session, 'enableSession')
 
-const disable = async (session: Session) => simpleActionHandler(session, 'disableSession')
+const disable = (session: Session) => simpleActionHandler(session, 'disableSession')
 
-const remove = async (session: Session) => simpleActionHandler(session, 'deleteSession')
+const remove = (session: Session) => simpleActionHandler(session, 'deleteSession')
 
-const approve = async (session: Session) => simpleActionHandler(session, 'approveSession')
+const approve = (session: Session) => simpleActionHandler(session, 'approveSession')
 
 const modalLoading = ref(false)
 const modalRouterName = ref('')
@@ -113,7 +113,8 @@ const modalInterface = ref('')
 const modalExtensions = ref('')
 const modalEndpoint = ref('')
 const modalRouter: Ref<RouterMetadata | undefined> = ref(undefined)
-const info = async (session: Session) => {
+const info = async (session: Session, event: MouseEvent) => {
+    event.stopPropagation()
     try {
 
         modalRouterName.value = ''
@@ -211,10 +212,30 @@ const columns = ref([
   }
 ])
 
+const customRow = (record: any, index: number) => {
+    return {
+        onClick: (event: MouseEvent) => info(record, event)
+    }
+}
+
+const stopPropagation = (event: MouseEvent) => event.stopPropagation()
+
+const searchKeywords = ref('')
+const filteredSessions = computed(() => {
+    if (searchKeywords.value.length === 0) return sessions.value
+    return sessions.value.filter(
+        (session: Session) =>
+            (session.asn !== undefined && session.asn !== null && session.asn.indexOf(searchKeywords.value) !== -1) ||
+            (session.ipv4 !== undefined && session.ipv4 !== null && session.ipv4.indexOf(searchKeywords.value) !== -1) ||
+            (session.ipv6 !== undefined && session.ipv6 !== null && session.ipv6.indexOf(searchKeywords.value) !== -1) ||
+            (session.ipv6LinkLocal !== undefined && session.ipv6LinkLocal !== null && session.ipv6LinkLocal.indexOf(searchKeywords.value) !== -1)
+    )
+})
 </script>
 
 <template>
-    <a-table :columns="columns" :data-source="sessions" :loading="loading" bordered size="small">
+    <a-input-search v-model:value="searchKeywords" :placeholder="t('pages.manage.session.search')" class="searchBox" enter-button />
+    <a-table :columns="columns" :data-source="filteredSessions" :loading="loading" bordered size="small" :customRow="customRow">
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'node'">
                 <router-location-avatar :router="record.routerJoined" :hide-peering-dot="true"></router-location-avatar>
@@ -251,32 +272,32 @@ const columns = ref([
             </template>
             <template v-else-if="column.key === 'action'">
             <span>
-                <a @click="info(record)">{{ t('pages.manage.session.info') }}</a>
+                <a @click="info(record, $event)">{{ t('pages.manage.session.info') }}</a>
                 <a-divider type="vertical" />
                 <a-popconfirm v-if="record.status === 1" placement="bottomRight" @confirm="disable(record)">
                     <template #title>
                         <p>{{ t('pages.manage.session.areYouSure') }}</p>
                     </template>
-                    <a>{{ t('pages.manage.session.disable') }}</a>
+                    <a @click="stopPropagation">{{ t('pages.manage.session.disable') }}</a>
                 </a-popconfirm>
                 <a-popconfirm v-else-if="record.status === 0" placement="bottomRight" @confirm="enable(record)">
                     <template #title>
                         <p>{{ t('pages.manage.session.areYouSure') }}</p>
                     </template>
-                    <a>{{ t('pages.manage.session.enable') }}</a>
+                    <a @click="stopPropagation">{{ t('pages.manage.session.enable') }}</a>
                 </a-popconfirm>
                 <a-popconfirm v-else-if="record.status === -1" placement="bottomRight" @confirm="approve(record)">
                     <template #title>
                         <p>{{ t('pages.manage.session.areYouSure') }}</p>
                     </template>
-                    <a>{{ t('pages.manage.session.approve') }}</a>
+                    <a @click="stopPropagation">{{ t('pages.manage.session.approve') }}</a>
                 </a-popconfirm>
                 <a-divider type="vertical" />
                 <a-popconfirm placement="bottomRight" @confirm="remove(record)">
                     <template #title>
                         <p>{{ t('pages.manage.session.areYouSure') }}</p>
                     </template>
-                    <a>{{ t('pages.manage.session.remove') }}</a>
+                    <a @click="stopPropagation">{{ t('pages.manage.session.remove') }}</a>
                 </a-popconfirm>
             </span>
             </template>
@@ -305,6 +326,13 @@ const columns = ref([
 </template>
 
 <style scoped>
+.searchBox {
+    max-width: 500px;
+    min-width: 150px;
+    width: 30%;
+    margin-bottom: 20px;
+    float: right;
+}
 .avatar-container {
     text-align: center;
 }

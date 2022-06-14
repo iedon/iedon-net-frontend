@@ -3,7 +3,7 @@ import { onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
-import { GlobalOutlined, CloseOutlined, CheckOutlined } from '@ant-design/icons-vue'
+import { GlobalOutlined, CloseOutlined, CheckCircleOutlined } from '@ant-design/icons-vue'
 import { loggedIn, nullOrEmpty } from '../../common/helper'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
@@ -229,7 +229,7 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
     <a-table :columns="columns" :data-source="routers" :loading="loading" bordered size="small">
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'location'">
-                <router-location-avatar v-if="record.location" :router="record" class="avatar" :hide-peering-dot="true"></router-location-avatar>
+                <router-location-avatar v-if="record.location" :router="record" :hide-peering-dot="true"></router-location-avatar>
                 <close-outlined v-else />
             </template>
             <template v-else-if="column.key === 'ipv4'">
@@ -245,15 +245,15 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
                 <close-outlined v-else />
             </template>
             <template v-else-if="column.key === 'public'">
-                <check-outlined v-if="record.public" />
+                <check-circle-outlined v-if="record.public" />
                 <close-outlined v-else />
             </template>
             <template v-else-if="column.key === 'openPeering'">
-                <check-outlined v-if="record.openPeering" />
+                <check-circle-outlined v-if="record.openPeering" />
                 <close-outlined v-else />
             </template>
             <template v-else-if="column.key === 'autoPeering'">
-                <check-outlined v-if="record.autoPeering" />
+                <check-circle-outlined v-if="record.autoPeering" />
                 <close-outlined v-else />
             </template>
             <template v-if="column.key === 'action'">

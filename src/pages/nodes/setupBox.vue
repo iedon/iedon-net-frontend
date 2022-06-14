@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { SendOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue'
+import { SendOutlined, CheckCircleOutlined, CloseOutlined } from '@ant-design/icons-vue'
 import { RouterInfoResponse, RouterMetadata } from '../../common/packetHandler'
 import PeerInfoCard from './peerInfoCard.vue'
 
@@ -72,7 +72,7 @@ const loading = computed(() => props.loading)
             </a-descriptions-item>
             <a-descriptions-item v-for="data, key in interfaceForm" :key="`interfaceForm_${key}`" :label="t(`pages.peering['${key}']`)">
                 <template v-if="typeof data === 'boolean'">
-                    <check-outlined v-if="data" />
+                    <check-circle-outlined v-if="data" />
                     <close-outlined v-else />
                 </template>
                 <template v-else>

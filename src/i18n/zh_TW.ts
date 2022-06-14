@@ -111,6 +111,7 @@ export default {
             settings: '設定',
             allSessions: '所有連線',
             session: {
+                search: '按 ASN 或 IP 位址檢索...',
                 node: '節點',
                 type: '介面種類',
                 status: '狀態',
