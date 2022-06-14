@@ -238,7 +238,7 @@ const filteredSessions = computed(() => {
         </a-button>
         <a-input-search v-model:value="searchKeywords" :placeholder="t('pages.manage.session.search')" class="searchBox" enter-button />
     </div>
-    <a-table :columns="columns" :data-source="sessions" :loading="loading" bordered size="small" :customRow="customRow">
+    <a-table :columns="columns" :data-source="filteredSessions" :loading="loading" bordered size="small" :customRow="customRow">
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'node'">
                 <router-location-avatar :router="record.routerJoined" :hide-peering-dot="true"></router-location-avatar>
