@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CountryFlag from 'vue-country-flag-next'
 import { iso31661Alpha2ToNumeric } from 'iso-3166'
 import { RouterMetadata } from '../common/packetHandler'
 
@@ -12,27 +11,34 @@ defineProps<{
 <template>
     <template v-if="!hidePeeringDot">
         <a-badge v-if="router" dot :offset="[0, 35]" :numberStyle="{width:'15px',minWidth:'15px',height:'15px'}" :color="`${router.openPeering ? (router.sessionCount < router.sessionCapacity ? (router.autoPeering ? 'green' : 'gold') : 'red') : 'red'}`">
-            <country-flag v-if="iso31661Alpha2ToNumeric[router.location] !== undefined" :country="router.location" size="big" class="country-flag" />
-            <a-avatar shape="square" class="text-avatar" :size="40" v-else-if="router.location">{{ router.location.length > 3 ? router.location.substring(0, 3) : router.location }}</a-avatar>
+            <img v-if="iso31661Alpha2ToNumeric[router.location] !== undefined" :src="`flags/${router.location}.svg`" width="48" class="country-flag" />
+            <div shape="square" class="text-avatar" v-else-if="router.location"><span>{{ router.location.length > 3 ? router.location.substring(0, 3) : router.location }}</span></div>
         </a-badge>
     </template>
     <template v-else-if="router">
-        <country-flag v-if="iso31661Alpha2ToNumeric[router.location] !== undefined" :country="router.location" size="big" class="country-flag" />
-        <a-avatar shape="square" class="text-avatar" :size="40" v-else-if="router.location">{{ router.location.length > 3 ? router.location.substring(0, 3) : router.location }}</a-avatar>
+        <img v-if="iso31661Alpha2ToNumeric[router.location] !== undefined" :src="`flags/${router.location}.svg`" width="48" class="country-flag" />
+        <div shape="square" class="text-avatar" v-else-if="router.location"><span>{{ router.location.length > 3 ? router.location.substring(0, 3) : router.location }}</span></div>
     </template>
 </template>
 
 <style scoped>
 .country-flag {
-    border-radius: 4px;
-    border: 1px solid #eee;
     vertical-align: middle;
 }
 .text-avatar {
-    color: #fff;
     background-color: #1890ff;
-    width: 52px !important; /* for consistence with country-flag size "big" */
+    width: 48px !important; /* for consistence with country-flag size */
+    height: 35px !important; /* for consistence with country-flag size */
+    margin-top: 5px;
+    border-radius: 4px;
     font-weight: 500;
     vertical-align: middle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.text-avatar span {
+    font-size: 15px;
+    color: #fff;
 }
 </style>

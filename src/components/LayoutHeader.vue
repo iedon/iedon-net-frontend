@@ -6,7 +6,6 @@ import { Modal } from 'ant-design-vue'
 import { UserOutlined, HomeOutlined, SafetyCertificateOutlined, LoginOutlined, GlobalOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 import { locale, setLocale, SupportedLocales, getLocaleName, getLocaleCodeAlias } from '../i18n/i18n'
 import { loggedIn, splitMessageToVNodes } from '../common/helper'
-import CountryFlag from 'vue-country-flag-next'
 import "ant-design-vue/es/modal/style/css"
 
 const t = useI18n().t
@@ -98,7 +97,7 @@ const redirectToManagePage = () => {
             </a-menu-item>
             <a-sub-menu>
                 <template #icon>
-                    <country-flag :country="getLocaleCodeAlias(locale)" size="small" class="flag" />
+                    <img :src="`flags/${getLocaleCodeAlias(locale)}.svg`" width="16" class="flag" />
                 </template>
                 <template #title>
                     {{ getLocaleName(locale) }}
@@ -106,7 +105,7 @@ const redirectToManagePage = () => {
                 <a-menu-item-group title="Choose language of your region...">
                     <a-menu-item v-for="_locale in SupportedLocales" :key="`lang_${_locale}`" @click="setLocale(_locale)">
                         <template #icon>
-                            <country-flag :country="getLocaleCodeAlias(_locale)" size="small" class="flag" />
+                            <img :src="`flags/${getLocaleCodeAlias(_locale)}.svg`" width="16" class="flag" />
                         </template>
                         {{ getLocaleName(_locale) }}
                     </a-menu-item>
@@ -168,8 +167,6 @@ const redirectToManagePage = () => {
     cursor: pointer;
 }
 .flag {
-    border-radius: 4px;
-    font-size: 15px;
-    border: 0.5px solid #666;
+    vertical-align: sub;
 }
 </style>

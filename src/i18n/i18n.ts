@@ -66,7 +66,7 @@ const getLocaleCodeAlias = (locale: SupportedLocale) => {
         case 'en_US': default: return 'us'
         case 'ja_JP': return 'jp'
         case 'zh_TW': return 'hk'
-        case 'zh_CN': return 'sg'
+        case 'zh_CN': return 'cn'
         case 'de_DE': return 'de'
     }
 }

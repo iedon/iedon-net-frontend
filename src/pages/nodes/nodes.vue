@@ -97,8 +97,8 @@ const redirectToPeering = (r: RouterMetadata) => {
     <section id="routers">
         <a-card hoverable class="card" v-for="r in routers" :key="r.uuid" @click="redirectToPeering(r)">
             <template #actions>
-                <api-outlined @click.stop="redirectToPeering(r)" />
                 <copy-outlined @click.stop="copyRouterDescription(r)" />
+                <api-outlined @click.stop="redirectToPeering(r)" />
             </template>
             <a-card-meta :title="r.name" :description="`${r.openPeering ? (r.sessionCount < r.sessionCapacity ? (r.autoPeering ? t('pages.nodes.statusOpen') : t('pages.nodes.statusOpenManuallyReview')) : t('pages.nodes.statusFull')) : t('pages.nodes.statusClosed')} ${t('pages.nodes.statusCapacity')}: ${r.sessionCount}/${r.sessionCapacity}`">
                 <template #avatar>
@@ -150,6 +150,8 @@ const redirectToPeering = (r: RouterMetadata) => {
 }
 .card .detail {
     margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
 }
 .card .detail code, .card .desc:deep(code) {
     background-color: #f1f1f1;
