@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref } from 'vue'
+import { computed, onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
@@ -7,6 +7,7 @@ import { ApiOutlined, LoadingOutlined, CopyOutlined } from '@ant-design/icons-vu
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
 import { loggedIn } from '../../common/helper'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
+import { Empty } from 'ant-design-vue'
 import "ant-design-vue/es/modal/style/css"
 import "ant-design-vue/es/message/style/css"
 
@@ -89,13 +90,27 @@ const redirectToPeering = (r: RouterMetadata) => {
     router.push({ path: `/nodes/${r.uuid}` })
 }
 
+const searchKeywords = ref('')
+const filteredRouters = computed(() => {
+    if (searchKeywords.value.length === 0) return routers.value
+    return routers.value.filter(
+        (router: RouterMetadata) =>
+            (router.name !== undefined && router.name !== null && router.name.toLocaleLowerCase().indexOf(searchKeywords.value.toLocaleLowerCase()) !== -1) ||
+            (router.ipv4 !== undefined && router.ipv4 !== null && router.ipv4.indexOf(searchKeywords.value) !== -1) ||
+            (router.ipv6 !== undefined && router.ipv6 !== null && router.ipv6.toLocaleLowerCase().indexOf(searchKeywords.value.toLocaleLowerCase()) !== -1) ||
+            (router.ipv6LinkLocal !== undefined && router.ipv6LinkLocal !== null && router.ipv6LinkLocal.toLocaleLowerCase().indexOf(searchKeywords.value.toLocaleLowerCase()) !== -1)
+    )
+})
+
+const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 </script>
 
 <template>
     <h1 class="header">{{ t('pages.nodes.nodes') }}</h1>
     <a-divider dashed></a-divider>
-    <section id="routers">
-        <a-card hoverable class="card" v-for="r in routers" :key="r.uuid" @click="redirectToPeering(r)">
+    <div class="searchContainer"><a-input-search v-model:value="searchKeywords" :placeholder="t('pages.nodes.search')" class="searchBox" enter-button /></div>
+    <section id="routers" v-if="filteredRouters.length !== 0">
+        <a-card hoverable class="card" v-for="r in filteredRouters" :key="r.uuid" @click="redirectToPeering(r)">
             <template #actions>
                 <copy-outlined @click.stop="copyRouterDescription(r)" />
                 <api-outlined @click.stop="redirectToPeering(r)" />
@@ -113,9 +128,25 @@ const redirectToPeering = (r: RouterMetadata) => {
             <div class="desc" v-if="r.description" v-html="md.render(r.description)"></div>
         </a-card>
     </section>
+    <section id="noData" v-else>
+        <a-empty :image="simpleImage"/>
+    </section>
 </template>
 
 <style scoped>
+#noData {
+    margin: 100px auto;
+}
+.searchContainer {
+    display: flex;
+    justify-content: center;
+}
+.searchBox {
+    max-width: 500px;
+    min-width: 250px;
+    width: 30%;
+    margin: 20px;
+}
 .header {
     font-size: 32px;
     letter-spacing: 0.5px;

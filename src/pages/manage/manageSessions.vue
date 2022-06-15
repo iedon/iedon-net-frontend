@@ -238,10 +238,12 @@ const filteredSessions = computed(() => {
     <a-table :columns="columns" :data-source="filteredSessions" :loading="loading" bordered size="small" :customRow="customRow">
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'node'">
-                <router-location-avatar :router="record.routerJoined" :hide-peering-dot="true"></router-location-avatar>
-                <span class="node small-text">
-                    {{ record.routerJoined?.name }}
-                </span>
+                <div class="avatar-container">
+                    <router-location-avatar :router="record.routerJoined" :hide-peering-dot="true"></router-location-avatar>
+                    <span class="node small-text">
+                        {{ record.routerJoined?.name }}
+                    </span>
+                </div>
             </template>
             <template v-else-if="column.key === 'asn'">
                 <span class="small-text">{{ record.asn }}</span>
@@ -304,9 +306,6 @@ const filteredSessions = computed(() => {
         </template>
     </a-table>
     <a-modal v-model:visible="modalVisible" :title="modalRouterName" centered>
-        <div class="avatar-container" v-if="modalRouter">
-            <router-location-avatar :router="modalRouter" :hide-peering-dot="true"></router-location-avatar>
-        </div>
         <ul class="detail">
             <li v-if="modalIpv4 !== ''">IPv4: <code>{{ modalIpv4 }}</code></li>
             <li v-if="modalIpv6 !== ''">IPv6: <code>{{ modalIpv6 }}</code></li>
@@ -334,7 +333,9 @@ const filteredSessions = computed(() => {
     float: right;
 }
 .avatar-container {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
 .node {
     margin-left: 15px;
@@ -355,7 +356,6 @@ const filteredSessions = computed(() => {
     font-size: 12px;
 }
 .detail {
-    margin-top: 20px;
     width: 100%;
 }
 .detail code {

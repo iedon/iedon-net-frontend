@@ -8,6 +8,7 @@
 import pkg from '../package.json'
 
 export default {
+    root: '/',
     package: `${pkg.name}/${pkg.version}`,
     apiPrefix: 'https://api.kuu.moe/service/dn42',
     pingIntervalMs: 60000,

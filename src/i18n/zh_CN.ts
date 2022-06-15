@@ -54,6 +54,7 @@ export default {
             pleaseWait: '请稍候',
         },
         nodes: {
+            search: '按 节点名 或 IP 地址搜索...',
             nodes: '网络节点',
             copied: '已复制详细信息',
             pleaseSignIn: '请先登录。',

@@ -54,6 +54,7 @@ export default {
             pleaseWait: 'しばらくお待ちください',
         },
         nodes: {
+            search: 'サーバーネーム または IPアドレス で検索...',
             nodes: 'ネットワークサーバー',
             copied: '詳しい情報がコピーされました',
             pleaseSignIn: 'ご利用くださいまして、ありがとうございます。まずサインインして下さい。',

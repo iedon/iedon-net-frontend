@@ -172,7 +172,7 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
     font-size: 32px;
     letter-spacing: 0.5px;
     margin-top: 30px;
-    margin-bottom: 0;
+    margin-bottom: 10px;
     text-align: center;
     font-weight: normal;
 }

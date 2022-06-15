@@ -162,9 +162,12 @@ const startPeering = async () => {
     font-size: 32px;
     letter-spacing: 0.5px;
     margin-top: 30px;
-    margin-bottom: 0;
+    margin-bottom: 10px;
     text-align: center;
     font-weight: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .header:deep(.avatar), .header:deep(.ant-badge-status) {
     margin-right: 20px;

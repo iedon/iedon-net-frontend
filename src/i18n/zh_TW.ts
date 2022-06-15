@@ -54,6 +54,7 @@ export default {
             pleaseWait: '請稍等',
         },
         nodes: {
+            search: '按 節點名字 或 IP 位址檢索...',
             nodes: '網路節點',
             copied: '已拷貝詳細訊息',
             pleaseSignIn: '您需要先登入。',

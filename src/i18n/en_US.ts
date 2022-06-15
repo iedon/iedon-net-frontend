@@ -54,6 +54,7 @@ export default {
             pleaseWait: 'Please wait',
         },
         nodes: {
+            search: 'Search by name or IP address...',
             nodes: 'Network Nodes',
             copied: 'Detail has been copied',
             pleaseSignIn: 'Please sign in first.',
