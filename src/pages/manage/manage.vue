@@ -3,7 +3,7 @@ import { onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { UserOutlined, NodeIndexOutlined, SettingOutlined, BookOutlined, GlobalOutlined } from '@ant-design/icons-vue'
-import { isAdmin } from '../../common/helper'
+import { isAdmin, theme, VAR_SIZE_LG } from '../../common/helper'
 import MySessions from './mySessions.vue'
 import MyAccount from './myAccount.vue'
 import ManageSessions from './manageSessions.vue'
@@ -30,19 +30,32 @@ onMounted(async () => {
     selectedKeys.value[0] = isAdmin.value ? 'manageSessions' : 'mySessions'
 })
 
+const collapsed: Ref<boolean> =  ref(false)
+const toggleMenu = () => {
+    collapsed.value = !collapsed.value
+    window.scrollTo(0, 0)
+}
+const backToTop = () => {
+    window.scrollTo(0, 0)
+    const width  = window.innerWidth || document.documentElement.clientWidth || 
+document.body.clientWidth
+    if (width < VAR_SIZE_LG) {
+        collapsed.value = true
+    }
+}
 </script>
 
 <template>
-    <a-layout-sider class="sider" width="200">
+    <a-layout-sider :class="`sider ${theme}`" width="200" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" :style="`display: ${collapsed ? 'none' : 'block'}`">
         <a-menu class="menu" mode="inline" v-model:selectedKeys="selectedKeys">
             <template v-if="!isAdmin">
-                <a-menu-item key="mySessions">
+                <a-menu-item key="mySessions" @click="backToTop()">
                     <template #icon>
                         <node-index-outlined />
                     </template>
                     {{ title.mySessions }}
                 </a-menu-item>
-                <a-menu-item key="myAccount">
+                <a-menu-item key="myAccount" @click="backToTop()">
                     <template #icon>
                         <user-outlined />
                     </template>
@@ -50,31 +63,31 @@ onMounted(async () => {
                 </a-menu-item>
             </template>
             <template v-else>
-                <a-menu-item key="manageSessions">
+                <a-menu-item key="manageSessions" @click="backToTop()">
                     <template #icon>
                         <node-index-outlined />
                     </template>
                     {{ title.manageSessions }}
                 </a-menu-item>
-                <a-menu-item key="manageNodes">
+                <a-menu-item key="manageNodes" @click="backToTop()">
                     <template #icon>
                         <global-outlined />
                     </template>
                     {{ title.manageNodes }}
                 </a-menu-item>
-                <a-menu-item key="managePosts">
+                <a-menu-item key="managePosts" @click="backToTop()">
                     <template #icon>
                         <book-outlined />
                     </template>
                     {{ title.managePosts }}
                 </a-menu-item>
-                <a-menu-item key="manageConfig">
+                <a-menu-item key="manageConfig" @click="backToTop()">
                     <template #icon>
                         <setting-outlined />
                     </template>
                     {{ title.manageConfig }}
                 </a-menu-item>
-                <a-menu-item key="myAccount">
+                <a-menu-item key="myAccount" @click="backToTop()">
                     <template #icon>
                         <user-outlined />
                     </template>
@@ -100,6 +113,7 @@ onMounted(async () => {
             <my-account v-else-if="selectedKeys[0] === 'myAccount'"></my-account>
         </template>
     </a-layout-content>
+    <menu-trigger :trigger="collapsed" @click="toggleMenu" />
 </template>
 
 <style scoped>
@@ -107,8 +121,15 @@ onMounted(async () => {
     background-color: #fafafa;
     min-height: 500px;
 }
+.sider.light {
+    background-color: #fafafa;
+}
+.sider.dark {
+    background-color: #1d1d1d;
+}
 .menu {
     height: 100%;
+    border-right: none;
 }
 .content {
     padding: 0 30px;

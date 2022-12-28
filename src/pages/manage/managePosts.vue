@@ -170,7 +170,7 @@ const showAddOrEdit = async (record?: PostMetadata) => {
             {{ t('pages.manage.posts.add') }}
         </a-button>
     </div>
-    <a-table :columns="columns" :data-source="posts" :loading="loading" bordered size="small">
+    <a-table :columns="columns" :data-source="posts" :loading="loading" bordered size="small" :scroll="{ x: 'max-content' }">
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'createdAt'">
                 <span>

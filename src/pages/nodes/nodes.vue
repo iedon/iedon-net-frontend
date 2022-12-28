@@ -5,7 +5,7 @@ import { message, Modal } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
 import { ApiOutlined, LoadingOutlined, CopyOutlined } from '@ant-design/icons-vue'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
-import { loggedIn } from '../../common/helper'
+import { loggedIn, theme } from '../../common/helper'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 import { Empty } from 'ant-design-vue'
 import "ant-design-vue/es/modal/style/css"
@@ -120,7 +120,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
                     <router-location-avatar :router="r"></router-location-avatar>
                 </template>
             </a-card-meta>
-            <ul class="detail">
+            <ul :class="`detail ${theme}`">
                 <li v-if="r.ipv4">IPv4<code>{{ r.ipv4 }}</code></li>
                 <li v-if="r.ipv6">IPv6<code>{{ r.ipv6 }}</code></li>
                 <li v-if="r.ipv6LinkLocal">IPv6 Link Local<code>{{ r.ipv6LinkLocal }}</code></li>
@@ -144,7 +144,6 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 .searchBox {
     max-width: 500px;
     min-width: 250px;
-    width: 30%;
     margin: 20px;
 }
 .header {
@@ -182,10 +181,14 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 .card .detail {
     margin-top: 20px;
     padding-top: 20px;
+}
+.card .detail.light {
     border-top: 1px solid #eee;
 }
+.card .detail.dark {
+    border-top: 1px solid #777;
+}
 .card .detail code, .card .desc:deep(code) {
-    background-color: #f1f1f1;
     border-radius: 5px;
     color: #666;
     font-size: 13px;

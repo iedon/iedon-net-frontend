@@ -130,12 +130,17 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
         }
 
         localStorage.setItem('person', authQueryResp.value?.person || '')
+        authQueryResp.value?.availableAuthMethods.forEach(m => {
+            if (m && m.type === 'e-mail' && m.data) {
+                localStorage.setItem('email', m.data)
+            }
+        })
         localStorage.setItem('asn', _asn.value)
         localStorage.setItem('lastAsn', _asn.value)
         loggedIn.value = true
 
         currentStep.value = 'done'
-        message.info(`${t('pages.signIn.welcomeBack')} ${authQueryResp.value?.person}`)
+        message.info(`${t('pages.signIn.welcomeBack')} ${authQueryResp.value?.person || _asn.value}`)
         window.scrollTo(0, 0)
 
     } catch (error) {
@@ -168,6 +173,9 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
 </template>
 
 <style scoped>
+.box:deep(.ant-alert-message) p:last-child {
+    margin-bottom: auto;
+}
 .header {
     font-size: 32px;
     letter-spacing: 0.5px;
@@ -179,7 +187,6 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
 #signin {
     margin-top: 15px;
     margin-bottom: 80px;
-    padding: 0 24px;
     min-height: 280px;
 }
 #signin:deep(.box) {
@@ -188,6 +195,12 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
 }
 #signin:deep(.steps) {
     max-width: 1000px;
-    margin: 0 auto 80px auto;
+    margin: 0 auto;
+    padding: 0 10px 50px 10px;
+}
+@media (min-width: 0px) and (max-width: 700px) {
+    #signin:deep(.steps) {
+        padding: 0 10px;
+    }
 }
 </style>

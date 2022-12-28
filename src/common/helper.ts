@@ -3,6 +3,8 @@ import { message } from 'ant-design-vue'
 import config from '../config'
 import { makeRequest, Post, SiteConfigData } from './packetHandler'
 import dayjs from 'dayjs'
+import themeLight from '../styles/light.less?inline'
+import themeDark from '../styles/dark.less?inline'
 import "ant-design-vue/es/message/style/css"
 
 export const splitMessageToVNodes = (message: string) => {
@@ -47,7 +49,7 @@ export const useHeartBeat = (t: (i18n: string) => string) => {
         const token = localStorage.getItem('token')
         const asn = localStorage.getItem('asn')
         const person = localStorage.getItem('person')
-        if (asn && person && token) {
+        if (asn && (person !== undefined && person !== null) && token) {
           const resp = await makeRequest(t, '/ping', { action: 'ping' }, true) as string
           loggedIn.value = resp === 'pong'
           if (loggedIn.value) return
@@ -56,6 +58,7 @@ export const useHeartBeat = (t: (i18n: string) => string) => {
         localStorage.removeItem('token')
         localStorage.removeItem('asn')
         localStorage.removeItem('person')
+        localStorage.removeItem('email')
         loggedIn.value = false
 
       } catch (error) {
@@ -85,3 +88,27 @@ export const formatDate = (dateString: string) => {
 }
 
 export const isAdmin = computed(() => siteConfig.value.netAsn === localStorage.getItem('asn'))
+
+export const theme = ref('light')
+
+export const applyTheme = (themeName?: string) => {
+  theme.value = themeName || 'light'
+  const head = document.getElementsByTagName("head")[0]
+  const getStyle = head.getElementsByTagName('style')
+  if (getStyle.length > 0) {
+    for (let i = 0, l = getStyle.length; i < l; i++) {
+      if (getStyle[i].getAttribute('data-type') === 'theme') {
+        getStyle[i].remove()
+        break
+      }
+    }
+  }
+  const styleDom = document.createElement("style")
+  styleDom.dataset.type = "theme"
+  styleDom.innerHTML = themeName === 'dark' ? themeDark : themeLight
+  head.appendChild(styleDom)
+}
+
+applyTheme()
+
+export const VAR_SIZE_LG = 992

@@ -16,5 +16,16 @@ export default defineConfig({
   ],
   server: {
     port: 3001
+  },
+  css:{
+    preprocessorOptions:{
+      less:{
+        javascriptEnabled: true,
+        modifyVars: {},
+      }
+    }
+  },
+  build: {
+    chunkSizeWarningLimit: 2000
   }
 })

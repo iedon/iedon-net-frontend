@@ -226,7 +226,7 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
             {{ t('pages.manage.nodes.add') }}
         </a-button>
     </div>
-    <a-table :columns="columns" :data-source="routers" :loading="loading" bordered size="small">
+    <a-table :columns="columns" :data-source="routers" :loading="loading" bordered size="small" :scroll="{ x: 'max-content' }">
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'location'">
                 <router-location-avatar v-if="record.location" :router="record" :hide-peering-dot="true"></router-location-avatar>

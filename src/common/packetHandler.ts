@@ -56,6 +56,7 @@ export const makeRequest = async (t: (i18n: string) => string, path: string, dat
                     localStorage.removeItem('token')
                     localStorage.removeItem('person')
                     localStorage.removeItem('asn')
+                    localStorage.removeItem('email')
                     loggedIn.value = false
                     if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.err_UNAUTHORIZED')), ERROR_MESSAGE_DURATION); 
                 } break;

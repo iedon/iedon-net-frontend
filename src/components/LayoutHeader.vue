@@ -5,8 +5,10 @@ import { useRouter } from 'vue-router'
 import { Modal } from 'ant-design-vue'
 import { UserOutlined, HomeOutlined, SafetyCertificateOutlined, LoginOutlined, GlobalOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 import { locale, setLocale, SupportedLocales, getLocaleName, getLocaleCodeAlias } from '../i18n/i18n'
-import { loggedIn, splitMessageToVNodes } from '../common/helper'
+import { loggedIn, splitMessageToVNodes, theme } from '../common/helper'
 import config from "../config"
+//@ts-ignore
+import md5 from 'md5'
 import "ant-design-vue/es/modal/style/css"
 
 const t = useI18n().t
@@ -21,15 +23,26 @@ const showPrivacyPolicy = () => {
 const selectedKeys = ref<string[]>(['home'])
 
 const router = useRouter()
-const goHome = () => { router.replace({ path: '/' }) }
-const openNodesPage = () => { router.replace({ path: '/nodes' }) }
-const openSigninPage = () => { router.replace({ path: '/signin' }) }
+const goHome = () => {
+    router.replace({ path: '/' })
+    window.scrollTo(0, 0)
+}
+const openNodesPage = () => {
+    router.replace({ path: '/nodes' })
+    window.scrollTo(0, 0)
+}
+const openSigninPage = () => {
+    router.replace({ path: '/signin' })
+    window.scrollTo(0, 0)
+}
 const signOut = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('asn')
     localStorage.removeItem('person')
+    localStorage.removeItem('email')
     loggedIn.value = false
     router.replace({ path: '/' })
+    window.scrollTo(0, 0)
 }
 
 const setHeaderFocus = () => {
@@ -46,6 +59,7 @@ const onSelect = (data: { item: HTMLElement, key: string, selectedKeys: string[]
 
 const asn = ref('')
 const person = ref('')
+const email = ref('')
 const stopWatchLoggedIn = watch(() => loggedIn.value, (newValue: boolean, oldValue: boolean) => {
     if (newValue) {
         asn.value = localStorage.getItem('asn') || ''
@@ -60,6 +74,10 @@ const stopWatchLoggedIn = watch(() => loggedIn.value, (newValue: boolean, oldVal
 
 asn.value = localStorage.getItem('asn') || ''
 person.value = localStorage.getItem('person') || ''
+email.value = localStorage.getItem('email') || ''
+if (email.value.length !== 0) {
+    email.value = `${config.gravatarUrlPrefix}${md5(email.value.trim().toLocaleLowerCase())}`
+}
 if (asn.value && person.value && localStorage.getItem('token')) loggedIn.value = true
 
 onUnmounted(() => {
@@ -72,12 +90,20 @@ const redirectToManagePage = () => {
         path: '/manage'
     })
 }
+
+const login = () => {
+    if (!loggedIn.value) {
+        openSigninPage()
+        return
+    }
+    redirectToManagePage()
+}
 </script>
 
 <template>
-    <a-layout-header id="header">
-        <img class="logo" src="../assets/logo.svg" alt="Logo" />
-        <a-menu class="menu" @select="onSelect" theme="light" mode="horizontal" v-model:selectedKeys="selectedKeys">
+    <a-layout-header id="header" :class="theme">
+        <img class="logo" src="../assets/logo.svg" @click="goHome" alt="Logo" />
+        <a-menu :class="`menu ${theme}`" @select="onSelect" :theme="theme" mode="horizontal" v-model:selectedKeys="selectedKeys">
             <a-menu-item key="home" @click="goHome">
                 <template #icon>
                     <home-outlined />
@@ -112,32 +138,35 @@ const redirectToManagePage = () => {
                     </a-menu-item>
                 </a-menu-item-group>
             </a-sub-menu>
-        </a-menu>
-        <div class="signBox">
-            <a-button v-if="!loggedIn" type="dashed" @click="openSigninPage">
-                <template #icon>
-                    <login-outlined />
-                </template>
-                {{ t('header.signIn') }}
-            </a-button>
-            <template v-else>
-                <a-avatar class="avatar" @click="redirectToManagePage" v-if="person.substring(0, 1) || asn.substring(asn.length - 4 - 1)">{{ person.substring(0, 1) || asn.substring(asn.length - 4 - 1) }}</a-avatar>
-                <a-avatar class="avatar" @click="redirectToManagePage" v-else>
-                    <template #icon>
-                        <user-outlined />
-                    </template>
-                </a-avatar>
-                <a-button type="text" @click="redirectToManagePage">{{ person || asn }}</a-button>
-                <a-popconfirm placement="bottomRight" :title="t('header.signOutConfirm')" @confirm="signOut">
-                    <a-button type="dashed">
+            <a-menu-item key="login" @click="login">
+                <div class="signBox">
+                    <a-button v-if="!loggedIn" type="dashed">
                         <template #icon>
-                            <logout-outlined />
+                            <login-outlined />
                         </template>
-                        {{ t('header.signOut') }}
+                        {{ t('header.signIn') }}
                     </a-button>
-                </a-popconfirm>
-            </template>
-        </div>
+                    <template v-else>
+                        <a-avatar class="avatar" v-if="email.length !== 0" :src="email"></a-avatar>
+                        <a-avatar class="avatar" v-else-if="person.substring(0, 1) || asn.substring(asn.length - 4 - 1)">{{ person.substring(0, 1) || asn.substring(asn.length - 4 - 1) }}</a-avatar>
+                        <a-avatar class="avatar" v-else>
+                            <template #icon>
+                                <user-outlined />
+                            </template>
+                        </a-avatar>
+                        <span class="name">{{ person || asn }}</span>
+                        <a-popconfirm @click="(event: Event) => event.stopPropagation()" placement="bottomRight" :title="t('header.signOutConfirm')" @confirm="signOut">
+                            <a-button type="dashed">
+                                <template #icon>
+                                    <logout-outlined />
+                                </template>
+                                {{ t('header.signOut') }}
+                            </a-button>
+                        </a-popconfirm>
+                    </template>
+                </div>
+            </a-menu-item>
+        </a-menu>
     </a-layout-header>
 </template>
 
@@ -146,19 +175,43 @@ const redirectToManagePage = () => {
     position: fixed;
     width: 100%;
     z-index: 100;
-    background-color: #ffffff;
     opacity: 0.95;
-    box-shadow: 0 2px 8px #f0f1f2;
     height: 64px;
     display: flex;
+}
+#header.light {
+    background-color: #fff;
+    box-shadow: 0 2px 8px #f0f1f2;
+}
+#header.dark {
+    background-color: #111;
+    box-shadow: 0 2px 8px #161616;
+}
+.menu.dark {
+    background-color: #111;
+}
+@media (min-width: 0px) and (max-width: 992px /* lg */) {
+  #header {
+    padding: 0 15px !important;
+  }
+  #header .logo {
+    width: 80px !important;
+    margin-right: 0px !important;
+  }
+  #header:deep(.menu) {
+    max-width: calc(100% - 80px) !important; /* 80px width of logo */
+  }
 }
 #header .logo {
     width: 100px;
     margin-right: 30px;
+    cursor: pointer;
 }
 #header:deep(.menu) {
     flex: 1 0 auto;
+    max-width: calc(100% - 130px); /* 100px width + 30px margin-right of logo */
     border-bottom: none;
+    justify-content: right;
 }
 .signBox {
     margin: 0 auto;
@@ -166,6 +219,9 @@ const redirectToManagePage = () => {
 .signBox .avatar {
     background-color: #f56a00;
     cursor: pointer;
+}
+.signBox span.name {
+    margin: auto 10px;
 }
 .flag {
     vertical-align: sub;

@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import { createI18n } from 'vue-i18n'
-// import Antd from 'ant-design-vue'
-// import 'ant-design-vue/dist/antd.css'
+// import Antd from 'ant-design-vue' /* We're using on demand import in vite */
 
 import router from './router'
 import App from './App.vue'
@@ -16,4 +15,4 @@ const i18n = createI18n({
 })
 
 const app = createApp(App)
-app.use(i18n).use(router)/*.use(Antd)*/.mount('#app')
+app.use(i18n).use(router)/* .use(Antd)  // We're using on demand import in vite*/.mount('#app')

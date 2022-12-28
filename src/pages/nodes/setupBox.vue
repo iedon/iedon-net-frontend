@@ -109,7 +109,6 @@ const loading = computed(() => props.loading)
     margin-right: 20px;
 }
 .tag {
-    background-color: #f1f1f1;
     border-radius: 5px;
     color: #666;
     font-size: 13px;

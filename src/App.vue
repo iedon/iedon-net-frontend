@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { onMounted, onUnmounted, Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Locale } from 'ant-design-vue/lib/vc-picker/interface'
@@ -7,8 +6,8 @@ import { locale, setLocale, SupportedLocale, SupportedLocales} from './i18n/i18n
 import LayoutHeader from './components/LayoutHeader.vue'
 import LayoutContent from './components/LayoutContent.vue'
 import LayoutFooter from './components/LayoutFooter.vue'
-import { makeRequest } from './common/packetHandler'
-import { useHeartBeat } from './common/helper'
+import ThemeTrigger from './components/ThemeTrigger.vue'
+import { useHeartBeat, applyTheme } from './common/helper'
 
 const vueI18n = useI18n()
 const t = vueI18n.t
@@ -21,6 +20,12 @@ const stopWatchLocale = watch((): SupportedLocale => locale.value, async (newLoc
 let stopHeartBeat: (() => void) | null = null
 const antdLocale: Ref<Locale | null> = ref(null)
 onMounted(async () => {
+  try {
+    applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+  } catch (error) {
+    applyTheme()
+    console.warn(error)
+  }
   const currentLocale = localStorage.getItem('locale')
   if (currentLocale && SupportedLocales.some(supported => currentLocale === supported)) {
     antdLocale.value = await setLocale(currentLocale as SupportedLocale)
@@ -35,6 +40,13 @@ onUnmounted(() => {
   if (stopHeartBeat) stopHeartBeat()
   stopWatchLocale()
 })
+
+const themeTrigger = ref(false)
+
+const changeTheme = () => {
+  applyTheme(themeTrigger.value ? 'dark' : 'light')
+  themeTrigger.value = !themeTrigger.value
+}
 </script>
 
 <template>
@@ -44,19 +56,15 @@ onUnmounted(() => {
       <layout-content></layout-content>
       <layout-footer></layout-footer>
       <a-back-top />
+      <theme-trigger :trigger="themeTrigger" @click="changeTheme" />
     </a-layout>
   </a-config-provider>
 </template>
 
-<style>
+<style lang="less">
 html, #app {
   width: 100%;
   height: 100%;
-  background-color: #f0f2f5;
   user-select: none;
-}
-/* Fix flag offset for JP */
-.f-jp, .f-jpn {
-  background-position: 0 -4963px !important;
 }
 </style>

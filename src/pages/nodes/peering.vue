@@ -158,6 +158,9 @@ const startPeering = async () => {
 </template>
 
 <style scoped>
+.box:deep(.ant-alert-message) p:last-child {
+    margin-bottom: auto;
+}
 .header {
     font-size: 32px;
     letter-spacing: 0.5px;
@@ -178,7 +181,6 @@ const startPeering = async () => {
 #peering {
     margin-top: 15px;
     margin-bottom: 80px;
-    padding: 0 24px;
     min-height: 280px;
 }
 #peering:deep(.box) {
@@ -191,6 +193,12 @@ const startPeering = async () => {
 }
 #peering:deep(.steps) {
     max-width: 1000px;
-    margin: 0 auto 80px auto;
+    margin: 0 auto;
+    padding: 0 10px 50px 10px;
+}
+@media (min-width: 0px) and (max-width: 768px) {
+    #peering:deep(.steps) {
+        padding: 0 10px;
+    }
 }
 </style>

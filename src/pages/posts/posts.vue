@@ -2,9 +2,10 @@
 import { onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { TagOutlined, NumberOutlined, LoadingOutlined } from '@ant-design/icons-vue'
+import { StarFilled, NumberOutlined, LoadingOutlined } from '@ant-design/icons-vue'
 import { makeRequest, Post, PostMetadaResponse, PostMetadata } from '../../common/packetHandler'
-import { postCache, formatDate } from '../../common/helper'
+import { postCache, formatDate, theme, VAR_SIZE_LG } from '../../common/helper'
+import MenuTrigger from '../../components/MenuTrigger.vue'
 import './post.css'
 
 //@ts-ignore
@@ -30,6 +31,7 @@ const postMetadata: Ref<{ [index: string]: PostMetadata[] }> = ref({})
 
 const selectedKeys: Ref<string[]> = ref([])
 const openKeys: Ref<string[]> = ref([])
+const collapsed: Ref<boolean> =  ref(false)
 
 const loadingPost: Ref<PostMetadata | null> = ref(null)
 const fetchPost = async (post: PostMetadata) => {
@@ -98,8 +100,10 @@ const preprocessPostMetadata = async (newPostMetadata: PostMetadata[]) => {
 }
 
 const fetchPosts = async () => {
+    let originalCollapsedStatus = collapsed.value
     try {
         loading.value = true
+        collapsed.value = false
 
         const resp = await makeRequest(t, '/list', {
             type: "posts",
@@ -113,6 +117,7 @@ const fetchPosts = async () => {
         console.error(error)
     } finally {
         loading.value = false
+        collapsed.value = originalCollapsedStatus
     }
 }
 
@@ -130,18 +135,29 @@ const navigateTo = async (post: PostMetadata) => {
     router.push({
         path: `/post/${post.postId}`
     })
+    window.scrollTo(0, 0)
+    const width  = window.innerWidth || document.documentElement.clientWidth || 
+document.body.clientWidth
+    if (width < VAR_SIZE_LG) {
+        collapsed.value = true
+    }
     await fetchPost(post)
+}
+
+const toggleMenu = () => {
+    collapsed.value = !collapsed.value
+    window.scrollTo(0, 0)
 }
 </script>
 
 <template>
-    <a-layout-sider class="sider" width="300">
+    <a-layout-sider :class="`sider ${theme}`" width="300" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" :style="`display: ${collapsed ? 'none' : 'block'}`">
         <a-spin :spinning="loading && openKeys.length === 0">
             <div v-if="loading && openKeys.length === 0" class="pad"></div>
             <a-menu class="menu" v-else mode="inline" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys">
                 <a-sub-menu v-for="(_, category) in postMetadata" :key="category">
                     <template #icon>
-                        <tag-outlined />
+                        <star-filled />
                     </template>
                     <template #title>
                         <b>{{ category }}</b>
@@ -166,18 +182,25 @@ const navigateTo = async (post: PostMetadata) => {
             <article id="post" v-if="currentPost" v-html="md.render(currentPost.content)"></article>
         </a-skeleton>
     </a-layout-content>
+    <menu-trigger :trigger="collapsed" @click="toggleMenu" />
 </template>
 
 <style scoped>
 .sider {
-    background-color: #fafafa;
     min-height: 500px;
+}
+.sider.light {
+    background-color: #fafafa;
+}
+.sider.dark {
+    background-color: #1d1d1d;
 }
 .sider .pad {
     margin: 200px auto;
 }
 .menu {
     height: 100%;
+    border-right: none;
 }
 .content {
     padding: 0 30px;

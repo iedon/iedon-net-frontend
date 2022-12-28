@@ -238,7 +238,7 @@ const filteredSessions = computed(() => {
         </a-button>
         <a-input-search v-model:value="searchKeywords" :placeholder="t('pages.manage.session.search')" class="searchBox" enter-button />
     </div>
-    <a-table :columns="columns" :data-source="filteredSessions" :loading="loading" bordered size="small" :customRow="customRow">
+    <a-table :columns="columns" :data-source="filteredSessions" :loading="loading" bordered size="small" :customRow="customRow" :scroll="{ x: 'max-content' }">
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'node'">
                 <div class="avatar-container">
@@ -325,7 +325,6 @@ const filteredSessions = computed(() => {
 .searchBox {
     max-width: 500px;
     min-width: 150px;
-    width: 30%;
     float: right;
 }
 .avatar-container {
@@ -355,7 +354,6 @@ const filteredSessions = computed(() => {
     width: 100%;
 }
 .detail code {
-    background-color: #f1f1f1;
     border-radius: 5px;
     color: #666;
     font-size: 13px;

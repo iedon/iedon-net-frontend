@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { theme } from '../common/helper'
 </script>
 
 <template>
   <a-layout-content id="content">
-    <a-layout class="page">
+    <a-layout class="page" :class="theme">
       <router-view></router-view>
     </a-layout>
   </a-layout-content>
@@ -14,11 +15,23 @@
   margin-top: 64px;
   padding: 0 50px;
 }
+@media (min-width: 0px) and (max-width: 992px /* lg */) {
+  #content {
+    padding: 0 5px;
+  }
+}
 #content:deep(.page) {
   margin-top: 30px;
   border-radius: 5px;
   overflow: hidden;
+}
+#content:deep(.page).light {
   background: #fff;
   box-shadow: 0 2px 8px #f0f1f2;
+}
+#content:deep(.page).dark {
+  background: #161616;
+  color: #949fa9;
+  box-shadow: 0 2px 8px #101010;
 }
 </style>
