@@ -38,6 +38,11 @@ defineProps<{
     right: 60px
   }
 }
+@media (min-width: 0px) and (max-width: 480px /* follow from <a-back-top> */) {
+  .trigger {
+    right: 20px
+  }
+}
 .trigger-inner.light {
   background-color: rgba(0, 0, 0, 0.45);
 }
