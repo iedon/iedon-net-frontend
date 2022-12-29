@@ -52,11 +52,13 @@ const onSelect = (data: { item: HTMLElement, key: string, selectedKeys: string[]
 const asn = ref('')
 const person = ref('')
 const email = ref('')
+const getGravatar = (_email: string) => `${config.gravatarUrlPrefix}${md5(_email.trim().toLocaleLowerCase())}`
 const stopWatchLoggedIn = watch(() => loggedIn.value, (newValue: boolean, oldValue: boolean) => {
     if (newValue) {
         asn.value = localStorage.getItem('asn') || ''
         person.value = localStorage.getItem('person') || ''
         email.value = localStorage.getItem('email') || ''
+        if (email.value.length !== 0) email.value = getGravatar(email.value)
     }
     if (oldValue && !newValue) {
         router.replace({
@@ -68,9 +70,7 @@ const stopWatchLoggedIn = watch(() => loggedIn.value, (newValue: boolean, oldVal
 asn.value = localStorage.getItem('asn') || ''
 person.value = localStorage.getItem('person') || ''
 email.value = localStorage.getItem('email') || ''
-if (email.value.length !== 0) {
-    email.value = `${config.gravatarUrlPrefix}${md5(email.value.trim().toLocaleLowerCase())}`
-}
+if (email.value.length !== 0) email.value = getGravatar(email.value)
 if (asn.value && person.value && localStorage.getItem('token')) loggedIn.value = true
 
 onUnmounted(() => {
