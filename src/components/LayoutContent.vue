@@ -5,7 +5,11 @@ import { theme } from '../common/helper'
 <template>
   <a-layout-content id="content">
     <a-layout class="page" :class="theme">
-      <router-view></router-view>
+      <router-view v-slot="{ Component }">
+        <transition name="fade">
+            <component :is="Component"></component>
+        </transition>
+      </router-view>
     </a-layout>
   </a-layout-content>
 </template>
@@ -33,5 +37,15 @@ import { theme } from '../common/helper'
   background: #161616;
   color: #949fa9;
   box-shadow: 0 2px 8px #101010;
+}
+.fade-enter-active, .fade-leave-active {
+  transition-property: opacity;
+  transition-duration: .25s;
+}
+.fade-enter-active {
+  transition-delay: .25s;
+}
+.fade-enter, .fade-leave-active {
+  opacity: 0
 }
 </style>

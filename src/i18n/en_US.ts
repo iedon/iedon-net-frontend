@@ -1,9 +1,7 @@
 export default {
     header: {
         home: 'Home',
-        nodes: 'Nodes',
-        privacy: 'Privacy Policy',
-        privacyPolicyContent: 'This site requires JavaScript and localStorage technologies to work.\nWe do not collect any personal information.\nBUT we may log your IP address, session status for debugging purposes.',
+        nodes: 'BGP',
         signIn: 'Sign In',
         signOut: 'Sign out',
         signOutConfirm: 'Are you really want to sign out?',
@@ -55,7 +53,7 @@ export default {
         },
         nodes: {
             search: 'Search by name or IP address...',
-            nodes: 'Network Nodes',
+            nodes: 'BGP Network Nodes',
             copied: 'Detail has been copied',
             pleaseSignIn: 'Please sign in first.',
             statusOpen: 'OPEN.',
@@ -96,7 +94,7 @@ export default {
             ipv6: 'DN42 IPv6',
             asn: 'Peer ASN',
             ipv6LinkLocal: 'IPv6 Link Local',
-            tunnelEndpointHint: 'Your Tunnel Endpoint. Format: [Hostname or IP]:Port',
+            tunnelEndpointHint: '(Optional) Your Tunnel Endpoint. Format: [Hostname or IP]:Port',
             tunnelCredentialHint: 'Your Tunnel Credential or public key.',
             thankYou: 'Thank you',
             step4Introduction: 'We\'re now configuring your session. Come and check your peering status later.',

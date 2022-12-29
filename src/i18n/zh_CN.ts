@@ -1,9 +1,7 @@
 export default {
     header: {
         home: '首页',
-        nodes: '网络节点',
-        privacy: '隐私声明',
-        privacyPolicyContent: '此站点需要 JavaScript 和 localStorage 技术才能工作。\n我们不收集任何个人信息。\n但我们可能会记录您的 IP 地址、会话状态以进行调试。',
+        nodes: 'BGP',
         signIn: '登录',
         signOut: '退出登录',
         signOutConfirm: '您真的要退出登录吗？',
@@ -55,7 +53,7 @@ export default {
         },
         nodes: {
             search: '按 节点名 或 IP 地址搜索...',
-            nodes: '网络节点',
+            nodes: 'BGP 网络节点',
             copied: '已复制详细信息',
             pleaseSignIn: '请先登录。',
             statusOpen: '可以互联。',
@@ -96,7 +94,7 @@ export default {
             ipv6: 'DN42 IPv6',
             asn: '对端 ASN',
             ipv6LinkLocal: 'IPv6 Link Local',
-            tunnelEndpointHint: '您的隧道端点。格式: [主机名或 IP]:端口号',
+            tunnelEndpointHint: '(可空) 您的隧道端点。格式: [主机名或 IP]:端口号',
             tunnelCredentialHint: '您的隧道机密或公钥。',
             thankYou: '非常感谢',
             step4Introduction: '我们正在设置您的会话。请稍后过来检查您的互联状态。',

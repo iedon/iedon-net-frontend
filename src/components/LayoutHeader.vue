@@ -2,23 +2,15 @@
 import { h, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { Modal } from 'ant-design-vue'
-import { UserOutlined, HomeOutlined, SafetyCertificateOutlined, LoginOutlined, GlobalOutlined, LogoutOutlined } from '@ant-design/icons-vue'
+import { UserOutlined, HomeOutlined, LoginOutlined, GlobalOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 import { locale, setLocale, SupportedLocales, getLocaleName, getLocaleCodeAlias } from '../i18n/i18n'
-import { loggedIn, splitMessageToVNodes, theme } from '../common/helper'
+import { loggedIn, theme } from '../common/helper'
 import config from "../config"
 //@ts-ignore
 import md5 from 'md5'
 import "ant-design-vue/es/modal/style/css"
 
 const t = useI18n().t
-
-const showPrivacyPolicy = () => {
-    Modal.info({
-        title: t('header.privacy'),
-        content: h('div', {}, splitMessageToVNodes(t('header.privacyPolicyContent')))
-    })
-}
 
 const selectedKeys = ref<string[]>(['home'])
 
@@ -64,6 +56,7 @@ const stopWatchLoggedIn = watch(() => loggedIn.value, (newValue: boolean, oldVal
     if (newValue) {
         asn.value = localStorage.getItem('asn') || ''
         person.value = localStorage.getItem('person') || ''
+        email.value = localStorage.getItem('email') || ''
     }
     if (oldValue && !newValue) {
         router.replace({
@@ -115,12 +108,6 @@ const login = () => {
                     <global-outlined />
                 </template>
                 {{ t('header.nodes') }}
-            </a-menu-item>
-            <a-menu-item @click="showPrivacyPolicy">
-                <template #icon>
-                    <safety-certificate-outlined />
-                </template>
-                {{ t('header.privacy') }}
             </a-menu-item>
             <a-sub-menu>
                 <template #icon>

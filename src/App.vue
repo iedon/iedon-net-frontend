@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, Ref, ref, watch } from 'vue'
+import { onMounted, onUnmounted, Ref, ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Locale } from 'ant-design-vue/lib/vc-picker/interface'
 import { locale, setLocale, SupportedLocale, SupportedLocales} from './i18n/i18n'
@@ -7,7 +7,7 @@ import LayoutHeader from './components/LayoutHeader.vue'
 import LayoutContent from './components/LayoutContent.vue'
 import LayoutFooter from './components/LayoutFooter.vue'
 import ThemeTrigger from './components/ThemeTrigger.vue'
-import { useHeartBeat, applyTheme } from './common/helper'
+import { useHeartBeat, applyTheme, theme } from './common/helper'
 
 const vueI18n = useI18n()
 const t = vueI18n.t
@@ -41,11 +41,10 @@ onUnmounted(() => {
   stopWatchLocale()
 })
 
-const themeTrigger = ref(false)
+const themeTrigger = computed(() => theme.value === 'light')
 
 const changeTheme = () => {
   applyTheme(themeTrigger.value ? 'dark' : 'light')
-  themeTrigger.value = !themeTrigger.value
 }
 </script>
 
@@ -61,7 +60,7 @@ const changeTheme = () => {
   </a-config-provider>
 </template>
 
-<style lang="less">
+<style>
 html, #app {
   width: 100%;
   height: 100%;

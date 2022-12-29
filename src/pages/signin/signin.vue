@@ -152,24 +152,26 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
 </script>
 
 <template>
-    <h1 class="header">{{ t('pages.signIn.signIn') }}</h1>
-    <a-layout-content id="signin">
-        <steps-bar class="steps" :step="currentStep" :custom-query-title="customQuery" :custom-choose-title="customChoose" :loading="loading"></steps-bar>
-        <section class="box">
-            <template v-if="currentStep === 'query'">
-                <query-box :loading="loading" :query-asn="queryAsn"></query-box>
-            </template>
-            <template v-else-if="currentStep === 'choose'">
-                <choose-box :prev-step="() => currentStep='query'" :loading="loading" :auth-query-resp="authQueryResp" :request-challenge="requestChallenge"></choose-box>
-            </template>
-            <template v-else-if="currentStep === 'challenge'">
-                <challenge-box :prev-step="() => currentStep='choose'" :loading="loading" :auth-request-resp="authRequestResp" :challenge="challenge" :type="customChoose"></challenge-box>
-            </template>
-            <template v-else-if="currentStep === 'done'">
-                <done-box></done-box>
-            </template>
-        </section>
-    </a-layout-content>
+    <section>
+        <h1 class="header">{{ t('pages.signIn.signIn') }}</h1>
+        <a-layout-content id="signin">
+            <steps-bar class="steps" :step="currentStep" :custom-query-title="customQuery" :custom-choose-title="customChoose" :loading="loading"></steps-bar>
+            <section class="box">
+                <template v-if="currentStep === 'query'">
+                    <query-box :loading="loading" :query-asn="queryAsn"></query-box>
+                </template>
+                <template v-else-if="currentStep === 'choose'">
+                    <choose-box :prev-step="() => currentStep='query'" :loading="loading" :auth-query-resp="authQueryResp" :request-challenge="requestChallenge"></choose-box>
+                </template>
+                <template v-else-if="currentStep === 'challenge'">
+                    <challenge-box :prev-step="() => currentStep='choose'" :loading="loading" :auth-request-resp="authRequestResp" :challenge="challenge" :type="customChoose"></challenge-box>
+                </template>
+                <template v-else-if="currentStep === 'done'">
+                    <done-box></done-box>
+                </template>
+            </section>
+        </a-layout-content>
+    </section>
 </template>
 
 <style scoped>
@@ -177,7 +179,7 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
     margin-bottom: auto;
 }
 .header {
-    font-size: 32px;
+    font-size: 28px;
     letter-spacing: 0.5px;
     margin-top: 30px;
     margin-bottom: 10px;

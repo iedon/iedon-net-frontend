@@ -1,9 +1,7 @@
 export default {
     header: {
         home: 'Startseite',
-        nodes: 'Knoten',
-        privacy: 'Datenschutzrichtlinie',
-        privacyPolicyContent: 'Diese Seite erfordert JavaScript und LocalStorage-Technologien, um zu funktionieren.\nWir erfassen keine personenbezogenen Daten.\nABER wir können Ihre IP-Adresse und Ihren Sitzungsstatus zu Debugging-Zwecken protokollieren.',
+        nodes: 'BGP',
         signIn: 'Einloggen',
         signOut: 'Ausloggen',
         signOutConfirm: 'Möchten Sie sich wirklich abmelden?',
@@ -55,7 +53,7 @@ export default {
         },
         nodes: {
             search: 'Suche nach Name oder IP-Adresse...',
-            nodes: 'Netzwerkknoten',
+            nodes: 'BGP Netzwerkknoten',
             copied: 'Detail wurde kopiert',
             pleaseSignIn: 'Bitte melden Sie sich zuerst an.',
             statusOpen: 'Verfügbar.',
@@ -96,7 +94,7 @@ export default {
             ipv6: 'DN42 IPv6',
             asn: 'Peer ASN',
             ipv6LinkLocal: 'IPv6 Link Local',
-            tunnelEndpointHint: 'Ihr Tunnelendpunkt. Format: [Hostname oder IP]:Port',
+            tunnelEndpointHint: '(Optional) Ihr Tunnelendpunkt. Format: [Hostname oder IP]:Port',
             tunnelCredentialHint: 'Ihre Tunnel-Anmeldeinformationen oder öffentlicher Schlüssel.',
             thankYou: 'Danke schön',
             step4Introduction: 'Wir konfigurieren jetzt Ihre Sitzung. Kommen Sie später und überprüfen Sie Ihren Peering-Status.',

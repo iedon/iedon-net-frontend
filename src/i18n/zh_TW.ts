@@ -1,9 +1,7 @@
 export default {
     header: {
         home: '主頁',
-        nodes: '網路節點',
-        privacy: '隱私政策',
-        privacyPolicyContent: '這個站點需要 JavaScript 和 localStorage 技術才能工作。\n我們不收集任何個人訊息。\n但我們可能會記錄您的 IP 位址、連線狀態以方便調試。',
+        nodes: 'BGP',
         signIn: '登入',
         signOut: '登出',
         signOutConfirm: '您真的要登出嗎？',
@@ -55,7 +53,7 @@ export default {
         },
         nodes: {
             search: '按 節點名字 或 IP 位址檢索...',
-            nodes: '網路節點',
+            nodes: 'BGP 網路節點',
             copied: '已拷貝詳細訊息',
             pleaseSignIn: '您需要先登入。',
             statusOpen: '可以連線。',
@@ -96,7 +94,7 @@ export default {
             ipv6: 'DN42 IPv6',
             asn: '對端 ASN',
             ipv6LinkLocal: 'IPv6 Link Local',
-            tunnelEndpointHint: '您的隧道端點。格式: [主機名或 IP]:端口號',
+            tunnelEndpointHint: '(可空) 您的隧道端點。格式: [主機名或 IP]:端口號',
             tunnelCredentialHint: '您的隧道機密或公鑰。',
             thankYou: '非常感謝',
             step4Introduction: '我們正在設定與您的連線。請稍後過來檢視您的連線狀態。',

@@ -360,6 +360,7 @@ const filteredSessions = computed(() => {
     padding: 0.15em 0.3em;
     margin-left: 10px;
     line-height: 200%;
+    word-break: break-all;
 }
 .desc:deep(code) {
     font-size: 12px;

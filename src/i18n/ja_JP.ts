@@ -1,9 +1,7 @@
 export default {
     header: {
         home: 'ホーム',
-        nodes: 'サーバー',
-        privacy: 'プライバシーポリシー',
-        privacyPolicyContent: '当サイトをご利用くださいまして、ありがとうございます。このサイトを御覧するには、お使いのデバイスで、JavaScript と localStorage のサポートが必要です。\n個人情報は収集されませんが、デバッグのため、IP アドレスやピアリング情報を記録する場合がございます。予めご了承ください。',
+        nodes: 'BGP',
         signIn: 'サインイン',
         signOut: 'サインアウト',
         signOutConfirm: 'ご利用ありがとうございます。サインアウトしますか？',
@@ -55,7 +53,7 @@ export default {
         },
         nodes: {
             search: 'サーバーネーム または IPアドレス で検索...',
-            nodes: 'ネットワークサーバー',
+            nodes: 'BGP ネットワークサーバー',
             copied: '詳しい情報がコピーされました',
             pleaseSignIn: 'ご利用くださいまして、ありがとうございます。まずサインインして下さい。',
             statusOpen: 'ご利用頂けます。',
@@ -96,7 +94,7 @@ export default {
             ipv6: 'DN42 IPv6',
             asn: '向こうの ASN',
             ipv6LinkLocal: 'IPv6 Link Local',
-            tunnelEndpointHint: 'お客様のトンネリングエンドポイント。フォーマット: [ホーストまたは IP]:ポート',
+            tunnelEndpointHint: '(任意) お客様のトンネリングエンドポイント。フォーマット: [ホーストまたは IP]:ポート',
             tunnelCredentialHint: 'お客様のトンネリング公開鍵',
             thankYou: 'ありがとうございます',
             step4Introduction: 'ただいま、ピアリングを構成しています。後でピアリングのステータスをご確認頂けます。',

@@ -132,29 +132,31 @@ const startPeering = async () => {
 </script>
 
 <template>
-    <h1 class="header" v-if="node">
-        <div class="avatar"><router-location-avatar :router="node"></router-location-avatar></div>
-        {{ node?.name }}
-    </h1>
-    <a-layout-content id="peering" v-if="node">
-        <steps-bar class="steps" :step="currentStep" :loading="loading"></steps-bar>
-        <a-spin :spinning="loading">
-            <section :class="`box ${currentStep || ''}`">
-                <template v-if="currentStep === 'preference'">
-                    <preference-box :router="node" :preference-form="preferenceForm" :nextStep="getRouterInfo"></preference-box>
-                </template>
-                <template v-else-if="currentStep === 'interface'">
-                    <interface-box :router="node" :router-info="routerInfo" :preference-form="preferenceForm" :interface-form="interfaceForm" :nextStep="() => currentStep = 'setup'" :prevStep="() => currentStep = 'preference'"></interface-box>
-                </template>
-                <template v-else-if="currentStep === 'setup'">
-                <setup-box :preference-form="preferenceForm" :loading="loading" :router="node" :router-info="routerInfo" :interface-form="interfaceForm" :nextStep="startPeering" :prevStep="() => currentStep = 'interface'"></setup-box>
-                </template>
-                <template v-else-if="currentStep === 'done'">
-                    <done-box :router="node"></done-box>
-                </template>
-            </section>
-        </a-spin>
-    </a-layout-content>
+    <section>
+        <h1 class="header" v-if="node">
+            <div class="avatar"><router-location-avatar :router="node"></router-location-avatar></div>
+            {{ node?.name }}
+        </h1>
+        <a-layout-content id="peering" v-if="node">
+            <steps-bar class="steps" :step="currentStep" :loading="loading"></steps-bar>
+            <a-spin :spinning="loading">
+                <section :class="`box ${currentStep || ''}`">
+                    <template v-if="currentStep === 'preference'">
+                        <preference-box :router="node" :preference-form="preferenceForm" :nextStep="getRouterInfo"></preference-box>
+                    </template>
+                    <template v-else-if="currentStep === 'interface'">
+                        <interface-box :router="node" :router-info="routerInfo" :preference-form="preferenceForm" :interface-form="interfaceForm" :nextStep="() => currentStep = 'setup'" :prevStep="() => currentStep = 'preference'"></interface-box>
+                    </template>
+                    <template v-else-if="currentStep === 'setup'">
+                    <setup-box :preference-form="preferenceForm" :loading="loading" :router="node" :router-info="routerInfo" :interface-form="interfaceForm" :nextStep="startPeering" :prevStep="() => currentStep = 'interface'"></setup-box>
+                    </template>
+                    <template v-else-if="currentStep === 'done'">
+                        <done-box :router="node"></done-box>
+                    </template>
+                </section>
+            </a-spin>
+        </a-layout-content>
+    </section>
 </template>
 
 <style scoped>
@@ -162,7 +164,7 @@ const startPeering = async () => {
     margin-bottom: auto;
 }
 .header {
-    font-size: 32px;
+    font-size: 28px;
     letter-spacing: 0.5px;
     margin-top: 30px;
     margin-bottom: 10px;

@@ -106,30 +106,32 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 </script>
 
 <template>
-    <h1 class="header">{{ t('pages.nodes.nodes') }}</h1>
-    <a-divider dashed></a-divider>
-    <div class="searchContainer"><a-input-search v-model:value="searchKeywords" :placeholder="t('pages.nodes.search')" class="searchBox" enter-button /></div>
-    <section id="routers" v-if="filteredRouters.length !== 0">
-        <a-card hoverable class="card" v-for="r in filteredRouters" :key="r.uuid" @click="redirectToPeering(r)">
-            <template #actions>
-                <copy-outlined @click.stop="copyRouterDescription(r)" />
-                <api-outlined @click.stop="redirectToPeering(r)" />
-            </template>
-            <a-card-meta :title="r.name" :description="`${r.openPeering ? (r.sessionCount < r.sessionCapacity ? (r.autoPeering ? t('pages.nodes.statusOpen') : t('pages.nodes.statusOpenManuallyReview')) : t('pages.nodes.statusFull')) : t('pages.nodes.statusClosed')} ${t('pages.nodes.statusCapacity')}: ${r.sessionCount}/${r.sessionCapacity}`">
-                <template #avatar>
-                    <router-location-avatar :router="r"></router-location-avatar>
+    <section>
+        <h1 class="header">{{ t('pages.nodes.nodes') }}</h1>
+        <a-divider dashed></a-divider>
+        <div class="searchContainer"><a-input-search v-model:value="searchKeywords" :placeholder="t('pages.nodes.search')" class="searchBox" enter-button /></div>
+        <section id="routers" v-if="filteredRouters.length !== 0">
+            <a-card hoverable class="card" v-for="r in filteredRouters" :key="r.uuid" @click="redirectToPeering(r)">
+                <template #actions>
+                    <copy-outlined @click.stop="copyRouterDescription(r)" />
+                    <api-outlined @click.stop="redirectToPeering(r)" />
                 </template>
-            </a-card-meta>
-            <ul :class="`detail ${theme}`">
-                <li v-if="r.ipv4">IPv4<code>{{ r.ipv4 }}</code></li>
-                <li v-if="r.ipv6">IPv6<code>{{ r.ipv6 }}</code></li>
-                <li v-if="r.ipv6LinkLocal">IPv6 Link Local<code>{{ r.ipv6LinkLocal }}</code></li>
-            </ul>
-            <div class="desc" v-if="r.description" v-html="md.render(r.description)"></div>
-        </a-card>
-    </section>
-    <section id="noData" v-else>
-        <a-empty :image="simpleImage"/>
+                <a-card-meta :title="r.name" :description="`${r.openPeering ? (r.sessionCount < r.sessionCapacity ? (r.autoPeering ? t('pages.nodes.statusOpen') : t('pages.nodes.statusOpenManuallyReview')) : t('pages.nodes.statusFull')) : t('pages.nodes.statusClosed')} ${t('pages.nodes.statusCapacity')}: ${r.sessionCount}/${r.sessionCapacity}`">
+                    <template #avatar>
+                        <router-location-avatar :router="r"></router-location-avatar>
+                    </template>
+                </a-card-meta>
+                <ul :class="`detail ${theme}`">
+                    <li v-if="r.ipv4">IPv4<code>{{ r.ipv4 }}</code></li>
+                    <li v-if="r.ipv6">IPv6<code>{{ r.ipv6 }}</code></li>
+                    <li v-if="r.ipv6LinkLocal">IPv6 Link Local<code>{{ r.ipv6LinkLocal }}</code></li>
+                </ul>
+                <div class="desc" v-if="r.description" v-html="md.render(r.description)"></div>
+            </a-card>
+        </section>
+        <section id="noData" v-else>
+            <a-empty :image="simpleImage"/>
+        </section>
     </section>
 </template>
 
@@ -147,7 +149,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     margin: 20px;
 }
 .header {
-    font-size: 32px;
+    font-size: 28px;
     letter-spacing: 0.5px;
     margin-top: 30px;
     margin-bottom: 0;

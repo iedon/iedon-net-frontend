@@ -33,11 +33,6 @@
     line-height: 38px;
 }
 
-#post h2 {
-    line-height: 32px;
-	font-size: 24px;
-}
-
 #post h3 {
 	font-size: 18px;
 }
@@ -80,6 +75,7 @@
     font-size: .9em;
     border: 1px solid #cbcbcb;
     border-radius: 3px;
+    word-break: break-all;
 }
 
 #post pre {
@@ -97,6 +93,7 @@
     text-align: left;
     background: #cbcbcb;
     border: none;
+    word-break: break-all;
 }
 
 #post strong, #post b {

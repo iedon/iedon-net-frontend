@@ -110,8 +110,8 @@ const fetchPosts = async () => {
         }) as PostMetadaResponse
 
         if (Array.isArray(resp.posts)) {
-            await preprocessPostMetadata(resp.posts)
             localStorage.setItem('posts', JSON.stringify(resp.posts))
+            await preprocessPostMetadata(resp.posts)
         }
     } catch (error) {
         console.error(error)
@@ -151,41 +151,47 @@ const toggleMenu = () => {
 </script>
 
 <template>
-    <a-layout-sider :class="`sider ${theme}`" width="300" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" :style="`display: ${collapsed ? 'none' : 'block'}`">
-        <a-spin :spinning="loading && openKeys.length === 0">
-            <div v-if="loading && openKeys.length === 0" class="pad"></div>
-            <a-menu class="menu" v-else mode="inline" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys">
-                <a-sub-menu v-for="(_, category) in postMetadata" :key="category">
-                    <template #icon>
-                        <star-filled />
-                    </template>
-                    <template #title>
-                        <b>{{ category }}</b>
-                    </template>
-                    <a-menu-item v-for="meta in postMetadata[category]" :key="`post_${meta.postId}`" @click="navigateTo(meta)">
+    <section id="wrapper">
+        <a-layout-sider :class="`sider ${theme}`" width="300" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" v-show="!collapsed">
+            <a-spin :spinning="loading && openKeys.length === 0">
+                <div v-if="loading && openKeys.length === 0" class="pad"></div>
+                <a-menu class="menu" v-else mode="inline" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys">
+                    <a-sub-menu v-for="(_, category) in postMetadata" :key="category">
                         <template #icon>
-                            <loading-outlined v-if="loadingPost && loadingPost.postId === meta.postId" />
-                            <number-outlined v-else/>
+                            <star-filled />
                         </template>
-                        {{ meta.title }}
-                    </a-menu-item>
-                </a-sub-menu>
-            </a-menu>
-        </a-spin>
-    </a-layout-sider>
-    <a-layout-content class="content">      
-        <h1 class="header">
-            {{ loadingPost ? loadingPost.title : (currentPost?.title || '') }}
-        </h1>
-        <a-divider orientation="right">{{ loadingPost ? formatDate(loadingPost.updatedAt) : (currentPost ? formatDate(currentPost.updatedAt) : '') }}</a-divider>
-        <a-skeleton active :loading="loadingPost !== null">
-            <article id="post" v-if="currentPost" v-html="md.render(currentPost.content)"></article>
-        </a-skeleton>
-    </a-layout-content>
-    <menu-trigger :trigger="collapsed" @click="toggleMenu" />
+                        <template #title>
+                            <b>{{ category }}</b>
+                        </template>
+                        <a-menu-item v-for="meta in postMetadata[category]" :key="`post_${meta.postId}`" @click="navigateTo(meta)">
+                            <template #icon>
+                                <loading-outlined v-if="loadingPost && loadingPost.postId === meta.postId" />
+                                <number-outlined v-else/>
+                            </template>
+                            {{ meta.title }}
+                        </a-menu-item>
+                    </a-sub-menu>
+                </a-menu>
+            </a-spin>
+        </a-layout-sider>
+        <a-layout-content class="content">      
+            <h1 class="header">
+                {{ loadingPost ? loadingPost.title : (currentPost?.title || '') }}
+            </h1>
+            <a-divider orientation="right">{{ loadingPost ? formatDate(loadingPost.updatedAt) : (currentPost ? formatDate(currentPost.updatedAt) : '') }}</a-divider>
+            <a-skeleton active :loading="loadingPost !== null">
+                <article id="post" v-if="currentPost" v-html="md.render(currentPost.content)"></article>
+            </a-skeleton>
+        </a-layout-content>
+        <menu-trigger :trigger="collapsed" @click="toggleMenu" />
+    </section>
 </template>
 
 <style scoped>
+#wrapper {
+    width: 100%;
+    display: flex;
+}
 .sider {
     min-height: 500px;
 }
@@ -206,9 +212,10 @@ const toggleMenu = () => {
     padding: 0 30px;
     min-height: 500px;
     user-select: text;
+    overflow: hidden;
 }
 .content .header {
-    font-size: 32px;
+    font-size: 28px;
     letter-spacing: 0.5px;
     margin-top: 30px;
     text-align: center;
