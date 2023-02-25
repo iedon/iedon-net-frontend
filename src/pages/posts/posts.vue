@@ -17,7 +17,9 @@ const t = useI18n().t
 const router = useRouter()
 const desiredPostId = router.currentRoute.value.params.id as string || null
 
-const md = new markdown_it()
+const md = new markdown_it({
+    html: true
+})
 md.use(mila, {
   attrs: {
     target: "_blank"
