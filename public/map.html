@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <base target="_top">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">  
+        <title>IEDON-NET NODE MAP</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
+            .leaflet-container {
+                height: 100%;
+                width: 100%;
+                max-width: 100%;
+                max-height: 100%;
+            }
+        </style>      
+    </head>
+    <body>
+        <div id="map" style="width: 100%; height: 100%"></div>
+        <script>
+            const geo_data = [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [ 139.650311,35.676192 ],
+                            [ -118.243683,34.052235 ],
+                        ]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [ 139.650311,35.676192 ],
+                            [ -121.886329,37.338208 ],
+                        ]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [ 139.650311,35.676192 ],
+                            [ 8.682127, 50.110922 ],
+                        ]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [ 8.682127, 50.110922 ],
+                            [ -118.243683,34.052235 ],
+                        ]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [ 8.682127, 50.110922 ],
+                            [ -121.886329,37.338208 ],
+                        ]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [ -118.243683,34.052235 ],
+                            [ -121.886329,37.338208 ],
+                        ]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [ 119.973999, 31.811001 ],
+                            [ -118.243683,34.052235 ],
+                        ]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            119.973999,
+                            31.811001
+                        ]
+                    },
+                    "properties": {
+                        "title": "Changzhou, Jiangsu, CN",
+                        "id": 5,
+                        "icon": "https://maps.google.com/mapfiles/ms/micons/red-dot.png"
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            8.682127,
+                            50.110922
+                        ]
+                    },
+                    "properties": {
+                        "title": "Frankfurt, DE",
+                        "id": 4,
+                        "icon": "https://maps.google.com/mapfiles/ms/micons/red-dot.png"
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            -118.243683,
+                            34.052235
+                        ]
+                    },
+                    "properties": {
+                        "title": "Los Angeles, CA, US",
+                        "id": 1,
+                        "icon": "https://maps.google.com/mapfiles/ms/micons/red-dot.png"
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            -121.886329,
+                            37.338208
+                        ]
+                    },
+                    "properties": {
+                        "title": "San Jose, CA, US",
+                        "id": 2,
+                        "icon": "https://maps.google.com/mapfiles/ms/micons/red-dot.png"
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            139.650311,
+                            35.676192
+                        ]
+                    },
+                    "properties": {
+                        "title": "Tokyo, JP",
+                        "id": 3,
+                        "icon": "https://maps.google.com/mapfiles/ms/micons/red-dot.png"
+                    }
+                },
+            ];
+
+            const map = L.map('map').setView([35, 20], 1);
+            const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            L.geoJSON(geo_data).addTo(map);
+        </script>
+    </body>
+</html>
