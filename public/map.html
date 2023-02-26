@@ -23,160 +23,93 @@
     <body>
         <div id="map" style="width: 100%; height: 100%"></div>
         <script>
-            const geo_data = [
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": [
-                            [ 139.650311,35.676192 ],
-                            [ -118.243683,34.052235 ],
-                        ]
-                    }
+            const nodes = {
+                'czx1': {
+                    name: '🇨🇳 <b>Changzhou, Jiangsu, China</b><br/><small>172.23.91.121, fd42:4242:2189:c3::1</small>',
+                    nodeId: 5,
+                    coordinates: [ 119.973999, 31.811001 ]
                 },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": [
-                            [ 139.650311,35.676192 ],
-                            [ -121.886329,37.338208 ],
-                        ]
-                    }
+                'tyo1': {
+                    name: '🇯🇵 <b>Tokyo, Japan</b><br/><small>172.23.91.116, fd42:4242:2189:ee::1</small>',
+                    nodeId: 3,
+                    coordinates: [ 139.650311, 35.676192 ]
                 },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": [
-                            [ 139.650311,35.676192 ],
-                            [ 8.682127, 50.110922 ],
-                        ]
-                    }
+                'lax1': {
+                    name: '🇺🇸 <b>Los Angeles, CA, US</b><br/><small>172.23.91.114, fd42:4242:2189:ef::1</small>',
+                    nodeId: 1,
+                    coordinates: [ -118.243683, 34.052235 ]
                 },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": [
-                            [ 8.682127, 50.110922 ],
-                            [ -118.243683,34.052235 ],
-                        ]
-                    }
+                'sjc1': {
+                    name: '🇺🇸 <b>San Jose, CA, US</b><br/><small>172.23.91.117, fd42:4242:2189:e8::1</small>',
+                    nodeId: 2,
+                    coordinates: [ -121.886329, 37.338208 ]
                 },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": [
-                            [ 8.682127, 50.110922 ],
-                            [ -121.886329,37.338208 ],
-                        ]
-                    }
+                'fra1': {
+                    name: '🇩🇪 <b>Frankfurt, Germany</b><br/><small>172.23.91.125, fd42:4242:2189:e9::1</small>',
+                    nodeId: 4,
+                    coordinates: [ 8.682127, 50.110922 ]
                 },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": [
-                            [ -118.243683,34.052235 ],
-                            [ -121.886329,37.338208 ],
-                        ]
-                    }
+                'ntg1': {
+                    name: '🇨🇳 <b>Nantong, Jiangsu, China</b><br/><small>172.23.91.44, fd42:4242:2189:a0::44</small>',
+                    nodeId: 999,
+                    coordinates: [ 120.865, 31.9661 ]
                 },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": [
-                            [ 119.973999, 31.811001 ],
-                            [ -118.243683,34.052235 ],
-                        ]
-                    }
-                },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            119.973999,
-                            31.811001
-                        ]
+            };
+            const node_conns = {
+                'ntg1': [ 'lax1', 'sjc1', 'fra1', 'tyo1', 'czx1' ],
+                'tyo1': [ 'lax1', 'sjc1', 'fra1' ],
+                'lax1': [ 'sjc1', 'fra1', 'czx1' ],
+                'sjc1': [ 'fra1' ],
+            };
+            const data = [];
+            Object.keys(nodes).forEach(key => {
+                data.push({
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: nodes[key].coordinates
                     },
-                    "properties": {
-                        "title": "Changzhou, Jiangsu, CN",
-                        "id": 5,
-                        "icon": "https://maps.google.com/mapfiles/ms/micons/red-dot.png"
+                    properties: {
+                        name: nodes[key].name,
+                        id: nodes[key].nodeId
                     }
-                },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            8.682127,
-                            50.110922
-                        ]
-                    },
-                    "properties": {
-                        "title": "Frankfurt, DE",
-                        "id": 4,
-                        "icon": "https://maps.google.com/mapfiles/ms/micons/red-dot.png"
-                    }
-                },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            -118.243683,
-                            34.052235
-                        ]
-                    },
-                    "properties": {
-                        "title": "Los Angeles, CA, US",
-                        "id": 1,
-                        "icon": "https://maps.google.com/mapfiles/ms/micons/red-dot.png"
-                    }
-                },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            -121.886329,
-                            37.338208
-                        ]
-                    },
-                    "properties": {
-                        "title": "San Jose, CA, US",
-                        "id": 2,
-                        "icon": "https://maps.google.com/mapfiles/ms/micons/red-dot.png"
-                    }
-                },
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            139.650311,
-                            35.676192
-                        ]
-                    },
-                    "properties": {
-                        "title": "Tokyo, JP",
-                        "id": 3,
-                        "icon": "https://maps.google.com/mapfiles/ms/micons/red-dot.png"
-                    }
-                },
-            ];
+                });
+            });
+            Object.keys(node_conns).forEach(key => {
+                node_conns[key].forEach(peer => {
+                    data.push({
+                        type: 'Feature',
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: [ nodes[key].coordinates, nodes[peer].coordinates ]
+                        }
+                    });
+                })
+            });
 
-            const map = L.map('map').setView([45, 20], 2);
+            const map = L.map('map', {
+                worldCopyJump: true
+            }).setView([35, 20], 2);
+            const customIcon = L.icon({
+                iconUrl: './map/icon-pin.png',
+                iconSize:     [24, 24],
+                iconAnchor:   [13, 22],
+                popupAnchor:  [0, -20]
+            });
             const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
-            L.geoJSON(geo_data).addTo(map);
+            L.geoJSON(data, {
+                onEachFeature: function(features, layer) {
+                    if (features.properties && features.properties.name) {
+                        layer.bindPopup(features.properties.name);
+                    }
+                },
+                pointToLayer: function(feature, latlng) {
+                    return L.marker(latlng, { icon: customIcon });
+                }
+            }).addTo(map);
         </script>
     </body>
 </html>
