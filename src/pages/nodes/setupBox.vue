@@ -35,7 +35,7 @@ const props = defineProps<{
 const interfaceForm = computed(() => {
     const result = {}
     for (const key in props.interfaceForm) {
-        const data: string | boolean = props.interfaceForm[key]
+        const data: string | boolean = props.interfaceForm[key as keyof typeof props.interfaceForm]
         if ((typeof data === 'string' && data !== '') || (typeof data !== 'string' && !data)) Object.assign(result, {
             [key]: data
         })
@@ -46,7 +46,7 @@ const interfaceForm = computed(() => {
 const preferenceForm = computed(() => {
     const result = {}
     for (const key in props.preferenceForm) {
-        const data: string | ("mp-bgp" | "extended-nexthop")[] = props.preferenceForm[key]
+        const data: string | ("mp-bgp" | "extended-nexthop")[] = props.preferenceForm[key as keyof typeof props.preferenceForm]
         if (key !== 'asn') Object.assign(result, { [key]: data })
     }
     return result

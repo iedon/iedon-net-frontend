@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { UserOutlined, NodeIndexOutlined, SettingOutlined, BookOutlined, GlobalOutlined } from '@ant-design/icons-vue'
 import { isAdmin, theme, VAR_SIZE_LG } from '../../common/helper'
@@ -12,8 +11,6 @@ import ManagePosts from './managePosts.vue'
 import ManageNodes from './manageNodes.vue'
 
 const t = useI18n().t
-const router = useRouter()
-
 
 const selectedKeys: Ref<string[]> = ref([ 'mySessions' ])
 
@@ -98,7 +95,7 @@ const backToTop = () => {
         </a-layout-sider>
         <a-layout-content class="content">
             <h1 class="header">
-                {{ title[selectedKeys[0]] || '' }}
+                {{ title[selectedKeys[0] as keyof typeof title] || '' }}
             </h1>
             <a-divider dashed></a-divider>
             <template v-if="!isAdmin">
