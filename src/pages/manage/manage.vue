@@ -37,8 +37,7 @@ const toggleMenu = () => {
 }
 const backToTop = () => {
     window.scrollTo(0, 0)
-    const width  = window.innerWidth || document.documentElement.clientWidth || 
-document.body.clientWidth
+    const width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
     if (width < VAR_SIZE_LG) {
         collapsed.value = true
     }

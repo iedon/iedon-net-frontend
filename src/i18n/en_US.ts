@@ -89,6 +89,7 @@ export default {
             mustEnterTunnelInformation: 'You must enter tunnel information, including endpoint and credential.',
             inputValid: 'Your information is not valid. Check and try again.',
             back: 'Back to modify',
+            backTop: 'Back to all nodes page',
             step3Introduction: 'Your application for peering. Please have a check.',
             ipv4: 'DN42 IPv4',
             ipv6: 'DN42 IPv6',

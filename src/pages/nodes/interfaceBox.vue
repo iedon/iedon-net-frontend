@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Ref, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Modal } from 'ant-design-vue'
 import { SendOutlined } from '@ant-design/icons-vue'

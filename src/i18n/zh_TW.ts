@@ -89,6 +89,7 @@ export default {
             mustEnterTunnelInformation: '您必須輸入隧道訊息，包括端點和憑證。',
             inputValid: '您的訊息不正確。請檢視並重試。',
             back: '返回修改',
+            backTop: '返回到所有節點頁',
             step3Introduction: '您的申請表。請檢視。',
             ipv4: 'DN42 IPv4',
             ipv6: 'DN42 IPv6',

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { SendOutlined } from '@ant-design/icons-vue'
 import { isAdmin, splitMessageToVNodes } from '../../common/helper'
 import { RouterMetadata } from '../../common/packetHandler'
@@ -17,6 +17,12 @@ const props = defineProps<{
 }>()
 
 const t = useI18n().t
+
+const router = useRouter()
+const openNodesPage = () => {
+    router.replace({ path: '/nodes' })
+    window.scrollTo(0, 0)
+}
 </script>
 
 <template>
@@ -41,6 +47,7 @@ const t = useI18n().t
         </a-form-item>
         <br />
         <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
+            <a-button style="margin-right:20px" @click="openNodesPage()">{{ t('pages.peering.backTop') }}</a-button>
             <a-button type="primary" @click="props.nextStep()">
                 <template #icon>
                     <send-outlined />

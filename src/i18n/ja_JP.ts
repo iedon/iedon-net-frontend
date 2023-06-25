@@ -89,6 +89,7 @@ export default {
             mustEnterTunnelInformation: 'エンドポイントやクレデンシャルなどのトンネル情報を入力する必要がございます。',
             inputValid: 'お客様の情報は無効です。確認して再試行してください。',
             back: '戻ってやり直す',
+            backTop: 'ノードページに戻る',
             step3Introduction: 'お申込内容です。もう一度ご確認ください。',
             ipv4: 'DN42 IPv4',
             ipv6: 'DN42 IPv6',

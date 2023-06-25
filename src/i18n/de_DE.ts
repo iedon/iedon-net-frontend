@@ -89,6 +89,7 @@ export default {
             mustEnterTunnelInformation: 'Sie müssen Tunnelinformationen eingeben, einschließlich Endpunkt und Anmeldedaten.',
             inputValid: 'Ihre Informationen sind ungültig. Prüfen und erneut versuchen.',
             back: 'Zurück zum Ändern',
+            backTop: 'Zurück zur Seite „Alle Knoten“.',
             step3Introduction: 'Ihre Anwendung für Peering. Bitte haben Sie einen Scheck.',
             ipv4: 'DN42 IPv4',
             ipv6: 'DN42 IPv6',
