@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { siteConfig, theme } from '../common/helper'
+import { siteConfig, themeName } from '../common/helper'
 
 //@ts-ignore
 import markdown_it from 'markdown-it'
@@ -16,7 +16,7 @@ const currentYear = new Date().getFullYear()
 </script>
 
 <template>
-    <a-layout-footer id="footer" :class="theme">
+    <a-layout-footer id="footer" :class="themeName">
       <div class="md" v-if="siteConfig.footerText" v-html="md.render(siteConfig.footerText)"></div>
       <p>&copy; {{currentYear}}&nbsp;&nbsp;<a href="https://dn42.dev" target="_blank" title="DN42 Wiki">DN42 Participant</a>&nbsp;&nbsp;{{siteConfig.netName}}({{siteConfig.netAsn}})</p>
     </a-layout-footer>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { theme } from '../common/helper'
+import { themeName } from '../common/helper'
 import { BulbFilled, BulbOutlined } from '@ant-design/icons-vue'
 
 defineProps<{
@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
     <div class="trigger">
-      <div :class="`trigger-inner ${theme}`">
+      <div :class="`trigger-inner ${themeName}`">
         <bulb-outlined v-if="trigger" />
         <bulb-filled v-else />
       </div>

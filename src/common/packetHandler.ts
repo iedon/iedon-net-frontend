@@ -1,7 +1,6 @@
 import { message } from 'ant-design-vue'
 import config from "../config"
 import { loggedIn, splitMessageToVNodes } from './helper'
-import "ant-design-vue/es/message/style/css"
 
 enum ResponseCode {
     OK = 0,

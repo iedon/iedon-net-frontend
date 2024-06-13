@@ -3,13 +3,11 @@ import { computed, onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
-import { ApiOutlined, LoadingOutlined, CopyOutlined } from '@ant-design/icons-vue'
+import { ApiOutlined, CopyOutlined } from '@ant-design/icons-vue'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
-import { loggedIn, theme } from '../../common/helper'
+import { loggedIn, themeName } from '../../common/helper'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 import { Empty } from 'ant-design-vue'
-import "ant-design-vue/es/modal/style/css"
-import "ant-design-vue/es/message/style/css"
 
 //@ts-ignore
 import markdown_it from 'markdown-it'
@@ -70,6 +68,7 @@ const copyRouterDescription = async (r: RouterMetadata) => {
 const redirectToPeering = (r: RouterMetadata) => {
     if (!r.openPeering) {
         Modal.error({
+            centered: true,
             title: r.name,
             content: t('pages.nodes.statusClosed')
         })
@@ -77,6 +76,7 @@ const redirectToPeering = (r: RouterMetadata) => {
     }
     if (r.sessionCount >= r.sessionCapacity) {
         Modal.error({
+            centered: true,
             title: r.name,
             content: t('pages.nodes.statusFull')
         })
@@ -121,7 +121,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
                         <router-location-avatar :router="r"></router-location-avatar>
                     </template>
                 </a-card-meta>
-                <ul :class="`detail ${theme}`">
+                <ul :class="`detail ${themeName}`">
                     <li v-if="r.ipv4">IPv4<code>{{ r.ipv4 }}</code></li>
                     <li v-if="r.ipv6">IPv6<code>{{ r.ipv6 }}</code></li>
                     <li v-if="r.ipv6LinkLocal">IPv6 Link Local<code>{{ r.ipv6LinkLocal }}</code></li>
@@ -171,9 +171,6 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 .card:deep(.ant-card-body) {
     min-height: 280px;
 }
-.card > * {
-    display: block;
-}
 .card > span {
     margin-bottom: 1rem;
 }
@@ -197,6 +194,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     padding: 0.15em 0.3em;
     margin-left: 10px;
     line-height: 200%;
+    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
 }
 .card .desc {
     margin-top: 20px;
@@ -204,6 +202,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 }
 .card .desc:deep(p) {
     margin-bottom: 0.5em;
+    margin-top: 0;
 }
 .card:deep(.ant-card-meta-detail) > div:not(:last-child) {
     margin-bottom: 0;

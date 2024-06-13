@@ -3,9 +3,6 @@ import { message } from 'ant-design-vue'
 import config from '../config'
 import { makeRequest, Post, SiteConfigData } from './packetHandler'
 import dayjs from 'dayjs'
-import themeLight from '../styles/light.less?inline'
-import themeDark from '../styles/dark.less?inline'
-import "ant-design-vue/es/message/style/css"
 
 export const splitMessageToVNodes = (message: string) => {
     const paras: VNode[] = []
@@ -89,10 +86,10 @@ export const formatDate = (dateString: string) => {
 
 export const isAdmin = computed(() => siteConfig.value.netAsn === localStorage.getItem('asn'))
 
-export const theme = ref('light')
+export const themeName = ref('light')
 
-export const applyTheme = (themeName?: string) => {
-  theme.value = themeName || 'light'
+export const applyTheme = (newThemeName?: string) => {
+  themeName.value = newThemeName || 'light'
   const head = document.getElementsByTagName("head")[0]
   const getStyle = head.getElementsByTagName('style')
   if (getStyle.length > 0) {
@@ -105,7 +102,7 @@ export const applyTheme = (themeName?: string) => {
   }
   const styleDom = document.createElement("style")
   styleDom.dataset.type = "theme"
-  styleDom.innerHTML = themeName === 'dark' ? themeDark : themeLight
+  styleDom.innerHTML = newThemeName === 'dark' ? 'html{background-color:#000000}' : 'html{background-color:#f5f5f5}'
   head.appendChild(styleDom)
 }
 

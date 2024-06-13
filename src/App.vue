@@ -2,12 +2,13 @@
 import { onMounted, onUnmounted, Ref, ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Locale } from 'ant-design-vue/lib/vc-picker/interface'
+import { theme as antTheme } from 'ant-design-vue'
 import { locale, setLocale, SupportedLocale, SupportedLocales} from './i18n/i18n'
 import LayoutHeader from './components/LayoutHeader.vue'
 import LayoutContent from './components/LayoutContent.vue'
 import LayoutFooter from './components/LayoutFooter.vue'
 import ThemeTrigger from './components/ThemeTrigger.vue'
-import { useHeartBeat, applyTheme, theme } from './common/helper'
+import { useHeartBeat, applyTheme, themeName } from './common/helper'
 
 const vueI18n = useI18n()
 const t = vueI18n.t
@@ -19,9 +20,16 @@ const stopWatchLocale = watch((): SupportedLocale => locale.value, async (newLoc
 
 let stopHeartBeat: (() => void) | null = null
 const antdLocale: Ref<Locale | null> = ref(null)
+
+let matchMedia: MediaQueryList | undefined = undefined
+const themeChangeHandler = (event: MediaQueryListEvent) => {
+  applyTheme(event.matches ? "dark" : "light")
+}
 onMounted(async () => {
   try {
-    applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    matchMedia = window.matchMedia('(prefers-color-scheme: dark)')
+    matchMedia.addEventListener('change', themeChangeHandler)
+    applyTheme(matchMedia.matches ? 'dark' : 'light')
   } catch (error) {
     applyTheme()
     console.warn(error)
@@ -39,9 +47,13 @@ onMounted(async () => {
 onUnmounted(() => {
   if (stopHeartBeat) stopHeartBeat()
   stopWatchLocale()
+  if (matchMedia !== undefined) {
+    matchMedia.removeEventListener('change', themeChangeHandler)
+    matchMedia = undefined
+  }
 })
 
-const themeTrigger = computed(() => theme.value === 'light')
+const themeTrigger = computed(() => themeName.value === 'light')
 
 const changeTheme = () => {
   applyTheme(themeTrigger.value ? 'dark' : 'light')
@@ -49,7 +61,11 @@ const changeTheme = () => {
 </script>
 
 <template>
-  <a-config-provider :locale="antdLocale">
+  <a-config-provider :locale="antdLocale"
+    :theme="{
+      algorithm: themeName === 'dark' ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm
+    }"
+  >
     <a-layout>
       <layout-header></layout-header>
       <layout-content></layout-content>
@@ -65,5 +81,8 @@ html, #app {
   width: 100%;
   height: 100%;
   user-select: none;
+}
+body {
+  margin: 0;
 }
 </style>

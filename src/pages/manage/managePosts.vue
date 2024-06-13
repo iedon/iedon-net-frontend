@@ -6,8 +6,6 @@ import { message, Modal } from 'ant-design-vue'
 import { FileAddOutlined } from '@ant-design/icons-vue'
 import { loggedIn, nullOrEmpty, formatDate } from '../../common/helper'
 import { makeRequest, Post, PostMetadaResponse, PostMetadata } from '../../common/packetHandler'
-import "ant-design-vue/es/modal/style/css"
-import "ant-design-vue/es/message/style/css"
 
 const t = useI18n().t
 const router = useRouter()
@@ -103,6 +101,7 @@ const modalForm = ref({
 const addOrEdit = async () => {
     if (nullOrEmpty(modalForm.value.category) || nullOrEmpty(modalForm.value.title) || nullOrEmpty(modalForm.value.content)) {
         Modal.error({
+            centered: true,
             title: t('pages.manage.posts.addOrEdit'),
             content: t('pages.peering.inputValid'),
         })
@@ -198,7 +197,7 @@ const showAddOrEdit = async (record?: PostMetadata) => {
             </template>
         </template>
     </a-table>
-    <a-modal v-model:visible="modalVisible" :title="t('pages.manage.posts.addOrEdit')" centered>
+    <a-modal v-model:open="modalVisible" :title="t('pages.manage.posts.addOrEdit')" centered>
         <a-spin :spinning="modalLoading">
             <a-form :model="modalForm" class="modalForm">
                 <a-form-item name="category" :label="t('pages.manage.posts.category')">

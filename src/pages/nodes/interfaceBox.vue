@@ -5,7 +5,6 @@ import { SendOutlined } from '@ant-design/icons-vue'
 import { IPV4_REGEX, IPV6_REGEX } from '../../common/helper'
 import { RouterInfoResponse, RouterMetadata } from '../../common/packetHandler'
 import PeerInfoCard from './peerInfoCard.vue'
-import "ant-design-vue/es/modal/style/css"
 
 const props = defineProps<{
     router: RouterMetadata,
@@ -34,6 +33,7 @@ const checkAndContinue = () => {
     if ((!props.interfaceForm.ipv4 && !props.interfaceForm.ipv6 && !props.interfaceForm.ipv6LinkLocal) ||
         (!props.interfaceForm.useIpv4 && !props.interfaceForm.useIpv6 && !props.interfaceForm.useIpv6LinkLocal)) {
         Modal.error({
+            centered: true,
             title: t('pages.peering.step2'),
             content: t('pages.peering.mustEnableAtleastOneProtocol'),
         })
@@ -42,6 +42,7 @@ const checkAndContinue = () => {
 
     if (props.preferenceForm.linkType !== 'direct' && !props.interfaceForm.credential) {
         Modal.error({
+            centered: true,
             title: t('pages.peering.step2'),
             content: t('pages.peering.mustEnterTunnelInformation'),
         })
@@ -50,6 +51,7 @@ const checkAndContinue = () => {
 
     if (!props.routerInfo || !props.routerInfo.passthrough) {
         Modal.error({
+            centered: true,
             title: t('pages.peering.step2'),
             content: t('pages.signIn.errorOccurred'),
         })
@@ -60,6 +62,7 @@ const checkAndContinue = () => {
         (props.interfaceForm.useIpv6 && !props.interfaceForm.ipv6) ||
         (props.interfaceForm.ipv6LinkLocal && !props.interfaceForm.ipv6LinkLocal)) {
         Modal.error({
+            centered: true,
             title: t('pages.peering.step2'),
             content: t('pages.peering.inputValid'),
         })
@@ -89,6 +92,7 @@ const checkAndContinue = () => {
 
     } catch /*(error)*/ {
         Modal.error({
+            centered: true,
             title: t('pages.peering.step2'),
             content: t('pages.peering.inputValid'),
         })
@@ -103,7 +107,7 @@ const checkAndContinue = () => {
 
 <template>
     <peer-info-card :router="props.router" :router-info="props.routerInfo"></peer-info-card>
-    <a-form :model="props.preferenceForm">
+    <a-form :model="props.preferenceForm" class="peerInfoForm">
         <a-form-item :label="t('pages.peering.useIpv4')">
             <a-switch v-model:checked="props.interfaceForm.useIpv4" />
         </a-form-item>
@@ -151,4 +155,7 @@ const checkAndContinue = () => {
 </template>
 
 <style scoped>
+.peerInfoForm {
+    padding: 0 20px
+}
 </style>

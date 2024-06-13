@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { theme } from '../common/helper'
+import { themeName } from '../common/helper'
 </script>
 
 <template>
   <a-layout-content id="content">
-    <a-layout class="page" :class="theme">
+    <a-layout class="page" :class="themeName">
       <router-view v-slot="{ Component }">
         <transition name="fade">
             <component :is="Component"></component>

@@ -6,8 +6,6 @@ import { message, Modal } from 'ant-design-vue'
 import { SendOutlined } from '@ant-design/icons-vue'
 import { loggedIn } from '../../common/helper'
 import { makeRequest, SetPasswordResponse } from '../../common/packetHandler'
-import "ant-design-vue/es/modal/style/css"
-import "ant-design-vue/es/message/style/css"
 
 const t = useI18n().t
 const router = useRouter()
@@ -32,6 +30,7 @@ const setPasswordForm = ref({
 const setPassword = async () => {
     if (setPasswordForm.value.password !== setPasswordForm.value.confirmPassword) {
         Modal.error({
+            centered: true,
             title: t('pages.manage.account.setPassword'),
             content: t('pages.peering.inputValid'),
         })
@@ -51,6 +50,7 @@ const setPassword = async () => {
         }
 
         Modal.error({
+            centered: true,
             title: t('pages.manage.account.setPassword'),
             content: t('pages.signIn.errorOccurred'),
         })

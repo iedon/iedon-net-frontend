@@ -2,7 +2,7 @@
 import { onMounted, Ref, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { UserOutlined, NodeIndexOutlined, SettingOutlined, BookOutlined, GlobalOutlined } from '@ant-design/icons-vue'
-import { isAdmin, theme, VAR_SIZE_LG } from '../../common/helper'
+import { isAdmin, themeName, VAR_SIZE_LG } from '../../common/helper'
 import MySessions from './mySessions.vue'
 import MyAccount from './myAccount.vue'
 import ManageSessions from './manageSessions.vue'
@@ -43,7 +43,7 @@ const backToTop = () => {
 
 <template>
     <section id="wrapper">
-        <a-layout-sider :class="`sider ${theme}`" width="200" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" v-show="!collapsed">
+        <a-layout-sider :class="`sider ${themeName}`" width="200" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" v-show="!collapsed">
             <a-menu class="menu" mode="inline" v-model:selectedKeys="selectedKeys">
                 <template v-if="!isAdmin">
                     <a-menu-item key="mySessions" @click="backToTop()">
@@ -141,7 +141,6 @@ const backToTop = () => {
 .content .header {
     font-size: 28px;
     letter-spacing: 0.5px;
-    margin-top: 30px;
     text-align: center;
     font-weight: normal;
 }

@@ -26,7 +26,7 @@ defineProps<{
   height: 40px;
   width: 40px;
   line-height: 40px;
-  border-radius: 4px;
+  border-radius: 50%;
   background-color: #1088e9;
   opacity: 0.65;
   color: #fff;

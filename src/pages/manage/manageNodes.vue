@@ -7,8 +7,6 @@ import { GlobalOutlined, CloseOutlined, CheckCircleOutlined } from '@ant-design/
 import { loggedIn, nullOrEmpty } from '../../common/helper'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
-import "ant-design-vue/es/modal/style/css"
-import "ant-design-vue/es/message/style/css"
 
 const t = useI18n().t
 const router = useRouter()
@@ -142,6 +140,7 @@ const addOrEdit = async () => {
     if (nullOrEmpty(modalForm.value.name) || nullOrEmpty(modalForm.value.sessionCapacity) || isNaN(Number(modalForm.value.sessionCapacity)) ||
         nullOrEmpty(modalForm.value.callbackUrl) || !Array.isArray(modalForm.value.linkTypes) || modalForm.value.linkTypes.length < 1) {
         Modal.error({
+            centered: true,
             title: t('pages.manage.nodes.addOrEdit'),
             content: t('pages.peering.inputValid'),
         })
@@ -270,7 +269,7 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
             </template>
         </template>
     </a-table>
-    <a-modal v-model:visible="modalVisible" :title="t('pages.manage.nodes.addOrEdit')" centered>
+    <a-modal v-model:open="modalVisible" :title="t('pages.manage.nodes.addOrEdit')" centered>
         <a-spin :spinning="modalLoading">
             <a-form :model="modalForm" class="modalForm">
                 <a-form-item name="name" :label="t('pages.manage.nodes.name')">

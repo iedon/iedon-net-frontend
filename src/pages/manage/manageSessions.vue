@@ -7,7 +7,6 @@ import { NodeIndexOutlined, CloseOutlined } from '@ant-design/icons-vue'
 import { loggedIn } from '../../common/helper'
 import { makeRequest, RouterMetadata, RoutersResponse, SessionMetadata, SessionsResponse } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
-import "ant-design-vue/es/message/style/css"
 
 //@ts-ignore
 import markdown_it from 'markdown-it'
@@ -305,7 +304,7 @@ const filteredSessions = computed(() => {
             </template>
         </template>
     </a-table>
-    <a-modal v-model:visible="modalVisible" :title="modalRouterName" centered>
+    <a-modal v-model:open="modalVisible" :title="modalRouterName" centered>
         <ul class="detail">
             <li v-if="modalIpv4 !== ''">IPv4: <code>{{ modalIpv4 }}</code></li>
             <li v-if="modalIpv6 !== ''">IPv6: <code>{{ modalIpv6 }}</code></li>
@@ -353,6 +352,7 @@ const filteredSessions = computed(() => {
     padding: 10px;
     max-height: 200px;
     font-size: 12px;
+    overflow: scroll;
 }
 .detail {
     width: 100%;
@@ -365,9 +365,11 @@ const filteredSessions = computed(() => {
     margin-left: 10px;
     line-height: 200%;
     word-break: break-all;
+    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
 }
 .desc:deep(code) {
     font-size: 12px;
+    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
 }
 .desc:deep(p) {
     margin-bottom: 0.5em;

@@ -5,9 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
 import { SendOutlined } from '@ant-design/icons-vue'
 import { ASN_MAX, ASN_MIN, loggedIn, nullOrEmpty, refreshSiteConfig, siteConfig } from '../../common/helper'
-import { makeRequest, SetPasswordResponse } from '../../common/packetHandler'
-import "ant-design-vue/es/message/style/css"
-import "ant-design-vue/es/modal/style/css"
+import { makeRequest } from '../../common/packetHandler'
 
 const t = useI18n().t
 const router = useRouter()
@@ -27,6 +25,7 @@ const saveConfig = async () => {
     if (nullOrEmpty(configForm.value.netAsn) || nullOrEmpty(configForm.value.netName) ||
         isNaN(Number(configForm.value.netAsn)) || Number(configForm.value.netAsn) < ASN_MIN || Number(configForm.value.netAsn) > ASN_MAX) {
         Modal.error({
+            centered: true,
             title: t('pages.manage.config.changeConfig'),
             content: t('pages.peering.inputValid'),
         })

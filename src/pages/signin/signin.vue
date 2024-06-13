@@ -9,8 +9,6 @@ import queryBox from './queryBox.vue'
 import chooseBox from './chooseBox.vue'
 import challengeBox from './challengeBox.vue'
 import doneBox from './doneBox.vue'
-import "ant-design-vue/es/modal/style/css"
-import "ant-design-vue/es/message/style/css"
 
 onMounted(() => {
     window.scrollTo(0, 0)
@@ -48,6 +46,7 @@ const queryAsn = async (asn: number) => {
 
         if (resp.availableAuthMethods.length === 0) {
             Modal.error({
+                centered: true,
                 title: t('pages.signIn.signIn'),
                 content: splitMessageToVNodes(t('pages.signIn.couldNotFindAuthMethod')),
             })
@@ -79,6 +78,7 @@ const requestChallenge = async (selectedMethod: number) => {
 
         if (!resp.authState || !resp.authChallenge) {
             Modal.error({
+                centered: true,
                 title: t('pages.signIn.signIn'),
                 content: splitMessageToVNodes(t('pages.signIn.errorOccurred')),
             })
@@ -123,6 +123,7 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
 
         if (!resp || !resp.authResult) {
             Modal.error({
+                centered: true,
                 title: t('pages.signIn.signIn'),
                 content: splitMessageToVNodes(t('pages.signIn.signInFailed')),
             })
@@ -175,6 +176,9 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
 </template>
 
 <style scoped>
+.box:deep(.ant-alert-message) p:first-child {
+    margin-top: auto;
+}
 .box:deep(.ant-alert-message) p:last-child {
     margin-bottom: auto;
 }

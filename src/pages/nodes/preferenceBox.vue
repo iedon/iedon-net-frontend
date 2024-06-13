@@ -28,7 +28,7 @@ const openNodesPage = () => {
 <template>
     <a-alert :message="splitMessageToVNodes(t('pages.peering.step1Introduction'))" type="info" />
     <br />
-    <a-form :model="props.preferenceForm" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+    <a-form :model="props.preferenceForm" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" class="peerInfoForm">
         <a-form-item v-if="isAdmin" name="peerAsn" :label="t('pages.peering.asn')">
             <a-input type="number" v-model:value="props.preferenceForm.asn" addon-before="AS" :placeholder="`${t('pages.signIn.pleaseInput')} ${t('pages.peering.asn')}`"></a-input>
         </a-form-item>
@@ -59,4 +59,7 @@ const openNodesPage = () => {
 </template>
 
 <style scoped>
+.peerInfoForm {
+    padding: 0 20px
+}
 </style>

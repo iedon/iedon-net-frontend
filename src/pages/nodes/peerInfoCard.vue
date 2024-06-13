@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { RouterInfoResponse, RouterMetadata } from '../../common/packetHandler'
-import { siteConfig, theme } from '../../common/helper'
+import { siteConfig, themeName } from '../../common/helper'
 
 //@ts-ignore
 import markdown_it from 'markdown-it'
@@ -24,7 +24,7 @@ const t = useI18n().t
 </script>
 
 <template>
-    <div :class="`info ${theme}`">
+    <div :class="`info ${themeName}`">
         <h2>{{ t('pages.peering.step2Introduction') }}</h2>
         <ul class="detail">
             <li v-if="props.router.ipv4">ASN<code>{{ siteConfig.netAsn }}</code></li>

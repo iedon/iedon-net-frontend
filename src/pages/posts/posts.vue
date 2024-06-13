@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { StarFilled, NumberOutlined, LoadingOutlined } from '@ant-design/icons-vue'
 import { makeRequest, Post, PostMetadaResponse, PostMetadata } from '../../common/packetHandler'
-import { postCache, formatDate, theme, VAR_SIZE_LG } from '../../common/helper'
+import { postCache, formatDate, themeName, VAR_SIZE_LG } from '../../common/helper'
 import MenuTrigger from '../../components/MenuTrigger.vue'
 import './post.css'
 
@@ -154,7 +154,7 @@ const toggleMenu = () => {
 
 <template>
     <section id="wrapper">
-        <a-layout-sider :class="`sider ${theme}`" width="300" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" v-show="!collapsed">
+        <a-layout-sider :class="`sider ${themeName}`" width="300" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" v-show="!collapsed">
             <a-spin :spinning="loading && openKeys.length === 0">
                 <div v-if="loading && openKeys.length === 0" class="pad"></div>
                 <a-menu class="menu" v-else mode="inline" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys">
@@ -219,7 +219,6 @@ const toggleMenu = () => {
 .content .header {
     font-size: 28px;
     letter-spacing: 0.5px;
-    margin-top: 30px;
     text-align: center;
     font-weight: normal;
 }

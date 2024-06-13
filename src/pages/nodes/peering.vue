@@ -11,8 +11,6 @@ import preferenceBox from './preferenceBox.vue'
 import interfaceBox from './interfaceBox.vue'
 import setupBox from './setupBox.vue'
 import doneBox from './doneBox.vue'
-import "ant-design-vue/es/modal/style/css"
-import "ant-design-vue/es/message/style/css"
 
 const t = useI18n().t
 const router = useRouter()
@@ -54,6 +52,7 @@ const getRouterInfo = async () => {
     if (isAdmin.value) {
         if (preferenceForm.value.asn === '' || isNaN(Number(preferenceForm.value.asn)) || Number(preferenceForm.value.asn) < ASN_MIN || Number(preferenceForm.value.asn) > ASN_MAX) {
             Modal.error({
+                centered: true,
                 title: 'Admin Peering',
                 content: `${t('pages.signIn.pleaseInput')} ${t('pages.peering.asn')}`,
             })
@@ -118,6 +117,7 @@ const startPeering = async () => {
         }
 
         Modal.error({
+            centered: true,
             title: t('pages.peering.step3'),
             content: t('pages.signIn.errorOccurred'),
         })
@@ -148,7 +148,7 @@ const startPeering = async () => {
                         <interface-box :router="node" :router-info="routerInfo" :preference-form="preferenceForm" :interface-form="interfaceForm" :nextStep="() => currentStep = 'setup'" :prevStep="() => currentStep = 'preference'"></interface-box>
                     </template>
                     <template v-else-if="currentStep === 'setup'">
-                    <setup-box :preference-form="preferenceForm" :loading="loading" :router="node" :router-info="routerInfo" :interface-form="interfaceForm" :nextStep="startPeering" :prevStep="() => currentStep = 'interface'"></setup-box>
+                        <setup-box :preference-form="preferenceForm" :loading="loading" :router="node" :router-info="routerInfo" :interface-form="interfaceForm" :nextStep="startPeering" :prevStep="() => currentStep = 'interface'"></setup-box>
                     </template>
                     <template v-else-if="currentStep === 'done'">
                         <done-box :router="node"></done-box>
@@ -160,6 +160,9 @@ const startPeering = async () => {
 </template>
 
 <style scoped>
+.box:deep(.ant-alert-message) p:first-child {
+    margin-top: auto;
+}
 .box:deep(.ant-alert-message) p:last-child {
     margin-bottom: auto;
 }

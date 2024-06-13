@@ -4,11 +4,10 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { UserOutlined, HomeOutlined, LoginOutlined, GlobalOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 import { locale, setLocale, SupportedLocales, getLocaleName, getLocaleCodeAlias } from '../i18n/i18n'
-import { loggedIn, theme } from '../common/helper'
+import { loggedIn, themeName } from '../common/helper'
 import config from "../config"
 //@ts-ignore
 import md5 from 'md5'
-import "ant-design-vue/es/modal/style/css"
 
 const t = useI18n().t
 
@@ -94,9 +93,9 @@ const login = () => {
 </script>
 
 <template>
-    <a-layout-header id="header" :class="theme">
+    <a-layout-header id="header" :class="themeName">
         <img class="logo" src="../assets/logo.svg" @click="goHome" alt="Logo" />
-        <a-menu :class="`menu ${theme}`" @select="onSelect" :theme="theme" mode="horizontal" v-model:selectedKeys="selectedKeys">
+        <a-menu :class="`menu ${themeName}`" @select="onSelect" :theme="themeName" mode="horizontal" v-model:selectedKeys="selectedKeys">
             <a-menu-item key="home" @click="goHome">
                 <template #icon>
                     <home-outlined />
