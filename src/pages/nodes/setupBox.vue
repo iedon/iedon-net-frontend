@@ -59,9 +59,9 @@ const loading = computed(() => props.loading)
     <a-spin :spinning="loading">
         <h2 class="header">{{ t('pages.peering.step3Introduction') }}</h2>
         <a-descriptions layout="vertical" bordered size="small" :column="2" class="summary">
-            <a-descriptions-item v-for="data, key in preferenceForm" :key="`preferenceForm_${key}`" :label="t(`pages.peering['${key}']`)">
+            <a-descriptions-item v-for="data, key in preferenceForm" :key="`preferenceForm_${key}`" :label="t(`pages.peering['${key}']` as string)">
                 <template v-if="key === 'linkType'">
-                    {{ t(`pages.peering['${data}']`) }}
+                    {{ t(`pages.peering['${data}']` as string) }}
                 </template>
                 <template v-else-if="key === 'bgpExtensions' && Array.isArray(data)">
                     <span class="tag" v-for="item in data" :key="item">{{ t(`pages.peering['${item}']`) }}</span>
@@ -70,7 +70,7 @@ const loading = computed(() => props.loading)
                     {{ data }}
                 </template>
             </a-descriptions-item>
-            <a-descriptions-item v-for="data, key in interfaceForm" :key="`interfaceForm_${key}`" :label="t(`pages.peering['${key}']`)">
+            <a-descriptions-item v-for="data, key in interfaceForm" :key="`interfaceForm_${key}`" :label="t(`pages.peering['${key}']` as string)">
                 <template v-if="typeof data === 'boolean'">
                     <check-circle-outlined v-if="data" />
                     <close-outlined v-else />
