@@ -1,7 +1,7 @@
 {
     "rewrites": [
       {
-        "source": "\/((?!map.html).*)",
+        "source": "/(.*)",
         "destination": "/index.html"
       }
     ]
