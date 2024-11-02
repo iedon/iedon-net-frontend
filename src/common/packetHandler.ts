@@ -88,9 +88,6 @@ export const makeRequest = async (
 
     const respData: ResponsePacket = await resp.json();
 
-    // Validate response data and handle response codes
-    if (!respData.data) throw new Error('Invalid response received from server.');
-
     if (respData.code !== ResponseCode.OK) {
       handleApiError(respData.code, t, suppressErrorMessage);
       return { success: false, status: resp.status };

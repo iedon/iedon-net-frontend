@@ -27,7 +27,7 @@ const activeKey = ref('challengeHint')
 
 const copyChallengeText = async (c: string) => {
     try {
-        await navigator.clipboard.writeText(c)
+        await navigator.clipboard.writeText(c.trim())
         message.info(t('pages.nodes.copied'))
     } catch (error) {
         console.error(error)
@@ -46,16 +46,15 @@ const copyChallengeText = async (c: string) => {
                         <span style="font-style:italic">{{ t('pages.signIn.challengeHint') }}</span>
                     </template>
                     <span
-                        @click.stop='copyChallengeText(`echo
-                        "${props.authRequestResp?.authChallenge}" |
-                        gpg --clearsign --armor -u ${props.authQueryResp?.availableAuthMethods.find(v => Number(v.id) === selectedIndex)?.data}`)'
+                        @click.stop='copyChallengeText(
+                            `echo "${props.authRequestResp?.authChallenge}" | gpg --clearsign --armor -u ${props.authQueryResp?.availableAuthMethods.find(v => Number(v.id) === selectedIndex)?.data}`
+                        )'
                         v-if="props.type === AvailableAuthMethod.PGP_ASCII_ARMORED_CLEAR_SIGN"
-                        style="word-break:break-all;font-size:12px;user-select:text;font-family:\'Courier New\',Courier,monospace;cursor:pointer">{{
-                            `echo
-                        "${props.authRequestResp?.authChallenge}" |
-                        gpg --clearsign --armor -u ${props.authQueryResp?.availableAuthMethods.find(v => Number(v.id)
-                                ===
-                                selectedIndex)?.data}` }}</span>
+                        style="word-break:break-all;font-size:12px;user-select:text;font-family:\'Courier New\',Courier,monospace;cursor:pointer">
+                        {{
+                            `echo "${props.authRequestResp?.authChallenge}" | gpg --clearsign --armor -u ${props.authQueryResp?.availableAuthMethods.find(v => Number(v.id) === selectedIndex)?.data}`
+                        }}
+                    </span>
                     <span @click.stop='copyChallengeText(props.authRequestResp?.authChallenge || "")' v-else
                         style="word-break:break-all;font-size:12px;user-select:text;font-family:\'Courier New\',Courier,monospace;cursor:pointer">{{
                             props.authRequestResp?.authChallenge
