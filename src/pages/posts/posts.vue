@@ -3,7 +3,7 @@ import { onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { StarFilled, NumberOutlined, LoadingOutlined } from '@ant-design/icons-vue'
-import { makeRequest, Post, PostMetadaResponse, PostMetadata } from '../../common/packetHandler'
+import { makeRequest, PostMetadaResponse, PostMetadata, PostResponse } from '../../common/packetHandler'
 import { postCache, formatDate, themeName, VAR_SIZE_LG } from '../../common/helper'
 import MenuTrigger from '../../components/MenuTrigger.vue'
 import './post.css'
@@ -21,19 +21,19 @@ const md = new markdown_it({
     html: true
 })
 md.use(mila, {
-  attrs: {
-    target: "_blank"
-  },
+    attrs: {
+        target: "_blank"
+    },
 })
 
 const loading = ref(false)
-const currentPost: Ref<Post | null> = ref(null)
+const currentPost: Ref<PostResponse | null> = ref(null)
 
 const postMetadata: Ref<{ [index: string]: PostMetadata[] }> = ref({})
 
 const selectedKeys: Ref<string[]> = ref([])
 const openKeys: Ref<string[]> = ref([])
-const collapsed: Ref<boolean> =  ref(false)
+const collapsed: Ref<boolean> = ref(false)
 
 const loadingPost: Ref<PostMetadata | null> = ref(null)
 const fetchPost = async (post: PostMetadata) => {
@@ -50,13 +50,16 @@ const fetchPost = async (post: PostMetadata) => {
                 console.error(error)
             }
         }
-        
-        currentPost.value = (await makeRequest(t, '/list', {
-            type: 'post',
-            postId: post.postId
-        })) as Post | null || null
 
-        if (currentPost.value) postCache.set(`post_${post.postId}`, currentPost.value)
+        const resp = await makeRequest(t, `/list/post/${post.postId}`)
+        if (resp.success && resp.response) {
+            const data = resp.response as PostResponse
+            if (data) {
+                currentPost.value = data
+                postCache.set(`post_${post.postId}`, currentPost.value)
+            }
+        }
+
     } catch (error) {
         console.error(error)
     } finally {
@@ -79,7 +82,7 @@ const preprocessPostMetadata = async (newPostMetadata: PostMetadata[]) => {
                 const desiredPost = postMetadata.value[category].find(c => c.postId === Number(desiredPostId))
                 if (desiredPost) {
                     foundDesiredPost = true
-                    selectedKeys.value = [ `post_${desiredPostId}` ]
+                    selectedKeys.value = [`post_${desiredPostId}`]
                     await fetchPost(desiredPost)
                     break
                 }
@@ -91,7 +94,7 @@ const preprocessPostMetadata = async (newPostMetadata: PostMetadata[]) => {
                 path: '/'
             })
             for (const category in postMetadata.value) {
-                selectedKeys.value = [ `post_${postMetadata.value[category][0].postId}` ]
+                selectedKeys.value = [`post_${postMetadata.value[category][0].postId}`]
                 await fetchPost(postMetadata.value[category][0])
                 break
             }
@@ -107,13 +110,13 @@ const fetchPosts = async () => {
         loading.value = true
         collapsed.value = false
 
-        const resp = await makeRequest(t, '/list', {
-            type: "posts",
-        }) as PostMetadaResponse
-
-        if (Array.isArray(resp.posts)) {
-            localStorage.setItem('posts', JSON.stringify(resp.posts))
-            await preprocessPostMetadata(resp.posts)
+        const resp = await makeRequest(t, '/list/posts')
+        if (resp.success && resp.response) {
+            const data = resp.response as PostMetadaResponse
+            if (Array.isArray(data.posts)) {
+                localStorage.setItem('posts', JSON.stringify(data.posts))
+                await preprocessPostMetadata(data.posts)
+            }
         }
     } catch (error) {
         console.error(error)
@@ -138,8 +141,8 @@ const navigateTo = async (post: PostMetadata) => {
         path: `/post/${post.postId}`
     })
     window.scrollTo(0, 0)
-    const width  = window.innerWidth || document.documentElement.clientWidth || 
-document.body.clientWidth
+    const width = window.innerWidth || document.documentElement.clientWidth ||
+        document.body.clientWidth
     if (width < VAR_SIZE_LG) {
         collapsed.value = true
     }
@@ -154,10 +157,12 @@ const toggleMenu = () => {
 
 <template>
     <section id="wrapper">
-        <a-layout-sider :class="`sider ${themeName}`" width="300" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" v-show="!collapsed">
+        <a-layout-sider :class="`sider ${themeName}`" width="300" collapsible v-model:collapsed="collapsed"
+            :trigger="null" breakpoint="lg" :collapsedWidth="40" v-show="!collapsed">
             <a-spin :spinning="loading && openKeys.length === 0">
                 <div v-if="loading && openKeys.length === 0" class="pad"></div>
-                <a-menu class="menu" v-else mode="inline" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys">
+                <a-menu class="menu" v-else mode="inline" v-model:selectedKeys="selectedKeys"
+                    v-model:openKeys="openKeys">
                     <a-sub-menu v-for="(_, category) in postMetadata" :key="category">
                         <template #icon>
                             <star-filled />
@@ -165,10 +170,11 @@ const toggleMenu = () => {
                         <template #title>
                             <b>{{ category }}</b>
                         </template>
-                        <a-menu-item v-for="meta in postMetadata[category]" :key="`post_${meta.postId}`" @click="navigateTo(meta)">
+                        <a-menu-item v-for="meta in postMetadata[category]" :key="`post_${meta.postId}`"
+                            @click="navigateTo(meta)">
                             <template #icon>
                                 <loading-outlined v-if="loadingPost && loadingPost.postId === meta.postId" />
-                                <number-outlined v-else/>
+                                <number-outlined v-else />
                             </template>
                             {{ meta.title }}
                         </a-menu-item>
@@ -176,11 +182,12 @@ const toggleMenu = () => {
                 </a-menu>
             </a-spin>
         </a-layout-sider>
-        <a-layout-content class="content">      
+        <a-layout-content class="content">
             <h1 class="header">
                 {{ loadingPost ? loadingPost.title : (currentPost?.title || '') }}
             </h1>
-            <a-divider orientation="right">{{ loadingPost ? formatDate(loadingPost.updatedAt) : (currentPost ? formatDate(currentPost.updatedAt) : '') }}</a-divider>
+            <a-divider orientation="right">{{ loadingPost ? formatDate(loadingPost.updatedAt) : (currentPost ?
+                formatDate(currentPost.updatedAt) : '') }}</a-divider>
             <a-skeleton active :loading="loadingPost !== null">
                 <article id="post" v-if="currentPost" v-html="md.render(currentPost.content)"></article>
             </a-skeleton>
@@ -194,28 +201,35 @@ const toggleMenu = () => {
     width: 100%;
     display: flex;
 }
+
 .sider {
     min-height: 500px;
 }
+
 .sider.light {
     background-color: #fafafa;
 }
+
 .sider.dark {
     background-color: #1d1d1d;
 }
+
 .sider .pad {
     margin: 200px auto;
 }
+
 .menu {
     height: 100%;
     border-right: none;
 }
+
 .content {
     padding: 0 30px;
     min-height: 500px;
     user-select: text;
     overflow: hidden;
 }
+
 .content .header {
     font-size: 28px;
     letter-spacing: 0.5px;

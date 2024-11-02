@@ -62,14 +62,22 @@ const getRouterInfo = async () => {
     try {
         routerInfo.value = null
         loading.value = true
-        routerInfo.value = await makeRequest(t, '/session', {
+
+        const resp = await makeRequest(t, '/session', {
             action: 'info',
             router: node.value?.uuid,
             data: {
                 linkType: preferenceForm.value.linkType,
                 bgpExtensions: preferenceForm.value.bgpExtensions
             }
-        }) as RouterInfoResponse
+        })
+        if (resp.success && resp.response) {
+            const data = resp.response as RouterInfoResponse
+            if (data) {
+                routerInfo.value =  data
+            }
+        }
+
         currentStep.value = 'interface'
         window.scrollTo(0, 0)
     } catch (error) {
@@ -110,7 +118,7 @@ const startPeering = async () => {
 
         const resp = await makeRequest(t, '/session', options)
 
-        if (resp !== null) {
+        if (resp.success && resp.response) {
             currentStep.value = 'done'
             window.scrollTo(0, 0)
             return

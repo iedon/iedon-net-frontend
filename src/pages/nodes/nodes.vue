@@ -19,9 +19,9 @@ const router = useRouter()
 
 const md = new markdown_it()
 md.use(mila, {
-  attrs: {
-    target: "_blank"
-  },
+    attrs: {
+        target: "_blank"
+    },
 })
 
 const loading = ref(false)
@@ -31,14 +31,15 @@ const fetchRouters = async () => {
     try {
         loading.value = true
 
-        const resp = await makeRequest(t, '/list', {
-            type: "routers",
-        }) as RoutersResponse
-
-        if (Array.isArray(resp.routers)) {
-            routers.value = resp.routers.sort((a, b) => ('' + a.name).localeCompare(b.name))
-            localStorage.setItem('routers', JSON.stringify(routers.value))
+        let resp = await makeRequest(t, '/list/routers')
+        if (resp.success && resp.response) {
+            const data = resp.response as RoutersResponse
+            if (data && Array.isArray(data.routers)) {
+                routers.value = data.routers.sort((a, b) => ('' + a.name).localeCompare(b.name))
+                localStorage.setItem('routers', JSON.stringify(routers.value))
+            }
         }
+
     } catch (error) {
         console.error(error)
     } finally {
@@ -109,14 +110,16 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     <section>
         <h1 class="header">{{ t('pages.nodes.nodes') }}</h1>
         <a-divider dashed></a-divider>
-        <div class="searchContainer"><a-input-search v-model:value="searchKeywords" :placeholder="t('pages.nodes.search')" class="searchBox" enter-button /></div>
+        <div class="searchContainer"><a-input-search v-model:value="searchKeywords"
+                :placeholder="t('pages.nodes.search')" class="searchBox" enter-button /></div>
         <section id="routers" v-if="filteredRouters.length !== 0">
             <a-card hoverable class="card" v-for="r in filteredRouters" :key="r.uuid" @click="redirectToPeering(r)">
                 <template #actions>
                     <copy-outlined @click.stop="copyRouterDescription(r)" />
                     <api-outlined @click.stop="redirectToPeering(r)" />
                 </template>
-                <a-card-meta :title="r.name" :description="`${r.openPeering ? (r.sessionCount < r.sessionCapacity ? (r.autoPeering ? t('pages.nodes.statusOpen') : t('pages.nodes.statusOpenManuallyReview')) : t('pages.nodes.statusFull')) : t('pages.nodes.statusClosed')} ${t('pages.nodes.statusCapacity')}: ${r.sessionCount}/${r.sessionCapacity}`">
+                <a-card-meta :title="r.name"
+                    :description="`${r.openPeering ? (r.sessionCount < r.sessionCapacity ? (r.autoPeering ? t('pages.nodes.statusOpen') : t('pages.nodes.statusOpenManuallyReview')) : t('pages.nodes.statusFull')) : t('pages.nodes.statusClosed')} ${t('pages.nodes.statusCapacity')}: ${r.sessionCount}/${r.sessionCapacity}`">
                     <template #avatar>
                         <router-location-avatar :router="r"></router-location-avatar>
                     </template>
@@ -130,7 +133,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
             </a-card>
         </section>
         <section id="noData" v-else>
-            <a-empty :image="simpleImage"/>
+            <a-empty :image="simpleImage" />
         </section>
     </section>
 </template>
@@ -139,15 +142,18 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 #noData {
     margin: 100px auto;
 }
+
 .searchContainer {
     display: flex;
     justify-content: center;
 }
+
 .searchBox {
     max-width: 500px;
     min-width: 250px;
     margin: 20px;
 }
+
 .header {
     font-size: 28px;
     letter-spacing: 0.5px;
@@ -156,6 +162,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     text-align: center;
     font-weight: normal;
 }
+
 #routers {
     margin: 10px auto 100px auto;
     display: flex;
@@ -164,47 +171,59 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     justify-content: space-evenly;
     align-items: center;
 }
+
 .card {
     margin: 10px;
     user-select: text;
 }
+
 .card:deep(.ant-card-body) {
     min-height: 280px;
 }
-.card > span {
+
+.card>span {
     margin-bottom: 1rem;
 }
+
 .card:deep(.ant-card-meta-title) {
     font-size: 24px;
 }
+
 .card .detail {
     margin-top: 20px;
     padding-top: 20px;
 }
+
 .card .detail.light {
     border-top: 1px solid #eee;
 }
+
 .card .detail.dark {
     border-top: 1px solid #777;
 }
-.card .detail code, .card .desc:deep(code) {
+
+.card .detail code,
+.card .desc:deep(code) {
     border-radius: 5px;
     color: #666;
     font-size: 13px;
     padding: 0.15em 0.3em;
     margin-left: 10px;
     line-height: 200%;
-    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
 }
+
 .card .desc {
     margin-top: 20px;
     min-width: 300px;
 }
+
 .card .desc:deep(p) {
     margin-bottom: 0.5em;
     margin-top: 0;
 }
-.card:deep(.ant-card-meta-detail) > div:not(:last-child) {
+
+.card:deep(.ant-card-meta-detail)>div:not(:last-child) {
     margin-bottom: 0;
 }
 </style>

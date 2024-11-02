@@ -8,6 +8,7 @@ import { loggedIn, themeName } from '../common/helper'
 import config from "../config"
 //@ts-ignore
 import md5 from 'md5'
+import { message } from 'ant-design-vue'
 
 const t = useI18n().t
 
@@ -46,7 +47,7 @@ const setHeaderFocus = () => {
 }
 
 const stopWatchPagePath = watch(() => router.currentRoute.value.path, (newValue: string) => setHeaderFocus())
-const onSelect = (data: { item: HTMLElement, key: string, selectedKeys: string[] }) => setHeaderFocus()
+const onSelect = (_: { item: HTMLElement, key: string, selectedKeys: string[] }) => setHeaderFocus()
 
 const asn = ref('')
 const person = ref('')
@@ -60,9 +61,8 @@ const stopWatchLoggedIn = watch(() => loggedIn.value, (newValue: boolean, oldVal
         if (email.value.length !== 0) email.value = getGravatar(email.value)
     }
     if (oldValue && !newValue) {
-        router.replace({
-            path: '/'
-        })
+        message.info(t('pages.nodes.pleaseSignIn'))
+        router.replace({ path: '/signin' })
     }
 })
 

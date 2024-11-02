@@ -1,17 +1,17 @@
 import { computed, h, Ref, ref, VNode } from 'vue'
 import { message } from 'ant-design-vue'
 import config from '../config'
-import { makeRequest, Post, SiteConfigData } from './packetHandler'
+import { makeRequest, PostResponse, SiteConfigDataResponse, TokenRefreshResponse } from './packetHandler'
 import dayjs from 'dayjs'
 
 export const splitMessageToVNodes = (message: string) => {
-    const paras: VNode[] = []
-    message.split('\n').forEach(line => paras.push(h('p', line.trim())))
-    return paras
+  const paras: VNode[] = []
+  message.split('\n').forEach(line => paras.push(h('p', line.trim())))
+  return paras
 }
 
 export const loggedIn = ref(false)
-export const siteConfig: Ref<SiteConfigData> = ref({
+export const siteConfig: Ref<SiteConfigDataResponse> = ref({
   netAsn: config.configFallback.netAsn,
   netName: config.configFallback.netName,
   netDesc: config.configFallback.netDesc,
@@ -20,9 +20,9 @@ export const siteConfig: Ref<SiteConfigData> = ref({
 })
 export const refreshSiteConfig = async (t: (i18n: string) => string) => {
   try {
-    const resp = await makeRequest(t, '/list', { type: 'config' }, true) as SiteConfigData
-    if (resp) {
-      const { netAsn, netName, netDesc, footerText, maintenanceText } = resp
+    const resp = await makeRequest(t, '/list/config', undefined, true)
+    if (resp.success && resp.response) {
+      const { netAsn, netName, netDesc, footerText, maintenanceText } = resp.response as SiteConfigDataResponse
       siteConfig.value = {
         netAsn: netAsn || config.configFallback.netAsn,
         netName: netName || config.configFallback.netName,
@@ -39,36 +39,35 @@ export const refreshSiteConfig = async (t: (i18n: string) => string) => {
   }
 }
 export const useHeartBeat = (t: (i18n: string) => string) => {
-    const heartBeat = async () => {
-      await refreshSiteConfig(t)
-      try {
-
-        const token = localStorage.getItem('token')
-        const asn = localStorage.getItem('asn')
-        const person = localStorage.getItem('person')
-        if (asn && (person !== undefined && person !== null) && token) {
-          const resp = await makeRequest(t, '/ping', { action: 'ping' }, true) as string
-          loggedIn.value = resp === 'pong'
-          if (loggedIn.value) return
+  const heartBeat = async () => {
+    refreshSiteConfig(t)
+    try {
+      const token = localStorage.getItem('token')
+      const asn = localStorage.getItem('asn')
+      const person = localStorage.getItem('person')
+      if (asn && (person !== undefined && person !== null) && token) {
+        loggedIn.value = true
+        const resp = await makeRequest(t, '/token', undefined, true)
+        if (resp.success && resp.response) {
+          const data = resp.response as TokenRefreshResponse
+          if (data && data.token) {
+            localStorage.setItem('token', data.token)
+            return
+          }
         }
-
-        localStorage.removeItem('token')
-        localStorage.removeItem('asn')
-        localStorage.removeItem('person')
-        localStorage.removeItem('email')
-        loggedIn.value = false
-
-      } catch (error) {
-        loggedIn.value = false
-        console.error(error)
       }
+      loggedIn.value = false
+    } catch (error) {
+      loggedIn.value = false
+      console.error(error)
     }
-    const handle = setInterval(heartBeat, config.pingIntervalMs)
-    heartBeat()
-    return () => clearInterval(handle)
+  }
+  const handle = setInterval(heartBeat, config.pingIntervalMs)
+  heartBeat()
+  return () => clearInterval(handle)
 }
 
-export const postCache = new Map<string, Post>()
+export const postCache = new Map<string, PostResponse>()
 
 // regex took from https://stackoverflow.com/questions/23483855/javascript-regex-to-validate-ipv4-and-ipv6-address-no-hostnames
 export const IPV4_REGEX = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/

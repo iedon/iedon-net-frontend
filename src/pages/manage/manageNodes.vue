@@ -17,12 +17,15 @@ const routers: Ref<RouterMetadata[]> = ref([])
 const fetchRouters = async () => {
     try {
         loading.value = true
-
         const resp = await makeRequest(t, '/admin', {
             action: "enumRouters",
-        }) as RoutersResponse
-
-        if (Array.isArray(resp.routers)) routers.value = resp.routers
+        })
+        if (resp.success && resp.response) {
+            const data = resp.response as RoutersResponse
+            if (data && Array.isArray(data.routers)) {
+                routers.value = data.routers
+            }
+        }
     } catch (error) {
         console.error(error)
     } finally {

@@ -42,11 +42,13 @@ const setPassword = async () => {
         const resp = await makeRequest(t, '/settings', {
             action: 'password',
             password: setPasswordForm.value.password
-        }) as SetPasswordResponse
-
-        if (resp.success) {
-            message.success(t('pages.manage.account.successSetPassword'))
-            return
+        })
+        if (resp.success && resp.response) {
+            const data = resp.response as SetPasswordResponse
+            if (data && data.success) {
+                message.success(t('pages.manage.account.successSetPassword'))
+                return
+            }
         }
 
         Modal.error({
@@ -72,10 +74,12 @@ const setPassword = async () => {
                 <input type="text" name="username" :value="asn" autocomplete="username" />
             </a-form-item>
             <a-form-item name="password" :label="t('pages.manage.account.password')">
-                <a-input-password autocomplete="new-password" v-model:value="setPasswordForm.password" :placeholder="t('pages.manage.account.password')" />
+                <a-input-password autocomplete="new-password" v-model:value="setPasswordForm.password"
+                    :placeholder="t('pages.manage.account.password')" />
             </a-form-item>
             <a-form-item name="confirmPassword" :label="t('pages.manage.account.confirmPassword')">
-                <a-input-password autocomplete="new-password" v-model:value="setPasswordForm.confirmPassword" :placeholder="t('pages.manage.account.confirmPassword')" />
+                <a-input-password autocomplete="new-password" v-model:value="setPasswordForm.confirmPassword"
+                    :placeholder="t('pages.manage.account.confirmPassword')" />
             </a-form-item>
             <br />
             <a-form-item :wrapper-col="{ offset: 8, span: 16 }">

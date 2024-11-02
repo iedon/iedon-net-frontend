@@ -5,8 +5,8 @@ This is IEDON-NET's DN42 Auto Peering System implementation.
 ## Build
 
 ```bash
-npm install
-npm run build
+bun install
+bun run build
 # Built bundles are located in ./dist
 # Remember to modify ./src/config.ts
 ```

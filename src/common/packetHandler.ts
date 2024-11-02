@@ -1,185 +1,271 @@
-import { message } from 'ant-design-vue'
-import config from "../config"
-import { loggedIn, splitMessageToVNodes } from './helper'
+import { message } from 'ant-design-vue';
+import config from '../config';
+import { loggedIn, splitMessageToVNodes } from './helper';
 
+// Constants
+const ERROR_MESSAGE_DURATION = 8;
+
+// Enums
 enum ResponseCode {
-    OK = 0,
-    SERVER_ERROR = 1,
-    UNAUTHORIZED = 2,
-    BAD_REQUEST = 3,
-    METHOD_NOT_ALLOWED = 4,
-    ROUTER_OPERATION_FAILED = 5,
-    ROUTER_NOT_AVAILABLE = 6
-}
-
-type ResponsePacket = {
-    code: ResponseCode,
-    message: string,
-    data: string | any,
-    token?: string
-}
-
-const ERROR_MESSAGE_DURATION = 8
-export const makeRequest = async (t: (i18n: string) => string, path: string, data?: any, supressErrorMessage?: boolean): Promise<null | object | string> => {
-    const _data = data || ''
-    if (path !== '/auth') {
-        const token = localStorage.getItem('token')
-        if (token) Object.assign(_data, { token })
-    }
-    const options = {
-        method:"POST",
-        headers: {
-            'Content-Type': 'application/json',
-            'X-PeerAPI-Version': config.package
-        },
-        body: JSON.stringify(_data)
-    }
-    try {
-        const resp = await fetch(`${config.apiPrefix}${path}`, options)
-        if (resp.status !== 200) {
-            switch (resp.status) {
-                case 400: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.errMsg400_BAD_REQUEST')), ERROR_MESSAGE_DURATION); break;
-                case 404: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.errMsg404')), ERROR_MESSAGE_DURATION); break;
-                case 405: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.errMsg405_METHOD_NOT_ALLOWED')), ERROR_MESSAGE_DURATION); break;
-                case 500: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.errMsg500_SERVER_ERROR')), ERROR_MESSAGE_DURATION); break;
-                default: case 502: case 503: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.errMsg502_503')), ERROR_MESSAGE_DURATION); break;
-            }
-            return null
-        }
-
-        const respData: ResponsePacket = await resp.json()
-        if (respData.data === undefined || respData.data === null) throw new Error('Invalid response received from server.')
-        if (respData.code !== ResponseCode.OK) {
-            switch (respData.code) {
-                case ResponseCode.UNAUTHORIZED: {
-                    localStorage.removeItem('token')
-                    localStorage.removeItem('person')
-                    localStorage.removeItem('asn')
-                    localStorage.removeItem('email')
-                    loggedIn.value = false
-                    if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.err_UNAUTHORIZED')), ERROR_MESSAGE_DURATION); 
-                } break;
-                case ResponseCode.METHOD_NOT_ALLOWED: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.errMsg405_METHOD_NOT_ALLOWED')), ERROR_MESSAGE_DURATION); break;
-                case ResponseCode.SERVER_ERROR: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.errMsg500_SERVER_ERROR')), ERROR_MESSAGE_DURATION); break;
-                case ResponseCode.BAD_REQUEST: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.errMsg400_BAD_REQUEST')), ERROR_MESSAGE_DURATION); break;
-                case ResponseCode.ROUTER_NOT_AVAILABLE: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.err_ROUTER_NOT_AVAILABLE')), ERROR_MESSAGE_DURATION); break;
-                case ResponseCode.ROUTER_OPERATION_FAILED: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.err_ROUTER_OPERATION_FAILED')), ERROR_MESSAGE_DURATION); break;
-                default: if (!supressErrorMessage) message.error(splitMessageToVNodes(t('packetHandler.errMsg502_503')), ERROR_MESSAGE_DURATION); break;
-            }
-            return null
-        }
-
-        if (respData.token) {
-            localStorage.setItem('token', respData.token)
-        }
-
-        return respData.data
-    } catch (error) {
-        message.error(splitMessageToVNodes(t('packetHandler.errMsg500_SERVER_ERROR')), ERROR_MESSAGE_DURATION);
-        console.error(error)
-        return null
-    }
-}
-
-export interface AuthQueryResponse {
-    person: string,
-    authState: string,
-    availableAuthMethods: {
-        id: string,
-        type: 'password' | 'e-mail' | 'pgp-fingerprint' | 'ssh-rsa' | 'ssh-dsa' | 'ssh-ecdsa' | 'ssh-ed25519',
-        data?: string
-    }[]
-}
-
-export interface AuthRequestResponse {
-    authState: string,
-    authChallenge: string
-}
-
-export interface AuthChallengeResponse {
-    authResult: boolean,
-    token: string
-}
-
-export type PostMetadata = {
-    postId: number,
-    category: string,
-    title: string,
-    createdAt: string,
-    updatedAt: string
-}
-
-export interface Post extends PostMetadata {
-    content: string
-}
-
-export interface PostMetadaResponse {
-    posts: PostMetadata[]
-}
-
-export type RouterMetadata = {
-    uuid: string,
-    name: string,
-    description: string,
-    location: string,
-    openPeering: boolean,
-    autoPeering: boolean,
-    sessionCapacity: number,
-    sessionCount: number,
-    ipv4: string | '',
-    ipv6: string | '',
-    ipv6LinkLocal: string | '',
-    linkTypes: ('wireguard' | 'openvpn' | 'ipsec' | 'gre' | 'direct')[],
-    extensions: ('mp-bgp'|'extended-nexthop')[],
-    /* only available in /admin */
-    public?: boolean,
-    callbackUrl?: string
-}
-
-export interface RoutersResponse {
-    routers: RouterMetadata[]
-}
-
-export interface RouterInfoResponse {
-    info: string,
-    passthrough: string
+  OK = 0,
+  SERVER_ERROR = 1,
+  SERVICE_UNAVAILABLE = 2,
+  UNAUTHORIZED = 3,
+  BAD_REQUEST = 4,
+  NOT_FOUND = 5,
+  ROUTER_OPERATION_FAILED = 6,
+  ROUTER_NOT_AVAILABLE = 7,
 }
 
 export enum SessionStatus {
-    PENDING_REVIEW = -1,
-    DISABLED = 0,
-    ENABLED = 1
+  PENDING_REVIEW = -1,
+  DISABLED = 0,
+  ENABLED = 1,
 }
+
+// Types
+type ResponseData =
+  | string
+  | AuthQueryResponse
+  | AuthRequestResponse
+  | AuthChallengeResponse
+  | PostMetadaResponse
+  | RoutersResponse
+  | RouterInfoResponse
+  | SessionsResponse
+  | SetPasswordResponse
+  | PostResponse
+  | TokenRefreshResponse
+  | SiteConfigDataResponse;
+
+interface ResponsePacket {
+  code: ResponseCode;
+  message: string;
+  data: ResponseData;
+  token?: string;
+}
+
+export interface GeneralResponse {
+  success: boolean;
+  status?: number;
+  response?: ResponseData;
+}
+
+// API Request Function
+export const makeRequest = async (
+  t: (i18n: string) => string,
+  path: string,
+  data?: any,
+  suppressErrorMessage = false // Default value for suppressErrorMessage
+): Promise<GeneralResponse> => {
+
+  // Prepare request options
+  const options: RequestInit = {
+    method: data ? 'POST' : 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-PeerAPI-Version': config.package,
+    },
+    body: data ? JSON.stringify(data) : undefined, // Only include body if data is provided
+  };
+
+  // Add Authorization header if necessary
+  if (path !== '/auth' && !path.startsWith('/list')) {
+    const token = localStorage.getItem('token');
+    if (token) {
+      options.headers = { ...options.headers, Authorization: `Bearer ${token}` };
+    }
+  }
+
+  try {
+    const resp = await fetch(`${config.apiPrefix}${path}`, options);
+
+    // Handle non-200 status codes with specific messages
+    if (resp.status !== 200) {
+      handleHttpError(resp.status, t, suppressErrorMessage);
+      return { success: false, status: resp.status };
+    }
+
+    const respData: ResponsePacket = await resp.json();
+
+    // Validate response data and handle response codes
+    if (!respData.data) throw new Error('Invalid response received from server.');
+
+    if (respData.code !== ResponseCode.OK) {
+      handleApiError(respData.code, t, suppressErrorMessage);
+      return { success: false, status: resp.status };
+    }
+
+    return { success: true, status: resp.status, response: respData.data };
+
+  } catch (error) {
+    message.error(splitMessageToVNodes(t('packetHandler.errMsg500_SERVER_ERROR')), ERROR_MESSAGE_DURATION);
+    console.error(error);
+    return { success: false };
+  }
+};
+
+// Helper Functions for Error Handling
+
+const handleHttpError = (statusCode: number, t: (i18n: string) => string, suppressErrorMessage?: boolean) => {
+  if (suppressErrorMessage) return;
+
+  const errorMessages: Record<number, string> = {
+    400: t('packetHandler.errMsg400_BAD_REQUEST'),
+    404: t('packetHandler.errMsg404'),
+    405: t('packetHandler.errMsg405_METHOD_NOT_ALLOWED'),
+    500: t('packetHandler.errMsg500_SERVER_ERROR'),
+    502: t('packetHandler.errMsg502_503'),
+    503: t('packetHandler.errMsg502_503'),
+  };
+
+  const messageContent = errorMessages[statusCode] || t('packetHandler.errMsg500_SERVER_ERROR');
+
+  // Handle specific actions for unauthorized access (401)
+  if (statusCode === 401) {
+    clearLocalStorageAndLogout();
+  } else {
+    message.error(splitMessageToVNodes(messageContent), ERROR_MESSAGE_DURATION);
+  }
+};
+
+const handleApiError = (code: ResponseCode, t: (i18n: string) => string, suppressErrorMessage?: boolean) => {
+
+  if (suppressErrorMessage) return;
+
+  const errorMessages: Record<ResponseCode, string> = {
+    [ResponseCode.ROUTER_NOT_AVAILABLE]: t('packetHandler.err_ROUTER_NOT_AVAILABLE'),
+    [ResponseCode.ROUTER_OPERATION_FAILED]: t('packetHandler.err_ROUTER_OPERATION_FAILED'),
+    [ResponseCode.OK]: '',
+    [ResponseCode.SERVER_ERROR]: '',
+    [ResponseCode.SERVICE_UNAVAILABLE]: '',
+    [ResponseCode.UNAUTHORIZED]: '',
+    [ResponseCode.BAD_REQUEST]: '',
+    [ResponseCode.NOT_FOUND]: ''
+  };
+
+  const messageContent = errorMessages[code] || '';
+
+  message.error(splitMessageToVNodes(messageContent), ERROR_MESSAGE_DURATION);
+};
+
+const clearLocalStorageAndLogout = () => {
+  ['token', 'person', 'asn', 'email'].forEach(item => localStorage.removeItem(item));
+  loggedIn.value = false;
+};
+
+export enum AvailableAuthMethod {
+  PASSWORD = 0,
+  PGP_ASCII_ARMORED_CLEAR_SIGN = 1,
+  SSH_SERVER_AUTH = 2,
+  EMAIL = 3
+}
+
+export type AuthQueryResponse = {
+  person: string;
+  authState: string;
+  availableAuthMethods: Array<{
+    id: string;
+    type: AvailableAuthMethod;
+    data?: string;
+  }>;
+}
+
+export type AuthRequestResponse = {
+  authState: string;
+  authChallenge: string;
+}
+
+export type AuthChallengeResponse = {
+  authResult: boolean;
+  token: string;
+}
+
+export interface PostMetadata {
+  postId: number;
+  category: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PostResponse extends PostMetadata {
+  content: string;
+}
+
+export type PostMetadaResponse = {
+  posts: PostMetadata[];
+}
+
+export type RoutersResponse = {
+  routers: RouterMetadata[];
+}
+
+export type RouterInfoResponse = {
+  info: string;
+  passthrough: string;
+}
+
+export type SessionsResponse = {
+  sessions: SessionMetadata[];
+}
+
+export type SetPasswordResponse = { success: boolean };
+export type TokenRefreshResponse = { token: string };
+
+export type RouterMetadata = {
+  uuid: string;
+  name: string;
+  description: string;
+  location: string;
+  openPeering: boolean;
+  autoPeering: boolean;
+  sessionCapacity: number;
+  sessionCount: number;
+  ipv4: string | '';
+  ipv6: string | '';
+  ipv6LinkLocal: string | '';
+  linkTypes:
+  (| 'wireguard'
+    | 'openvpn'
+    | 'ipsec'
+    | 'gre'
+    | 'direct')[];
+  extensions:
+  (| 'mp-bgp'
+    | 'extended-nexthop')[];
+  public?: boolean; /* only available in /admin */
+  callbackUrl?: string; /* only available in /admin */
+};
 
 export type SessionMetadata = {
-    uuid: string,
-    router: string,
-    status: SessionStatus,
-    ipv4: string,
-    ipv6: string,
-    ipv6LinkLocal: string,
-    type: 'wireguard' | 'openvpn' | 'ipsec' | 'gre' | 'direct',
-    extensions: ('mp-bgp'|'extended-nexthop')[],
-    interface: string,
-    endpoint: string,
-    credential: string,
-    data: {
-        info: string,
-        passthrough: string
-    } | ''
-}
-export interface SessionsResponse {
-    sessions: SessionMetadata[]
-}
+  uuid: string;
+  router: string;
+  status: SessionStatus;
+  ipv4: string;
+  ipv6: string;
+  ipv6LinkLocal: string;
+  type:
+  | 'wireguard'
+  | 'openvpn'
+  | 'ipsec'
+  | 'gre'
+  | 'direct';
+  extensions:
+  (| 'mp-bgp'
+    | 'extended-nexthop')[];
+  interface: string,
+  endpoint: string,
+  credential: string,
+  data:
+  | { info: string; passthrough: string }
+  | '';
+};
 
-export type SetPasswordResponse = {
-    success: boolean
-}
-
-export type SiteConfigData = {
-    netAsn: string,
-    netDesc: string,
-    netName: string,
-    footerText: string,
-    maintenanceText: string
-}
+export type SiteConfigDataResponse = {
+  netAsn: string;
+  netDesc: string;
+  netName: string;
+  footerText: string;
+  maintenanceText: string;
+};

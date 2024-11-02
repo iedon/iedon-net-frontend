@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
 import { FileAddOutlined } from '@ant-design/icons-vue'
 import { loggedIn, nullOrEmpty, formatDate } from '../../common/helper'
-import { makeRequest, Post, PostMetadaResponse, PostMetadata } from '../../common/packetHandler'
+import { makeRequest, PostMetadaResponse, PostMetadata, PostResponse } from '../../common/packetHandler'
 
 const t = useI18n().t
 const router = useRouter()
@@ -16,12 +16,13 @@ const posts: Ref<PostMetadata[]> = ref([])
 const fetchPosts = async () => {
     try {
         loading.value = true
-
-        const resp = await makeRequest(t, '/list', {
-            type: "posts",
-        }) as PostMetadaResponse
-
-        if (Array.isArray(resp.posts)) posts.value = resp.posts
+        const resp = await makeRequest(t, '/list/posts')
+        if (resp.success && resp.response) {
+            const data = resp.response as PostMetadaResponse
+            if (data && Array.isArray(data.posts)) {
+                posts.value = data.posts
+            }
+        }
     } catch (error) {
         console.error(error)
     } finally {
@@ -39,35 +40,35 @@ onMounted(async () => {
 })
 
 const columns = ref([
-  {
-    title: t('pages.manage.posts.title'),
-    dataIndex: 'title',
-    key: 'title',
-    sorter: (a: PostMetadata, b: PostMetadata) => ('' + (a.title || '')).localeCompare((b.title || '')),
-  },
-  {
-    title: t('pages.manage.posts.category'),
-    dataIndex: 'category',
-    key: 'category',
-    sorter: (a: PostMetadata, b: PostMetadata) => ('' + (a.category || '')).localeCompare((b.category || '')),
-  },
-  {
-    title: t('pages.manage.posts.createdAt'),
-    dataIndex: 'createdAt',
-    key: 'createdAt',
-    sorter: (a: PostMetadata, b: PostMetadata) => ('' + a.createdAt).localeCompare(b.createdAt)
-  },
-  {
-    title: t('pages.manage.posts.updatedAt'),
-    dataIndex: 'updatedAt',
-    key: 'updatedAt',
-    sorter: (a: PostMetadata, b: PostMetadata) => ('' + a.updatedAt).localeCompare(b.updatedAt)
-  },
-  {
-    title: t('pages.manage.session.action'),
-    dataIndex: 'action',
-    key: 'action',
-  }
+    {
+        title: t('pages.manage.posts.title'),
+        dataIndex: 'title',
+        key: 'title',
+        sorter: (a: PostMetadata, b: PostMetadata) => ('' + (a.title || '')).localeCompare((b.title || '')),
+    },
+    {
+        title: t('pages.manage.posts.category'),
+        dataIndex: 'category',
+        key: 'category',
+        sorter: (a: PostMetadata, b: PostMetadata) => ('' + (a.category || '')).localeCompare((b.category || '')),
+    },
+    {
+        title: t('pages.manage.posts.createdAt'),
+        dataIndex: 'createdAt',
+        key: 'createdAt',
+        sorter: (a: PostMetadata, b: PostMetadata) => ('' + a.createdAt).localeCompare(b.createdAt)
+    },
+    {
+        title: t('pages.manage.posts.updatedAt'),
+        dataIndex: 'updatedAt',
+        key: 'updatedAt',
+        sorter: (a: PostMetadata, b: PostMetadata) => ('' + a.updatedAt).localeCompare(b.updatedAt)
+    },
+    {
+        title: t('pages.manage.session.action'),
+        dataIndex: 'action',
+        key: 'action',
+    }
 ])
 
 const view = (record: PostMetadata) => {
@@ -143,12 +144,11 @@ const showAddOrEdit = async (record?: PostMetadata) => {
         modalForm.value.content = ''
         try {
             modalLoading.value = true
-            const post = (await makeRequest(t, '/list', {
-                type: 'post',
-                postId: record.postId
-            })) as Post | null || null
-            if (!post || !post.content) throw new Error('Invalid data retrived.')
-            modalForm.value.content = post.content
+            const resp = await makeRequest(t, `/list/post/${record.postId}`)
+            if (resp.success && resp.response) {
+                const data = resp.response as PostResponse
+                if (data && data.content) modalForm.value.content = data.content
+            }
         } catch (error) {
             message.error(t('pages.signIn.errorOccurred'))
             console.error(error)
@@ -169,7 +169,8 @@ const showAddOrEdit = async (record?: PostMetadata) => {
             {{ t('pages.manage.posts.add') }}
         </a-button>
     </div>
-    <a-table :columns="columns" :data-source="posts" :loading="loading" bordered size="small" :scroll="{ x: 'max-content' }">
+    <a-table :columns="columns" :data-source="posts" :loading="loading" bordered size="small"
+        :scroll="{ x: 'max-content' }">
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'createdAt'">
                 <span>
@@ -182,18 +183,18 @@ const showAddOrEdit = async (record?: PostMetadata) => {
                 </span>
             </template>
             <template v-if="column.key === 'action'">
-            <span>
-                <a @click="view(record)">{{ t('pages.manage.posts.view') }}</a>
-                <a-divider type="vertical" />
-                <a @click="showAddOrEdit(record)">{{ t('pages.manage.posts.edit') }}</a>
-                <a-divider type="vertical" />
-                <a-popconfirm placement="bottomRight" @confirm="remove(record)">
-                    <template #title>
-                        <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                    </template>
-                    <a>{{ t('pages.manage.session.remove') }}</a>
-                </a-popconfirm>
-            </span>
+                <span>
+                    <a @click="view(record)">{{ t('pages.manage.posts.view') }}</a>
+                    <a-divider type="vertical" />
+                    <a @click="showAddOrEdit(record)">{{ t('pages.manage.posts.edit') }}</a>
+                    <a-divider type="vertical" />
+                    <a-popconfirm placement="bottomRight" @confirm="remove(record)">
+                        <template #title>
+                            <p>{{ t('pages.manage.session.areYouSure') }}</p>
+                        </template>
+                        <a>{{ t('pages.manage.session.remove') }}</a>
+                    </a-popconfirm>
+                </span>
             </template>
         </template>
     </a-table>
@@ -207,14 +208,16 @@ const showAddOrEdit = async (record?: PostMetadata) => {
                     <a-input v-model:value="modalForm.title" :placeholder="t('pages.manage.posts.title')" />
                 </a-form-item>
                 <a-form-item name="content" :label="t('pages.manage.posts.content')">
-                    <a-textarea :rows="8" v-model:value="modalForm.content" :placeholder="t('pages.manage.posts.content')" />
+                    <a-textarea :rows="8" v-model:value="modalForm.content"
+                        :placeholder="t('pages.manage.posts.content')" />
                 </a-form-item>
             </a-form>
         </a-spin>
         <template #footer>
             <a-spin :spinning="modalLoading">
-                <a-button style="margin-right:10px" type="primary" @click="addOrEdit()">{{ t('pages.manage.config.save') }}</a-button>
-                <a-button @click="modalVisible=false">{{ t('pages.manage.posts.close') }}</a-button>
+                <a-button style="margin-right:10px" type="primary" @click="addOrEdit()">{{ t('pages.manage.config.save')
+                    }}</a-button>
+                <a-button @click="modalVisible = false">{{ t('pages.manage.posts.close') }}</a-button>
             </a-spin>
         </template>
     </a-modal>

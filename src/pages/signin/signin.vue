@@ -2,7 +2,7 @@
 import { Ref, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
-import { AuthQueryResponse, AuthRequestResponse, AuthChallengeResponse, makeRequest } from '../../common/packetHandler'
+import { AuthQueryResponse, AuthRequestResponse, AuthChallengeResponse, makeRequest, AvailableAuthMethod } from '../../common/packetHandler'
 import { loggedIn, splitMessageToVNodes } from '../../common/helper'
 import stepsBar from './stepsBar.vue'
 import queryBox from './queryBox.vue'
@@ -24,7 +24,9 @@ const currentStep: Ref<'query' | 'choose' | 'challenge' | 'done'> = ref('query')
 const loading = ref(false)
 
 const customQuery = ref('')
-const customChoose = ref('')
+const customChoose = ref(AvailableAuthMethod.PASSWORD)
+const customChooseTitle = ref('')
+const customChooseIndex = ref(0)
 
 const authQueryResp: Ref<AuthQueryResponse | null> = ref(null)
 const authRequestResp: Ref<AuthRequestResponse | null> = ref(null)
@@ -42,23 +44,23 @@ const queryAsn = async (asn: number) => {
         const resp = await makeRequest(t, '/auth', {
             action: 'query',
             asn
-        }) as AuthQueryResponse
-
-        if (resp.availableAuthMethods.length === 0) {
-            Modal.error({
-                centered: true,
-                title: t('pages.signIn.signIn'),
-                content: splitMessageToVNodes(t('pages.signIn.couldNotFindAuthMethod')),
-            })
-            return
+        })
+        if (resp.success && resp.response) {
+            const data = resp.response as AuthQueryResponse
+            if (!data || data.availableAuthMethods.length === 0) {
+                Modal.error({
+                    centered: true,
+                    title: t('pages.signIn.signIn'),
+                    content: splitMessageToVNodes(t('pages.signIn.couldNotFindAuthMethod')),
+                })
+                return
+            }
+            authQueryResp.value = data
+            currentStep.value = 'choose'
+            customQuery.value = `${t('pages.signIn.hi')} ${data.person}`
+            _asn.value = asn.toString()
+            window.scrollTo(0, 0)
         }
-
-        authQueryResp.value = resp
-        currentStep.value = 'choose'
-        customQuery.value = `${t('pages.signIn.hi')} ${resp.person}`
-        _asn.value = asn.toString()
-        window.scrollTo(0, 0)
-
     } catch (error) {
         console.error(error)
     } finally {
@@ -74,22 +76,28 @@ const requestChallenge = async (selectedMethod: number) => {
             action: 'request',
             authMethod: selectedMethod,
             authState: authQueryResp.value?.authState
-        }) as AuthRequestResponse
+        })
 
-        if (!resp.authState || !resp.authChallenge) {
-            Modal.error({
-                centered: true,
-                title: t('pages.signIn.signIn'),
-                content: splitMessageToVNodes(t('pages.signIn.errorOccurred')),
-            })
-            return
+        if (resp.success && resp.response) {
+            const data = resp.response as AuthRequestResponse
+            if (!data || !data.authState || !data.authChallenge) {
+                Modal.error({
+                    centered: true,
+                    title: t('pages.signIn.signIn'),
+                    content: splitMessageToVNodes(t('pages.signIn.errorOccurred')),
+                })
+                return
+            }
+
+            authRequestResp.value = data
+            currentStep.value = 'challenge'
+            if (authQueryResp.value) {
+                customChooseIndex.value = selectedMethod
+                customChoose.value = authQueryResp.value.availableAuthMethods[selectedMethod].type
+                customChooseTitle.value = t(`pages.signIn.authMethodsTiny[${authQueryResp.value.availableAuthMethods[selectedMethod].type}]`)
+                window.scrollTo(0, 0)
+            }
         }
-
-        authRequestResp.value = resp
-        currentStep.value = 'challenge'
-        customChoose.value = authQueryResp.value?.availableAuthMethods[selectedMethod].type as string
-        window.scrollTo(0, 0)
-
     } catch (error) {
         console.error(error)
     } finally {
@@ -119,31 +127,37 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
             action: 'challenge',
             authState: authRequestResp.value?.authState,
             data: challengeData
-        }) as AuthChallengeResponse
-
-        if (!resp || !resp.authResult) {
-            Modal.error({
-                centered: true,
-                title: t('pages.signIn.signIn'),
-                content: splitMessageToVNodes(t('pages.signIn.signInFailed')),
-            })
-            return
-        }
-
-        localStorage.setItem('person', authQueryResp.value?.person || '')
-        authQueryResp.value?.availableAuthMethods.forEach(m => {
-            if (m && m.type === 'e-mail' && m.data) {
-                localStorage.setItem('email', m.data)
-            }
         })
-        localStorage.setItem('asn', _asn.value)
-        localStorage.setItem('lastAsn', _asn.value)
-        loggedIn.value = true
 
-        currentStep.value = 'done'
-        message.info(`${t('pages.signIn.welcomeBack')} ${authQueryResp.value?.person || _asn.value}`)
-        window.scrollTo(0, 0)
+        if (resp.success && resp.response) {
+            const data = resp.response as AuthChallengeResponse
+            if (!data || !data.authResult) {
+                Modal.error({
+                    centered: true,
+                    title: t('pages.signIn.signIn'),
+                    content: splitMessageToVNodes(t('pages.signIn.signInFailed')),
+                })
+                return
+            }
 
+            if (data.token) {
+                localStorage.setItem('token', data.token)
+            }
+
+            localStorage.setItem('person', authQueryResp.value?.person || '')
+            authQueryResp.value?.availableAuthMethods.forEach(m => {
+                if (m && m.type === AvailableAuthMethod.EMAIL && m.data) {
+                    localStorage.setItem('email', m.data)
+                }
+            })
+            localStorage.setItem('asn', _asn.value)
+            localStorage.setItem('lastAsn', _asn.value)
+            loggedIn.value = true
+
+            currentStep.value = 'done'
+            message.info(`${t('pages.signIn.welcomeBack')} ${authQueryResp.value?.person || _asn.value}`)
+            window.scrollTo(0, 0)
+        }
     } catch (error) {
         console.error(error)
     } finally {
@@ -156,16 +170,20 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
     <section>
         <h1 class="header">{{ t('pages.signIn.signIn') }}</h1>
         <a-layout-content id="signin">
-            <steps-bar class="steps" :step="currentStep" :custom-query-title="customQuery" :custom-choose-title="customChoose" :loading="loading"></steps-bar>
+            <steps-bar class="steps" :step="currentStep" :custom-query-title="customQuery"
+                :custom-choose-title="customChooseTitle" :loading="loading"></steps-bar>
             <section class="box">
                 <template v-if="currentStep === 'query'">
                     <query-box :loading="loading" :query-asn="queryAsn"></query-box>
                 </template>
                 <template v-else-if="currentStep === 'choose'">
-                    <choose-box :prev-step="() => currentStep='query'" :loading="loading" :auth-query-resp="authQueryResp" :request-challenge="requestChallenge"></choose-box>
+                    <choose-box :prev-step="() => currentStep = 'query'" :loading="loading"
+                        :auth-query-resp="authQueryResp" :request-challenge="requestChallenge"></choose-box>
                 </template>
                 <template v-else-if="currentStep === 'challenge'">
-                    <challenge-box :prev-step="() => currentStep='choose'" :loading="loading" :auth-request-resp="authRequestResp" :challenge="challenge" :type="customChoose"></challenge-box>
+                    <challenge-box :prev-step="() => currentStep = 'choose'" :loading="loading"
+                        :auth-request-resp="authRequestResp" :auth-query-resp="authQueryResp" :selectedIndex="customChooseIndex" :challenge="challenge"
+                        :type="customChoose"></challenge-box>
                 </template>
                 <template v-else-if="currentStep === 'done'">
                     <done-box></done-box>
@@ -179,9 +197,11 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
 .box:deep(.ant-alert-message) p:first-child {
     margin-top: auto;
 }
+
 .box:deep(.ant-alert-message) p:last-child {
     margin-bottom: auto;
 }
+
 .header {
     font-size: 28px;
     letter-spacing: 0.5px;
@@ -190,20 +210,24 @@ const challenge = async (data: { publicKey: string, challengeText: string }) => 
     text-align: center;
     font-weight: normal;
 }
+
 #signin {
     margin-top: 15px;
     margin-bottom: 80px;
     min-height: 280px;
 }
+
 #signin:deep(.box) {
     max-width: 600px;
     margin: 30px auto;
 }
+
 #signin:deep(.steps) {
     max-width: 1000px;
     margin: 0 auto;
     padding: 0 10px 50px 10px;
 }
+
 @media (min-width: 0px) and (max-width: 700px) {
     #signin:deep(.steps) {
         padding: 0 10px;

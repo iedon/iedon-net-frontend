@@ -36,26 +36,26 @@ const fetchSessions = async () => {
     try {
         loading.value = true
 
-        const routersResp = await makeRequest(t, '/list', {
-            type: "routers",
-        }) as RoutersResponse
-
-        if (Array.isArray(routersResp.routers)) {
-            routers.value = routersResp.routers.sort((a, b) => ('' + a.name).localeCompare(b.name))
-            localStorage.setItem('routers', JSON.stringify(routers.value))
+        let resp = await makeRequest(t, '/list/routers')
+        if (resp.success && resp.response) {
+            const data = resp.response as RoutersResponse
+            if (data && Array.isArray(data.routers)) {
+                routers.value = data.routers.sort((a, b) => ('' + a.name).localeCompare(b.name))
+                localStorage.setItem('routers', JSON.stringify(routers.value))
+            }
         }
 
-        const resp = await makeRequest(t, '/session', {
+        resp = await makeRequest(t, '/session', {
             action: "enum",
-        }) as SessionsResponse
-
-        const newData: Session[] = []
-
-        if (Array.isArray(resp.sessions))  {
-            resp.sessions.forEach(s => newData.push({ ...s, routerJoined: routers.value.find(r => r.uuid === s.router) }))
-            sessions.value = newData
+        })
+        if (resp.success && resp.response) {
+            const data = resp.response as SessionsResponse
+            const newData: Session[] = []
+            if (data && Array.isArray(data.sessions)) {
+                data.sessions.forEach(s => newData.push({ ...s, routerJoined: routers.value.find(r => r.uuid === s.router) }))
+                sessions.value = newData
+            }
         }
-
     } catch (error) {
         console.error(error)
     } finally {
@@ -148,10 +148,11 @@ const info = async (session: Session, event: MouseEvent) => {
             action: 'query',
             router: session.router,
             session: session.uuid,
-        }) as string
-
-        if (typeof resp === 'string') modalInfoHtml.value = resp === '' ? '' : md.render(resp)
-
+        })
+        if (resp.success && resp.response) {
+            const data = resp.response as string
+            if (typeof data === 'string') modalInfoHtml.value = data === '' ? '' : md.render(data)
+        }
     } catch (error) {
         console.error(error)
     } finally {
