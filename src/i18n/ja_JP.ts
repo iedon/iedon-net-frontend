@@ -107,7 +107,7 @@ export default {
       ipv6: 'DN42 IPv6',
       asn: 'ピアASN',
       ipv6LinkLocal: 'IPv6リンクローカル',
-      tunnelEndpointHint: '（任意）トンネルエンドポイント。形式：[ホスト名またはIP]:ポート',
+      tunnelEndpointHint: '(任意) トンネルエンドポイント。形式：ホスト名またはIP:ポート',
       tunnelCredentialHint: 'トンネル認証情報または公開鍵。',
       thankYou: 'ありがとうございます',
       step4Introduction: 'セッションを構成中です。ピアリングステータスを後ほどご確認ください。',

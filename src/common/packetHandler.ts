@@ -105,6 +105,9 @@ export const makeRequest = async (
 // Helper Functions for Error Handling
 
 const handleHttpError = (statusCode: number, t: (i18n: string) => string, suppressErrorMessage?: boolean) => {
+  // Handle specific actions for unauthorized access (401)
+  if (statusCode === 401) clearLocalStorageAndLogout();
+
   if (suppressErrorMessage) return;
 
   const errorMessages: Record<number, string> = {
@@ -117,13 +120,7 @@ const handleHttpError = (statusCode: number, t: (i18n: string) => string, suppre
   };
 
   const messageContent = errorMessages[statusCode] || t('packetHandler.errMsg500_SERVER_ERROR');
-
-  // Handle specific actions for unauthorized access (401)
-  if (statusCode === 401) {
-    clearLocalStorageAndLogout();
-  } else {
-    message.error(splitMessageToVNodes(messageContent), ERROR_MESSAGE_DURATION);
-  }
+  message.error(splitMessageToVNodes(messageContent), ERROR_MESSAGE_DURATION);
 };
 
 const handleApiError = (code: ResponseCode, t: (i18n: string) => string, suppressErrorMessage?: boolean) => {

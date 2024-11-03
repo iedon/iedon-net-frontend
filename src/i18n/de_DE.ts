@@ -49,7 +49,7 @@ export default {
       topPage: 'Startseite',
       authMethods: [
         'Mit Passwort',
-        'Clear Sign (ASCII-Armored) mit PGP-Schlüssel',
+        'Clear Sign mit PGP-Schlüssel',
         'SSH-Schlüssel validieren',
         'E-Mail senden für Herausforderungstext'
       ],
@@ -107,7 +107,7 @@ export default {
       ipv6: 'DN42 IPv6',
       asn: 'Peer-ASN',
       ipv6LinkLocal: 'IPv6 Link-Local',
-      tunnelEndpointHint: '(Optional) Tunnelendpunkt im Format: [Hostname oder IP]:Port',
+      tunnelEndpointHint: '(Optional) Tunnelendpunkt im Format: Hostname oder IP:Port',
       tunnelCredentialHint: 'Ihr Tunnel-Anmeldedaten oder öffentlicher Schlüssel.',
       thankYou: 'Vielen Dank',
       step4Introduction: 'Ihre Sitzung wird konfiguriert. Überprüfen Sie den Status Ihres Peerings später.',
