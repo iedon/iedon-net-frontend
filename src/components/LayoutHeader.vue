@@ -33,7 +33,7 @@ const signOut = () => {
     localStorage.removeItem('person')
     localStorage.removeItem('email')
     loggedIn.value = false
-    router.replace({ path: '/' })
+    window.location.href = '/'
     window.scrollTo(0, 0)
 }
 

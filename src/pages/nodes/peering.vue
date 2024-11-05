@@ -116,9 +116,7 @@ const startPeering = async () => {
         }
         if (isAdmin.value) Object.assign(options, { asn: Number(preferenceForm.value.asn) })
 
-        const resp = await makeRequest(t, '/session', options)
-
-        if (resp.success && resp.response) {
+        if ((await makeRequest(t, '/session', options)).success) {
             currentStep.value = 'done'
             window.scrollTo(0, 0)
             return
