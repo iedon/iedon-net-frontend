@@ -7,15 +7,17 @@ import antd_ja_JP from 'ant-design-vue/es/locale/ja_JP'
 import antd_zh_TW from 'ant-design-vue/es/locale/zh_TW'
 import antd_zh_CN from 'ant-design-vue/es/locale/zh_CN'
 import antd_de_DE from 'ant-design-vue/es/locale/de_DE'
+import antd_fr_FR from 'ant-design-vue/es/locale/fr_FR'
 
 import 'dayjs/locale/en'
 import 'dayjs/locale/ja'
 import 'dayjs/locale/zh-tw'
 import 'dayjs/locale/zh-cn'
 import 'dayjs/locale/de'
+import 'dayjs/locale/fr'
 
-type SupportedLocale = 'en_US' | 'ja_JP' | 'zh_TW' | 'zh_CN' | 'de_DE'
-const SupportedLocales: SupportedLocale[] = [ 'en_US', 'de_DE', 'ja_JP', 'zh_TW', 'zh_CN' ]
+type SupportedLocale = 'en_US' | 'ja_JP' | 'zh_TW' | 'zh_CN' | 'fr_FR' | 'de_DE'
+const SupportedLocales: SupportedLocale[] = [ 'en_US', 'fr_FR', 'de_DE', 'ja_JP', 'zh_TW', 'zh_CN' ]
 
 interface ObjectMap {
     [index: string]: Object
@@ -30,7 +32,8 @@ const antdLocales: ObjectMap = {
     'ja_JP': antd_ja_JP,
     'zh_TW': antd_zh_TW,
     'zh_CN': antd_zh_CN,
-    'de_DE': antd_de_DE
+    'de_DE': antd_de_DE,
+    'fr_FR': antd_fr_FR
 }
 
 const dayJsLocales: StringMap = {
@@ -38,7 +41,8 @@ const dayJsLocales: StringMap = {
     'ja_JP': 'ja',
     'zh_TW': 'zh-tw',
     'zh_CN': 'zh-cn',
-    'de_DE': 'de-de'
+    'de_DE': 'de-de',
+    'fr_FR': 'fr-fr'
 }
 
 const locale: Ref<SupportedLocale> = ref('en_US');
@@ -54,6 +58,7 @@ const setLocale = async (localeString: SupportedLocale): Promise<Locale> => {
 const getLocaleName = (locale: SupportedLocale) => {
     switch (locale) {
         case 'en_US': default: return 'English'
+        case 'fr_FR': return 'Français (French)'
         case 'de_DE': return 'Deutsch (German)'
         case 'ja_JP': return '日本語 (Japanese)'
         case 'zh_TW': return '繁體中文 (Traditional Chinese)'
@@ -68,6 +73,7 @@ const getLocaleCodeAlias = (locale: SupportedLocale) => {
         case 'zh_TW': return 'hk'
         case 'zh_CN': return 'cn'
         case 'de_DE': return 'de'
+        case 'fr_FR': return 'fr'
     }
 }
 
