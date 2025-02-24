@@ -64,7 +64,7 @@ const loading = computed(() => props.loading)
                     {{ t(`pages.peering['${data}']` as string) }}
                 </template>
                 <template v-else-if="key === 'bgpExtensions' && Array.isArray(data)">
-                    <span class="tag" v-for="item in data" :key="item">{{ t(`pages.peering['${item}']`) }}</span>
+                    <span class="tag" v-for="item in data" :key="item">{{ t(`pages.peering['${item}']` as string) }}</span>
                 </template>
                 <template v-else>
                     {{ data }}
