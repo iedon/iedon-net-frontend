@@ -6,6 +6,13 @@ export default {
       signOut: 'Déconnexion',
       signOutConfirm: 'Êtes-vous sûr de vouloir vous déconnecter ?',
   },
+  notification: {
+    error: 'Erreur',
+    info: 'Information',
+    warning: 'Avertissement',
+    success: 'Succès',
+    maintenance: 'Maintenance'
+  },
   packetHandler: {
       fetchException: 'Échec de récupération des données.',
       errMsg400_BAD_REQUEST: 'Votre requête est invalide.\nVérifiez le format de votre saisie et réessayez.',
@@ -29,6 +36,8 @@ export default {
           signIn: 'Connexion',
           couldNotFindAuthMethod: 'Désolé, nous n\'avons pas pu récupérer les méthodes d\'authentification possibles pour votre AS.\nRaisons possibles :\n1. Vos objets ne sont pas fusionnés ou synchronisés, ou une erreur s\'est produite.\n2. Aucune entrée valide trouvée dans admin-c ou mntner.\n3. Vos méthodes d\'authentification ne sont pas prises en charge par notre système.\nN\'hésitez pas à nous contacter pour obtenir de l\'aide. Merci.',
           hi: 'Bonjour,',
+          youCanAlso: 'Vous pouvez également',
+          authWithKioubit: 'Authentifiez-vous avec Kioubit.dn42',
           signUp: 'Cliquez ici pour en savoir plus sur DN42',
           queryingSignInMethod: 'Recherche des méthodes de connexion...',
           authenticateWith: 'S\'authentifier avec',

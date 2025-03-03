@@ -6,6 +6,13 @@ export default {
     signOut: 'Sign Out',
     signOutConfirm: 'Are you sure you want to sign out?',
   },
+  notification: {
+    error: 'Error',
+    info: 'Information',
+    warning: 'Warning',
+    success: 'Success',
+    maintenance: 'Maintenance'
+  },
   packetHandler: {
     fetchException: 'Failed to retrieve data.',
     errMsg400_BAD_REQUEST: 'Your request is invalid.\nPlease check your input format and try again.',
@@ -29,6 +36,8 @@ export default {
       signIn: 'Sign In',
       couldNotFindAuthMethod: 'Sorry, we could not retrieve available authentication methods for your AS.\nPossible reasons include:\n1. Your objects are not merged or synchronized, or an error occurred.\n2. No valid entries were found in admin-c or mntner.\n3. Your authentication methods are unsupported by our system.\nPlease contact us for further assistance. Thank you.',
       hi: 'Hi,',
+      youCanAlso: 'You can also',
+      authWithKioubit: 'Authenticate with Kioubit.dn42',
       signUp: 'Click here to learn more about DN42',
       queryingSignInMethod: 'Fetching sign-in methods...',
       authenticateWith: 'Authenticate with',

@@ -1,5 +1,5 @@
 import { computed, h, Ref, ref, VNode } from 'vue'
-import { message } from 'ant-design-vue'
+import { notification, NotificationPlacement } from 'ant-design-vue'
 import config from '../config'
 import { makeRequest, PostResponse, SiteConfigDataResponse, TokenRefreshResponse } from './packetHandler'
 import dayjs from 'dayjs'
@@ -8,6 +8,15 @@ export const splitMessageToVNodes = (message: string) => {
   const paras: VNode[] = []
   message.split('\n').forEach(line => paras.push(h('p', line.trim())))
   return paras
+}
+
+export const openNotification = (placement: NotificationPlacement, type: 'error' | 'info' | 'success' | 'warning', title: string, message: string | VNode, duration?: number) => {
+  notification[type]({
+    message: title,
+    description: message,
+    placement,
+    duration: duration || 5
+  })
 }
 
 export const loggedIn = ref(false)
@@ -31,7 +40,7 @@ export const refreshSiteConfig = async (t: (i18n: string) => string) => {
         maintenanceText: maintenanceText || config.configFallback.maintenanceText
       }
       document.title = `${netName}(${netAsn}) - ${netDesc}`
-      if (siteConfig.value.maintenanceText !== '') message.info(maintenanceText)
+      if (siteConfig.value.maintenanceText !== '') openNotification("topLeft", "info", t('notification.maintenance'), maintenanceText)
     }
   } catch (error) {
     console.error(error)

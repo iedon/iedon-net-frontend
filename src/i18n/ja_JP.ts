@@ -6,6 +6,13 @@ export default {
     signOut: 'ログアウト',
     signOutConfirm: '本当にログアウトしますか？',
   },
+  notification: {
+    error: 'エラー',
+    info: '情報',
+    warning: 'ご注意',
+    success: '成功',
+    maintenance: 'メンテンナンス情報'
+  },
   packetHandler: {
     fetchException: 'データの取得に失敗しました。',
     errMsg400_BAD_REQUEST: 'リクエストが無効です。\n入力形式を確認してもう一度お試しください。',
@@ -29,6 +36,8 @@ export default {
       signIn: 'ログイン',
       couldNotFindAuthMethod: '申し訳ありませんが、ASから利用可能な認証方法を取得できませんでした。\n考えられる理由:\n1. オブジェクトがマージおよび同期されていない、またはエラーが発生しました。\n2. admin-cまたはmntnerに有効なエントリが見つかりませんでした。\n3. 使用可能な認証方法が当システムでサポートされていません。\n詳しいサポートが必要な場合は、お気軽にお問い合わせください。ありがとうございます。',
       hi: 'こんにちは、',
+      youCanAlso: 'または',
+      authWithKioubit: 'Kioubit.dn42 でサインイン',
       signUp: 'DN42についてさらに詳しく知るにはこちらをクリック',
       queryingSignInMethod: 'サインイン方法を取得中...',
       authenticateWith: '認証方法',

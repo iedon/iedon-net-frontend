@@ -61,6 +61,7 @@ const stopWatchLoggedIn = watch(() => loggedIn.value, (newValue: boolean, oldVal
         if (email.value.length !== 0) email.value = getGravatar(email.value)
     }
     if (oldValue && !newValue) {
+        if (location.href.startsWith('/signin') || location.href.startsWith('/openAuth')) return
         message.info(t('pages.nodes.pleaseSignIn'))
         router.replace({ path: '/signin' })
     }

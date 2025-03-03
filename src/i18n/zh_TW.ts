@@ -6,6 +6,13 @@ export default {
       signOut: '登出',
       signOutConfirm: '您確定要登出嗎？',
   },
+  notification: {
+    error: '錯誤',
+    info: '資訊',
+    warning: '警告',
+    success: '成功',
+    maintenance: '維護資訊'
+  },
   packetHandler: {
       fetchException: '資料獲取失敗。',
       errMsg400_BAD_REQUEST: '您的請求無效。\n請檢查輸入格式後重試。',
@@ -29,6 +36,8 @@ export default {
           signIn: '登入',
           couldNotFindAuthMethod: '抱歉，無法從您的AS中檢索到可能的認證方式。\n可能的原因有：\n1. 您的物件尚未合併或同步，或發生錯誤。\n2. 找不到 admin-c 和 mntner 的有效條目。\n3. 您的認證方式不受系統支援。\n如需協助，請隨時與我們聯絡。謝謝。',
           hi: '您好，',
+          youCanAlso: '您還可以',
+          authWithKioubit: '通過 Kioubit.dn42 登入',
           signUp: '點此了解更多有關 DN42 的資訊',
           queryingSignInMethod: '正在查詢登入方式...',
           authenticateWith: '認證方式',

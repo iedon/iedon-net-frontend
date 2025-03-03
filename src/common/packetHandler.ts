@@ -1,6 +1,6 @@
 import { message } from 'ant-design-vue';
 import config from '../config';
-import { loggedIn, splitMessageToVNodes } from './helper';
+import { loggedIn, openNotification, splitMessageToVNodes } from './helper';
 
 // Constants
 const ERROR_MESSAGE_DURATION = 8;
@@ -96,7 +96,8 @@ export const makeRequest = async (
     return { success: true, status: resp.status, response: respData.data };
 
   } catch (error) {
-    message.error(splitMessageToVNodes(t('packetHandler.errMsg500_SERVER_ERROR')), ERROR_MESSAGE_DURATION);
+    openNotification("topLeft", "error", t('notification.error'), t('packetHandler.errMsg500_SERVER_ERROR'), ERROR_MESSAGE_DURATION)
+  
     console.error(error);
     return { success: false };
   }
@@ -119,8 +120,8 @@ const handleHttpError = (statusCode: number, t: (i18n: string) => string, suppre
     503: t('packetHandler.errMsg502_503'),
   };
 
-  const messageContent = errorMessages[statusCode] || t('packetHandler.errMsg500_SERVER_ERROR');
-  message.error(splitMessageToVNodes(messageContent), ERROR_MESSAGE_DURATION);
+  const messageContent = errorMessages[statusCode] || t('packetHandler.errMsg500_SERVER_ERROR')
+  openNotification("topLeft", "error", t('notification.error'), messageContent, ERROR_MESSAGE_DURATION)
 };
 
 const handleApiError = (code: ResponseCode, t: (i18n: string) => string, suppressErrorMessage?: boolean) => {
@@ -173,7 +174,13 @@ export type AuthRequestResponse = {
 export type AuthChallengeResponse = {
   authResult: boolean;
   token: string;
-}
+};
+
+export type AuthOpenResponse = AuthChallengeResponse & {
+  asn: number;
+  person?: string;
+  email?: string;
+};
 
 export interface PostMetadata {
   postId: number;

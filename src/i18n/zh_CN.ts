@@ -6,6 +6,13 @@ export default {
     signOut: '登出',
     signOutConfirm: '您确定要登出吗？',
   },
+  notification: {
+    error: '错误',
+    info: '信息',
+    warning: '警告',
+    success: '成功',
+    maintenance: '维护信息'
+  },
   packetHandler: {
     fetchException: '数据获取失败。',
     errMsg400_BAD_REQUEST: '您的请求无效。\n请检查输入格式并重试。',
@@ -29,6 +36,8 @@ export default {
       signIn: '登录',
       couldNotFindAuthMethod: '抱歉，无法从您的 AS 检索到可能的认证方法。\n可能原因：\n1. 您的对象未合并或同步，或发生了错误。\n2. 未找到 admin-c 和 mntner 的有效条目。\n3. 您的认证方法不被系统支持。\n如需帮助，请随时联系我们。谢谢。',
       hi: '您好，',
+      youCanAlso: '您还可以',
+      authWithKioubit: '通过 Kioubit.dn42 登录',
       signUp: '点击这里了解更多关于 DN42 的信息',
       queryingSignInMethod: '正在查询登录方法...',
       authenticateWith: '认证方式',

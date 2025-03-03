@@ -6,6 +6,13 @@ export default {
     signOut: 'Abmelden',
     signOutConfirm: 'Sind Sie sicher, dass Sie sich abmelden möchten?',
   },
+  notification: {
+    error: 'Fehler',
+    info: 'Information',
+    warning: 'Warnung',
+    success: 'Erfolg',
+    maintenance: 'Wartungsinformationen'
+  },
   packetHandler: {
     fetchException: 'Daten konnten nicht abgerufen werden.',
     errMsg400_BAD_REQUEST: 'Ihre Anfrage ist ungültig.\nÜberprüfen Sie das Eingabeformat und versuchen Sie es erneut.',
@@ -29,6 +36,8 @@ export default {
       signIn: 'Anmelden',
       couldNotFindAuthMethod: 'Entschuldigung, wir konnten keine verfügbaren Authentifizierungsmethoden für Ihr AS abrufen.\nMögliche Gründe:\n1. Ihre Objekte sind nicht zusammengeführt oder synchronisiert, oder es ist ein Fehler aufgetreten.\n2. Es wurden keine gültigen Einträge in admin-c oder mntner gefunden.\n3. Ihre Authentifizierungsmethoden werden von unserem System nicht unterstützt.\nBitte kontaktieren Sie uns für weitere Hilfe. Vielen Dank.',
       hi: 'Hallo,',
+      youCanAlso: 'Sie können auch',
+      authWithKioubit: 'Authentifizieren mit Kioubit.dn42',
       signUp: 'Klicken Sie hier, um mehr über DN42 zu erfahren',
       queryingSignInMethod: 'Abrufen der Anmeldemethoden...',
       authenticateWith: 'Authentifizieren mit',

@@ -17,6 +17,11 @@ const pageRoutes: RouteRecordRaw[] = [
     component: () => import('./pages/signin/signin.vue')
   },
   {
+    name: "openAuth",
+    path: "/openAuth",
+    component: () => import('./pages/openAuth/openAuth.vue')
+  },
+  {
     name: "nodes",
     path: "/nodes",
     component: () => import('./pages/nodes/nodes.vue')

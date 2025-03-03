@@ -19,5 +19,8 @@ export default {
         footerText: 'Running in fallback mode',
         maintenanceText: ''
     },
-    gravatarUrlPrefix: 'https://www.gravatar.com/avatar/'
+    gravatarUrlPrefix: 'https://www.gravatar.com/avatar/',
+    openAuthCallback: {
+      kioubit: 'https://iedon.net/openAuth?type=kioubit',
+    }
 }
