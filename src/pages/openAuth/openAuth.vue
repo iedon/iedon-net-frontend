@@ -22,7 +22,12 @@ onMounted(async () => {
     window.scrollTo(0, 0)
     await router.isReady()
 
-    const type = route.query.type
+    let type = route.query.type
+    if (!type) {
+        // Compatibility mode for kioubit
+        const token = route.query.token
+        if (token === 'kioubit.dn42') type = 'kioubit';
+    }
     if (!type) return signInFailed()
 
     if (type === 'kioubit') kioubit()

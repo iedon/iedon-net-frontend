@@ -21,6 +21,8 @@ export default {
     },
     gravatarUrlPrefix: 'https://www.gravatar.com/avatar/',
     openAuthCallback: {
-      kioubit: 'https://iedon.net/openAuth?type=kioubit',
+      // Compatibility:
+      // will handle token to our type -> kioubit: 'https://iedon.net/openAuth?type=kioubit',
+      kioubit: 'https://iedon.net/openAuth?token=kioubit.dn42',
     }
 }
