@@ -62,7 +62,7 @@ const getLocaleName = (locale: SupportedLocale) => {
         case 'de_DE': return 'Deutsch (German)'
         case 'ja_JP': return '日本語 (Japanese)'
         case 'zh_TW': return '繁體中文 (Traditional Chinese)'
-        case 'zh_CN': return '简体中文 (Simplified Chinese)'
+        case 'zh_CN': return '简体字华语 (Simplified Chinese)'
     }
 }
 
