@@ -1,7 +1,7 @@
 export default {
   header: {
     home: 'ホーム',
-    nodes: 'BGP',
+    nodes: 'ピアリング',
     signIn: 'ログイン',
     signOut: 'ログアウト',
     signOutConfirm: '本当にログアウトしますか？',

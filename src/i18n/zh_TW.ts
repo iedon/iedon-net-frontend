@@ -1,7 +1,7 @@
 export default { 
   header: {
       home: '首頁',
-      nodes: 'BGP',
+      nodes: 'Peering',
       signIn: '登入',
       signOut: '登出',
       signOutConfirm: '您確定要登出嗎？',

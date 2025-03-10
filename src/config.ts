@@ -16,7 +16,7 @@ export default {
         netAsn: '4242422189',
         netName: 'iedon.dn42',
         netDesc: 'IEDON-NET',
-        footerText: 'Running in fallback mode',
+        footerText: '',
         maintenanceText: ''
     },
     gravatarUrlPrefix: 'https://www.gravatar.com/avatar/',

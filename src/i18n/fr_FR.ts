@@ -1,7 +1,7 @@
 export default { 
   header: {
       home: 'Accueil',
-      nodes: 'BGP',
+      nodes: 'Peering',
       signIn: 'Connexion',
       signOut: 'Déconnexion',
       signOutConfirm: 'Êtes-vous sûr de vouloir vous déconnecter ?',
