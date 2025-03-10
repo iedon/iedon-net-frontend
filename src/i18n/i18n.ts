@@ -71,7 +71,7 @@ const getLocaleCodeAlias = (locale: SupportedLocale) => {
         case 'en_US': default: return 'gb'
         case 'ja_JP': return 'jp'
         case 'zh_TW': return 'hk'
-        case 'zh_CN': return 'cn'
+        case 'zh_CN': return 'sg'
         case 'de_DE': return 'de'
         case 'fr_FR': return 'fr'
     }
