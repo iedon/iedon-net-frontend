@@ -40,7 +40,7 @@ export const refreshSiteConfig = async (t: (i18n: string) => string) => {
         maintenanceText: maintenanceText || config.configFallback.maintenanceText
       }
       document.title = `${netName}(${netAsn}) - ${netDesc}`
-      if (siteConfig.value.maintenanceText !== '') openNotification("topLeft", "info", t('notification.maintenance'), maintenanceText)
+      if (siteConfig.value.maintenanceText !== '') openNotification("topLeft", "info", t('notification.maintenance'), maintenanceText, 20)
     }
   } catch (error) {
     console.error(error)
