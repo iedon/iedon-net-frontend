@@ -314,6 +314,7 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
                         <a-checkbox value="openvpn">{{ t('pages.peering[\'openvpn\']') }}</a-checkbox>
                         <a-checkbox value="ipsec">{{ t('pages.peering[\'ipsec\']') }}</a-checkbox>
                         <a-checkbox value="gre">{{ t('pages.peering[\'gre\']') }}</a-checkbox>
+                        <a-checkbox value="ip6gre">{{ t('pages.peering[\'ip6gre\']') }}</a-checkbox>
                         <a-checkbox value="direct">{{ t('pages.peering[\'direct\']') }}</a-checkbox>
                     </a-checkbox-group>
                 </a-form-item>

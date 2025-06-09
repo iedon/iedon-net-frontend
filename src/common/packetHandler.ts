@@ -18,9 +18,22 @@ enum ResponseCode {
 }
 
 export enum SessionStatus {
-  PENDING_REVIEW = -1,
-  DISABLED = 0,
-  ENABLED = 1,
+  DELETED = 0,
+  DISABLED = 1,
+  ENABLED = 2,
+  PENDING_APPROVAL = 3,
+  QUEUED_FOR_SETUP = 4,
+  QUEUED_FOR_DELETE = 5,
+  PROBLEM = 6,
+  TEARDOWN = 7,
+}
+
+export enum RoutingPolicy {
+  FULL = 0,         // Send all valid routes.  Receive all valid routes.
+  TRANSIT = 1,      // Send our valid self and downstream routes. Receive all valid routes.
+  PEER = 2,         // Send our valid self and downstream routes. Receive remote owned valid and remote downstream routes.
+  DOWNSTREAM = 3,   // Send all valid routes. Receive remote owned valid and remote downstream routes.
+  UPSTREAM = 4,     // Receive all valid routes, send self routes and downstream routes to remote
 }
 
 // Types
@@ -231,6 +244,7 @@ export type RouterMetadata = {
     | 'openvpn'
     | 'ipsec'
     | 'gre'
+    | 'ip6gre'
     | 'direct')[];
   extensions:
   (| 'mp-bgp'
@@ -251,13 +265,14 @@ export type SessionMetadata = {
   | 'openvpn'
   | 'ipsec'
   | 'gre'
+  | 'ip6gre'
   | 'direct';
   extensions:
   (| 'mp-bgp'
-    | 'extended-nexthop')[];
-  interface: string,
+    | 'extended-nexthop')[];  interface: string,
   endpoint: string,
   credential: string,
+  policy: RoutingPolicy,
   data:
   | { info: string; passthrough: string }
   | '';

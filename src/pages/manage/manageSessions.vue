@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import { loggedIn } from '../../common/helper'
-import { makeRequest, RouterMetadata, RoutersResponse, SessionMetadata, SessionsResponse } from '../../common/packetHandler'
+import { makeRequest, RouterMetadata, SessionStatus, RoutersResponse, SessionMetadata, SessionsResponse } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 
 //@ts-ignore
@@ -225,7 +225,7 @@ const filteredSessions = computed(() => {
     if (searchKeywords.value.length === 0) return sessions.value
     return sessions.value.filter(
         (session: Session) =>
-            (session.asn !== undefined && session.asn !== null && session.asn.indexOf(searchKeywords.value) !== -1) ||
+            (session.asn !== undefined && session.asn !== null && session.asn.toString().indexOf(searchKeywords.value) !== -1) ||
             (session.ipv4 !== undefined && session.ipv4 !== null && session.ipv4.indexOf(searchKeywords.value) !== -1) ||
             (session.ipv6 !== undefined && session.ipv6 !== null && session.ipv6.indexOf(searchKeywords.value) !== -1) ||
             (session.ipv6LinkLocal !== undefined && session.ipv6LinkLocal !== null && session.ipv6LinkLocal.indexOf(searchKeywords.value) !== -1)
@@ -279,19 +279,19 @@ const filteredSessions = computed(() => {
                 <span>
                     <a @click="info(record, $event)">{{ t('pages.manage.session.info') }}</a>
                     <a-divider type="vertical" />
-                    <a-popconfirm v-if="record.status === 1" placement="bottomRight" @confirm="disable(record)">
+                    <a-popconfirm v-if="record.status === SessionStatus.ENABLED || record.status === SessionStatus.PROBLEM" placement="bottomRight" @confirm="disable(record)">
                         <template #title>
                             <p>{{ t('pages.manage.session.areYouSure') }}</p>
                         </template>
                         <a @click="stopPropagation">{{ t('pages.manage.session.disable') }}</a>
                     </a-popconfirm>
-                    <a-popconfirm v-else-if="record.status === 0" placement="bottomRight" @confirm="enable(record)">
+                    <a-popconfirm v-else-if="record.status === SessionStatus.DISABLED" placement="bottomRight" @confirm="enable(record)">
                         <template #title>
                             <p>{{ t('pages.manage.session.areYouSure') }}</p>
                         </template>
                         <a @click="stopPropagation">{{ t('pages.manage.session.enable') }}</a>
                     </a-popconfirm>
-                    <a-popconfirm v-else-if="record.status === -1" placement="bottomRight" @confirm="approve(record)">
+                    <a-popconfirm v-else-if="record.status === SessionStatus.PENDING_APPROVAL" placement="bottomRight" @confirm="approve(record)">
                         <template #title>
                             <p>{{ t('pages.manage.session.areYouSure') }}</p>
                         </template>

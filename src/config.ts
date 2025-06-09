@@ -10,7 +10,7 @@ import pkg from '../package.json'
 export default {
     root: '/',
     package: `${pkg.name}/${pkg.version}`,
-    apiPrefix: 'https://api.iedon.com/dn42/peerapi',
+    apiPrefix: 'http://10.127.21.55:3000',
     pingIntervalMs: 180000,
     configFallback: {
         netAsn: '4242422189',

@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { SendOutlined, CheckCircleOutlined, CloseOutlined } from '@ant-design/icons-vue'
-import { RouterInfoResponse, RouterMetadata } from '../../common/packetHandler'
+import { RouterInfoResponse, RouterMetadata, RoutingPolicy } from '../../common/packetHandler'
 import PeerInfoCard from './peerInfoCard.vue'
 
 const t = useI18n().t
@@ -18,7 +18,8 @@ const props = defineProps<{
     loading: boolean,
     preferenceForm: {
         linkType: string,
-        bgpExtensions: ("mp-bgp" | "extended-nexthop")[]
+        bgpExtensions: ("mp-bgp" | "extended-nexthop")[],
+        routingPolicy: number
     },
     interfaceForm: {
         useIpv4: boolean,
@@ -28,7 +29,8 @@ const props = defineProps<{
         useIpv6LinkLocal: boolean,
         ipv6LinkLocal: string,
         endpoint: string,
-        credential: string
+        credential: string,
+        mtu: number
     }
 }>()
 
@@ -36,7 +38,7 @@ const interfaceForm = computed(() => {
     const result = {}
     for (const key in props.interfaceForm) {
         const data: string | boolean = props.interfaceForm[key as keyof typeof props.interfaceForm]
-        if ((typeof data === 'string' && data !== '') || (typeof data !== 'string' && !data)) Object.assign(result, {
+        if ((typeof data === 'string' && data !== '') || (typeof data !== 'string' && !data) || (typeof data === 'number' && data && !isNaN(data)) ) Object.assign(result, {
             [key]: data
         })
     }
@@ -46,31 +48,47 @@ const interfaceForm = computed(() => {
 const preferenceForm = computed(() => {
     const result = {}
     for (const key in props.preferenceForm) {
-        const data: string | ("mp-bgp" | "extended-nexthop")[] = props.preferenceForm[key as keyof typeof props.preferenceForm]
+        const data: string | ("mp-bgp" | "extended-nexthop")[] | number = props.preferenceForm[key as keyof typeof props.preferenceForm]
         if (key !== 'asn') Object.assign(result, { [key]: data })
     }
     return result
 })
 
 const loading = computed(() => props.loading)
+
+// Function to get routing policy name from numeric value
+const getRoutingPolicyName = (value: number): string => {
+    return RoutingPolicy[value] || 'FULL'
+}
 </script>
 
 <template>
     <a-spin :spinning="loading">
         <h2 class="header">{{ t('pages.peering.step3Introduction') }}</h2>
         <a-descriptions layout="vertical" bordered size="small" :column="2" class="summary">
-            <a-descriptions-item v-for="data, key in preferenceForm" :key="`preferenceForm_${key}`" :label="t(`pages.peering['${key}']` as string)">
+            <a-descriptions-item 
+                v-for="(data, key) in preferenceForm" 
+                :key="`preferenceForm_${key}`" 
+                :label="t(`pages.peering.${key}`)"
+            >
                 <template v-if="key === 'linkType'">
-                    {{ t(`pages.peering['${data}']` as string) }}
+                    {{ t(`pages.peering.${data}`) }}
                 </template>
                 <template v-else-if="key === 'bgpExtensions' && Array.isArray(data)">
-                    <span class="tag" v-for="item in data" :key="item">{{ t(`pages.peering['${item}']` as string) }}</span>
+                    <span class="tag" v-for="item in data" :key="item">{{ t(`pages.peering.${item}`) }}</span>
+                </template>
+                <template v-else-if="key === 'routingPolicy'">
+                    {{ t(`pages.peering.routingPolicyTypes.${getRoutingPolicyName(data as number)}`) }}
                 </template>
                 <template v-else>
                     {{ data }}
                 </template>
             </a-descriptions-item>
-            <a-descriptions-item v-for="data, key in interfaceForm" :key="`interfaceForm_${key}`" :label="t(`pages.peering['${key}']` as string)">
+            <a-descriptions-item 
+                v-for="(data, key) in interfaceForm" 
+                :key="`interfaceForm_${key}`" 
+                :label="t(`pages.peering.${key}`)"
+            >
                 <template v-if="typeof data === 'boolean'">
                     <check-circle-outlined v-if="data" />
                     <close-outlined v-else />

@@ -3,7 +3,7 @@ import { onMounted, Ref, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
-import { makeRequest, RouterInfoResponse, RouterMetadata } from '../../common/packetHandler'
+import { makeRequest, RouterInfoResponse, RouterMetadata, RoutingPolicy } from '../../common/packetHandler'
 import { ASN_MAX, ASN_MIN, isAdmin, loggedIn } from '../../common/helper'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 import stepsBar from './stepsBar.vue'
@@ -45,6 +45,7 @@ const preferenceForm = ref({
     asn: '424242',
     linkType: node.value?.linkTypes[0] || '',
     bgpExtensions: node.value?.extensions || [],
+    routingPolicy: RoutingPolicy.FULL, // Default to FULL
 })
 
 const routerInfo: Ref<RouterInfoResponse | null> = ref(null)
@@ -62,7 +63,6 @@ const getRouterInfo = async () => {
     try {
         routerInfo.value = null
         loading.value = true
-
         const resp = await makeRequest(t, '/session', {
             action: 'info',
             router: node.value?.uuid,
@@ -95,13 +95,13 @@ const interfaceForm = ref({
     useIpv6LinkLocal: true,
     ipv6LinkLocal: '',
     endpoint: '',
-    credential: ''
+    credential: '',
+    mtu: 1280
 })
 
 const startPeering = async () => {
     try {
         loading.value = true
-
         const options = {
             action: 'add',
             router: node.value?.uuid,
@@ -110,6 +110,8 @@ const startPeering = async () => {
             ipv6LinkLocal: interfaceForm.value.ipv6LinkLocal,
             type: preferenceForm.value.linkType,
             extensions: preferenceForm.value.bgpExtensions,
+            policy: preferenceForm.value.routingPolicy,
+            mtu: interfaceForm.value.mtu,
             endpoint: interfaceForm.value.endpoint,
             credential: interfaceForm.value.credential,
             data: routerInfo.value
