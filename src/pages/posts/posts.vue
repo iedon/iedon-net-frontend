@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref } from 'vue'
+import { onMounted, Ref, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { StarFilled, NumberOutlined, LoadingOutlined } from '@ant-design/icons-vue'
 import { makeRequest, PostMetadaResponse, PostMetadata, PostResponse } from '../../common/packetHandler'
-import { postCache, formatDate, themeName, VAR_SIZE_LG } from '../../common/helper'
-import MenuTrigger from '../../components/MenuTrigger.vue'
+import { postCache, formatDate } from '../../common/helper'
 import './post.css'
 
 //@ts-ignore
@@ -15,7 +13,7 @@ import mila from 'markdown-it-link-attributes'
 
 const t = useI18n().t
 const router = useRouter()
-const desiredPostId = router.currentRoute.value.params.id as string || null
+const desiredPostId = ref<string | null>(router.currentRoute.value.params.id as string || null)
 
 const md = new markdown_it({
     html: true
@@ -28,14 +26,9 @@ md.use(mila, {
 
 const loading = ref(false)
 const currentPost: Ref<PostResponse | null> = ref(null)
-
 const postMetadata: Ref<{ [index: string]: PostMetadata[] }> = ref({})
-
-const selectedKeys: Ref<string[]> = ref([])
-const openKeys: Ref<string[]> = ref([])
-const collapsed: Ref<boolean> = ref(false)
-
 const loadingPost: Ref<PostMetadata | null> = ref(null)
+
 const fetchPost = async (post: PostMetadata) => {
     if (currentPost.value?.postId === post.postId) return
     try {
@@ -73,16 +66,14 @@ const preprocessPostMetadata = async (newPostMetadata: PostMetadata[]) => {
         if (!postMetadata.value[p.category]) postMetadata.value[p.category] = []
         postMetadata.value[p.category].push(p)
     })
+    
     try {
-        openKeys.value = []
-        for (const category in postMetadata.value) openKeys.value.push(category)
         let foundDesiredPost = false
         for (const category in postMetadata.value) {
-            if (desiredPostId !== null) {
-                const desiredPost = postMetadata.value[category].find(c => c.postId === Number(desiredPostId))
+            if (desiredPostId.value !== null) {
+                const desiredPost = postMetadata.value[category].find(c => c.postId === Number(desiredPostId.value))
                 if (desiredPost) {
                     foundDesiredPost = true
-                    selectedKeys.value = [`post_${desiredPostId}`]
                     await fetchPost(desiredPost)
                     break
                 }
@@ -90,11 +81,8 @@ const preprocessPostMetadata = async (newPostMetadata: PostMetadata[]) => {
             }
         }
         if (!foundDesiredPost) {
-            router.replace({
-                path: '/'
-            })
+            // If no specific post is requested, load the first available post
             for (const category in postMetadata.value) {
-                selectedKeys.value = [`post_${postMetadata.value[category][0].postId}`]
                 await fetchPost(postMetadata.value[category][0])
                 break
             }
@@ -105,10 +93,8 @@ const preprocessPostMetadata = async (newPostMetadata: PostMetadata[]) => {
 }
 
 const fetchPosts = async () => {
-    let originalCollapsedStatus = collapsed.value
     try {
         loading.value = true
-        collapsed.value = false
 
         const resp = await makeRequest(t, '/list/posts')
         if (resp.success && resp.response) {
@@ -122,7 +108,6 @@ const fetchPosts = async () => {
         console.error(error)
     } finally {
         loading.value = false
-        collapsed.value = originalCollapsedStatus
     }
 }
 
@@ -136,104 +121,121 @@ onMounted(async () => {
     await fetchPosts()
 })
 
-const navigateTo = async (post: PostMetadata) => {
-    router.push({
-        path: `/post/${post.postId}`
-    })
-    window.scrollTo(0, 0)
-    const width = window.innerWidth || document.documentElement.clientWidth ||
-        document.body.clientWidth
-    if (width < VAR_SIZE_LG) {
-        collapsed.value = true
+// Function to load a specific post by ID
+const loadPostById = async (postId: string | null) => {
+    if (!postId) return
+    
+    // Find the post in the metadata
+    for (const category in postMetadata.value) {
+        const post = postMetadata.value[category].find(p => p.postId === Number(postId))
+        if (post) {
+            await fetchPost(post)
+            return
+        }
     }
-    await fetchPost(post)
 }
 
-const toggleMenu = () => {
-    collapsed.value = !collapsed.value
-    window.scrollTo(0, 0)
-}
+// Watch for route parameter changes
+watch(() => router.currentRoute.value.params.id, async (newPostId) => {
+    const postId = newPostId as string || null
+    desiredPostId.value = postId
+    
+    if (postId && Object.keys(postMetadata.value).length > 0) {
+        await loadPostById(postId)
+    }
+})
 </script>
 
 <template>
-    <section id="wrapper">
-        <a-layout-sider :class="`sider ${themeName}`" width="300" collapsible v-model:collapsed="collapsed"
-            :trigger="null" breakpoint="lg" :collapsedWidth="40" v-show="!collapsed">
-            <a-spin :spinning="loading && openKeys.length === 0">
-                <div v-if="loading && openKeys.length === 0" class="pad"></div>
-                <a-menu class="menu" v-else mode="inline" v-model:selectedKeys="selectedKeys"
-                    v-model:openKeys="openKeys">
-                    <a-sub-menu v-for="(_, category) in postMetadata" :key="category">
-                        <template #icon>
-                            <star-filled />
-                        </template>
-                        <template #title>
-                            <b>{{ category }}</b>
-                        </template>
-                        <a-menu-item v-for="meta in postMetadata[category]" :key="`post_${meta.postId}`"
-                            @click="navigateTo(meta)">
-                            <template #icon>
-                                <loading-outlined v-if="loadingPost && loadingPost.postId === meta.postId" />
-                                <number-outlined v-else />
-                            </template>
-                            {{ meta.title }}
-                        </a-menu-item>
-                    </a-sub-menu>
-                </a-menu>
-            </a-spin>
-        </a-layout-sider>
-        <a-layout-content class="content">
+    <div class="posts-page">
+        <div class="content">
             <h1 class="header">
                 {{ loadingPost ? loadingPost.title : (currentPost?.title || '') }}
             </h1>
-            <a-divider orientation="right">{{ loadingPost ? formatDate(loadingPost.updatedAt) : (currentPost ?
-                formatDate(currentPost.updatedAt) : '') }}</a-divider>
+            <a-divider orientation="right">
+                {{ loadingPost ? formatDate(loadingPost.updatedAt) : (currentPost ? formatDate(currentPost.updatedAt) : '') }}
+            </a-divider>
             <a-skeleton active :loading="loadingPost !== null">
                 <article id="post" v-if="currentPost" v-html="md.render(currentPost.content)"></article>
             </a-skeleton>
-        </a-layout-content>
-        <menu-trigger :trigger="collapsed" @click="toggleMenu" />
-    </section>
+        </div>
+    </div>
 </template>
 
 <style scoped>
-#wrapper {
+.posts-page {
     width: 100%;
-    display: flex;
+    min-height: 100vh;
+    background: #f5f5f5;
+    padding: 20px;
 }
 
-.sider {
-    min-height: 500px;
-}
-
-.sider.light {
-    background-color: #fafafa;
-}
-
-.sider.dark {
-    background-color: #1d1d1d;
-}
-
-.sider .pad {
-    margin: 200px auto;
-}
-
-.menu {
-    height: 100%;
-    border-right: none;
+.dark .posts-page {
+    background: #0f0f0f;
 }
 
 .content {
-    padding: 0 30px;
-    min-height: 500px;
+    background-color: #fff;
+    padding: 40px;
     user-select: text;
-    overflow: hidden;
+    border-radius: 8px;
 }
 
-.content .header {
-    font-size: 28px;
+.dark .content {
+    background: #1a1a1a;
+}
+
+.header {
+    font-size: 32px;
     letter-spacing: 0.5px;
     text-align: center;
-    font-weight: normal;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+    margin-top: 0px;
+}
+
+.dark .header {
+    color: #e2e8f0;
+}
+
+#post {
+    line-height: 1.8;
+    font-size: 16px;
+    color: #333;
+}
+
+.dark #post {
+    color: #d1d5db;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .posts-page {
+        padding: 12px;
+    }
+    
+    .content {
+        padding: 24px 20px;
+        border-radius: 8px;
+    }
+    
+    .header {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .posts-page {
+        padding: 8px;
+    }
+    
+    .content {
+        padding: 20px 16px;
+    }
+    
+    .header {
+        font-size: 24px;
+    }
 }
 </style>

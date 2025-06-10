@@ -24,7 +24,6 @@ const currentYear = new Date().getFullYear()
 
 <style scoped>
 #footer {
-  margin-top: 50px;
   font-size: .875rem;
   text-align: center;
   width: 100%;

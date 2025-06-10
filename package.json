@@ -8,23 +8,25 @@
   },
   "dependencies": {
     "ant-design-vue": "^4.2.6",
+    "echarts": "^5.6.0",
     "iso-3166": "^4.3.0",
     "markdown-it": "^14.1.0",
     "markdown-it-link-attributes": "^4.0.1",
     "md5": "^2.3.0",
-    "unplugin-vue-components": "^28.4.1",
-    "vite-plugin-vercel": "^9.0.5",
-    "vue": "^3.5.13",
-    "vue-i18n": "^11.1.1",
-    "vue-router": "^4.5.0"
+    "unplugin-vue-components": "^28.7.0",
+    "vite-plugin-vercel": "^9.0.7",
+    "vue": "^3.5.16",
+    "vue-echarts": "^7.0.3",
+    "vue-i18n": "^11.1.5",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@babel/types": "^7.26.9",
+    "@babel/types": "^7.27.6",
     "@types/md5": "^2.3.5",
-    "@vitejs/plugin-vue": "^5.2.1",
-    "less": "^4.2.2",
-    "typescript": "^5.8.2",
-    "vite": "^6.2.0",
-    "vue-tsc": "^2.2.8"
+    "@vitejs/plugin-vue": "^5.2.4",
+    "less": "^4.3.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vue-tsc": "^2.2.10"
   }
 }

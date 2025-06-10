@@ -16,7 +16,7 @@ import 'dayjs/locale/zh-cn'
 import 'dayjs/locale/de'
 import 'dayjs/locale/fr'
 
-type SupportedLocale = 'en_US' | 'ja_JP' | 'zh_TW' | 'zh_CN' | 'fr_FR' | 'de_DE'
+export type SupportedLocale = 'en_US' | 'ja_JP' | 'zh_TW' | 'zh_CN' | 'fr_FR' | 'de_DE'
 const SupportedLocales: SupportedLocale[] = [ 'en_US', 'fr_FR', 'de_DE', 'ja_JP', 'zh_TW', 'zh_CN' ]
 
 interface ObjectMap {
@@ -81,7 +81,6 @@ export {
     setLocale,
     getLocaleName,
     locale,
-    SupportedLocale,
     SupportedLocales,
     getLocaleCodeAlias
 }

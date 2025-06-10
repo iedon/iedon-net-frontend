@@ -18,9 +18,22 @@ enum ResponseCode {
 }
 
 export enum SessionStatus {
-  PENDING_REVIEW = -1,
-  DISABLED = 0,
-  ENABLED = 1,
+  DELETED = 0,
+  DISABLED = 1,
+  ENABLED = 2,
+  PENDING_APPROVAL = 3,
+  QUEUED_FOR_SETUP = 4,
+  QUEUED_FOR_DELETE = 5,
+  PROBLEM = 6,
+  TEARDOWN = 7,
+}
+
+export enum RoutingPolicy {
+  FULL = 0,         // Send all valid routes.  Receive all valid routes.
+  TRANSIT = 1,      // Send our valid self and downstream routes. Receive all valid routes.
+  PEER = 2,         // Send our valid self and downstream routes. Receive remote owned valid and remote downstream routes.
+  DOWNSTREAM = 3,   // Send all valid routes. Receive remote owned valid and remote downstream routes.
+  UPSTREAM = 4,     // Receive all valid routes, send self routes and downstream routes to remote
 }
 
 // Types
@@ -33,10 +46,97 @@ type ResponseData =
   | RoutersResponse
   | RouterInfoResponse
   | SessionsResponse
+  | SessionMetricsResponse
+  | GetCurrentSessionResponse
   | SetPasswordResponse
   | PostResponse
   | TokenRefreshResponse
   | SiteConfigDataResponse;
+
+// Types for session metrics
+export type RouteMetrics = {
+  current: number;   // current route count
+  metric: [number, number][]; // each metric is a pair [timestamp, value] where value is route count
+};
+
+export type RouteMetricStruct = {
+  imported: RouteMetrics;
+  exported: RouteMetrics;
+};
+
+export type BGPRoutesMetric = {
+  ipv4: RouteMetricStruct;
+  ipv6: RouteMetricStruct;
+};
+
+export type BGPMetric = {
+  name: string;
+  state: string;
+  info: string;
+  routes: BGPRoutesMetric;
+};
+
+export type InterfaceTrafficMetric = {
+  total: [number, number];   // [Tx, Rx] total traffic, not rate
+  current: [number, number]; // [Tx, Rx] current traffic rate, bytes/second
+  metric: [number, number, number][]; // each metric is [timestamp, Tx, Rx] in bytes/second
+};
+
+export type InterfaceMetric = {
+  ipv4: string;         // Can be empty string
+  ipv6: string;         // Can be empty string
+  ipv6LinkLocal: string; // Can be empty string
+  mac: string;          // Can be empty string
+  mtu: number;
+  status: string;       // Interface flags like "UP, BROADCAST, NOARP"
+  traffic: InterfaceTrafficMetric;
+};
+
+export type RTTMetric = {
+  current: number; // -1 means timeout or error
+  metric: [number, number][]; // each metric is [timestamp, value] where value -1 means timeout or error
+};
+
+export type SessionMetric = {
+  uuid: string;
+  asn: number;
+  timestamp: number;    // metric generated timestamp
+  bgp: BGPMetric[];
+  interface: InterfaceMetric;
+  rtt: RTTMetric;
+  data: {
+    info: string;       // Additional information
+    passthrough: string; // Passthrough data
+  } | '';
+};
+
+export type SessionMetricsResponse = {
+  metrics: SessionMetric;
+};
+
+export type GetCurrentSessionResponse = {
+  session: CurrentSessionMetadata;
+};
+
+export type CurrentSessionMetadata = {
+  uuid: string;
+  asn: number;
+  status: SessionStatus;
+  ipv4: string | null; // Can be null if not used
+  ipv6: string | null; // Can be null if not used
+  ipv6LinkLocal: string | null; // Can be null if not used
+  type: 'wireguard' | 'openvpn' | 'ipsec' | 'gre' | 'ip6gre' | 'direct';
+  extensions: ('mp-bgp' | 'extended-nexthop')[];
+  interface: string;
+  endpoint: string | null; // Can be null if not used
+  credential: string | null; // Can be null if not used
+  data: {
+    info: string;
+    passthrough: string;
+  } | '';
+  mtu: number;
+  policy: RoutingPolicy;
+};
 
 interface ResponsePacket {
   code: ResponseCode;
@@ -97,7 +197,7 @@ export const makeRequest = async (
 
   } catch (error) {
     openNotification("topLeft", "error", t('notification.error'), t('packetHandler.errMsg500_SERVER_ERROR'), ERROR_MESSAGE_DURATION)
-  
+
     console.error(error);
     return { success: false };
   }
@@ -231,12 +331,26 @@ export type RouterMetadata = {
     | 'openvpn'
     | 'ipsec'
     | 'gre'
+    | 'ip6gre'
     | 'direct')[];
   extensions:
   (| 'mp-bgp'
     | 'extended-nexthop')[];
+  metric?: {
+    version: string; // e.g., "iEdon-PeerAPI-Agent/1.0 (linux; amd64; go1.24.4)"
+    kernel: string; // e.g., "Linux 6.11.11-2-pve amd64"
+    loadAvg: string; // e.g., "1.35 1.64 1.53"
+    uptime: number; // e.g., 169829.75 (in seconds)
+    rs: string; // e.g., "BIRD 2.0.12\nRouter ID is
+    tx: number; // e.g., 1519580408 (in bytes)
+    rx: number; // e.g., 1984586137 (in bytes)
+    tcp: number; // e.g., 36 (TCP connections)
+    udp: number; // e.g., 16 (UDP connections)
+    timestamp: number; // e.g., 1749547951037 (timestamp in milliseconds)
+  };
   public?: boolean; /* only available in /admin */
   callbackUrl?: string; /* only available in /admin */
+  agentSecret?: string; /* only available in /admin */
 };
 
 export type SessionMetadata = {
@@ -251,16 +365,22 @@ export type SessionMetadata = {
   | 'openvpn'
   | 'ipsec'
   | 'gre'
+  | 'ip6gre'
   | 'direct';
   extensions:
   (| 'mp-bgp'
-    | 'extended-nexthop')[];
-  interface: string,
+    | 'extended-nexthop')[]; interface: string,
   endpoint: string,
   credential: string,
+  policy: RoutingPolicy,
   data:
   | { info: string; passthrough: string }
-  | '';
+  | '',
+  bgpStatus?: {
+    name: string;
+    state: string;
+    info: string;
+  }[];
 };
 
 export type SiteConfigDataResponse = {

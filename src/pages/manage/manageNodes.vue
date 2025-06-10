@@ -3,7 +3,7 @@ import { onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
-import { GlobalOutlined, CloseOutlined, CheckCircleOutlined } from '@ant-design/icons-vue'
+import { GlobalOutlined, CloseOutlined, CheckCircleOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import { loggedIn, nullOrEmpty } from '../../common/helper'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
@@ -43,66 +43,66 @@ onMounted(async () => {
 })
 
 const columns = ref([
-  {
-    title: t('pages.manage.nodes.name'),
-    dataIndex: 'name',
-    key: 'name',
-    sorter: (a: RouterMetadata, b: RouterMetadata) => ('' + (a.name || '')).localeCompare((b.name || '')),
-  },
-  {
-    title: t('pages.manage.nodes.location'),
-    dataIndex: 'location',
-    key: 'location',
-    sorter: (a: RouterMetadata, b: RouterMetadata) => ('' + (a.location || '')).localeCompare((b.location || '')),
-  },
-  {
-    title: t('pages.manage.nodes.public'),
-    dataIndex: 'public',
-    key: 'public',
-    sorter: (a: RouterMetadata, b: RouterMetadata) => (a.public ? 1 : 0) - (b.public ? 1 : 0)
-  },
-  {
-    title: t('pages.manage.nodes.openPeering'),
-    dataIndex: 'openPeering',
-    key: 'openPeering',
-    sorter: (a: RouterMetadata, b: RouterMetadata) => (a.openPeering ? 1 : 0) - (b.openPeering ? 1 : 0)
-  },
+    {
+        title: t('pages.manage.nodes.name'),
+        dataIndex: 'name',
+        key: 'name',
+        sorter: (a: RouterMetadata, b: RouterMetadata) => ('' + (a.name || '')).localeCompare((b.name || '')),
+    },
+    {
+        title: t('pages.manage.nodes.location'),
+        dataIndex: 'location',
+        key: 'location',
+        sorter: (a: RouterMetadata, b: RouterMetadata) => ('' + (a.location || '')).localeCompare((b.location || '')),
+    },
+    {
+        title: t('pages.manage.nodes.public'),
+        dataIndex: 'public',
+        key: 'public',
+        sorter: (a: RouterMetadata, b: RouterMetadata) => (a.public ? 1 : 0) - (b.public ? 1 : 0)
+    },
+    {
+        title: t('pages.manage.nodes.openPeering'),
+        dataIndex: 'openPeering',
+        key: 'openPeering',
+        sorter: (a: RouterMetadata, b: RouterMetadata) => (a.openPeering ? 1 : 0) - (b.openPeering ? 1 : 0)
+    },
 
-  {
-    title: t('pages.manage.nodes.autoPeering'),
-    dataIndex: 'autoPeering',
-    key: 'autoPeering',
-    sorter: (a: RouterMetadata, b: RouterMetadata) => (a.autoPeering ? 1 : 0) - (b.autoPeering ? 1 : 0)
-  },
-  {
-    title: t('pages.manage.nodes.sessionCapacity'),
-    dataIndex: 'sessionCapacity',
-    key: 'sessionCapacity',
-    sorter: (a: RouterMetadata, b: RouterMetadata) => a.sessionCapacity - b.sessionCapacity
-  },
-  {
-    title: 'IPv4',
-    dataIndex: 'ipv4',
-    key: 'ipv4',
-    sorter: (a: RouterMetadata, b: RouterMetadata) => ('' + (a.ipv4 || '')).localeCompare((b.ipv4 || '')),
-  },
-  {
-    title: 'IPv6',
-    dataIndex: 'ipv6',
-    key: 'ipv6',
-    sorter: (a: RouterMetadata, b: RouterMetadata) => ('' + (a.ipv6 || '')).localeCompare((b.ipv6 || '')),
-  },
-  {
-    title: 'IPv6 Link Local',
-    dataIndex: 'ipv6LinkLocal',
-    key: 'ipv6LinkLocal',
-    sorter: (a: RouterMetadata, b: RouterMetadata) => ('' + (a.ipv6LinkLocal || '')).localeCompare((b.ipv6LinkLocal || '')),
-  },
-  {
-    title: t('pages.manage.session.action'),
-    dataIndex: 'action',
-    key: 'action',
-  }
+    {
+        title: t('pages.manage.nodes.autoPeering'),
+        dataIndex: 'autoPeering',
+        key: 'autoPeering',
+        sorter: (a: RouterMetadata, b: RouterMetadata) => (a.autoPeering ? 1 : 0) - (b.autoPeering ? 1 : 0)
+    },
+    {
+        title: t('pages.manage.nodes.sessionCapacity'),
+        dataIndex: 'sessionCapacity',
+        key: 'sessionCapacity',
+        sorter: (a: RouterMetadata, b: RouterMetadata) => a.sessionCapacity - b.sessionCapacity
+    },
+    {
+        title: 'IPv4',
+        dataIndex: 'ipv4',
+        key: 'ipv4',
+        sorter: (a: RouterMetadata, b: RouterMetadata) => ('' + (a.ipv4 || '')).localeCompare((b.ipv4 || '')),
+    },
+    {
+        title: 'IPv6',
+        dataIndex: 'ipv6',
+        key: 'ipv6',
+        sorter: (a: RouterMetadata, b: RouterMetadata) => ('' + (a.ipv6 || '')).localeCompare((b.ipv6 || '')),
+    },
+    {
+        title: 'IPv6 Link Local',
+        dataIndex: 'ipv6LinkLocal',
+        key: 'ipv6LinkLocal',
+        sorter: (a: RouterMetadata, b: RouterMetadata) => ('' + (a.ipv6LinkLocal || '')).localeCompare((b.ipv6LinkLocal || '')),
+    },
+    {
+        title: t('pages.manage.session.action'),
+        dataIndex: 'action',
+        key: 'action',
+    }
 ])
 
 const remove = async (record: RouterMetadata) => {
@@ -131,6 +131,7 @@ const modalForm = ref({
     autoPeering: true,
     sessionCapacity: 30,
     callbackUrl: '',
+    agentSecret: '',
     ipv4: '',
     ipv6: '',
     ipv6LinkLocal: '',
@@ -140,8 +141,13 @@ const modalForm = ref({
 })
 
 const addOrEdit = async () => {
-    if (nullOrEmpty(modalForm.value.name) || nullOrEmpty(modalForm.value.sessionCapacity) || isNaN(Number(modalForm.value.sessionCapacity)) ||
-        nullOrEmpty(modalForm.value.callbackUrl) || !Array.isArray(modalForm.value.linkTypes) || modalForm.value.linkTypes.length < 1) {
+    if (nullOrEmpty(modalForm.value.name) ||
+        nullOrEmpty(modalForm.value.sessionCapacity) ||
+        isNaN(Number(modalForm.value.sessionCapacity)) ||
+        nullOrEmpty(modalForm.value.agentSecret) ||
+        nullOrEmpty(modalForm.value.callbackUrl) ||
+        !Array.isArray(modalForm.value.linkTypes) ||
+        modalForm.value.linkTypes.length < 1) {
         Modal.error({
             centered: true,
             title: t('pages.manage.nodes.addOrEdit'),
@@ -163,6 +169,7 @@ const addOrEdit = async () => {
             autoPeering: !!modalForm.value.autoPeering,
             sessionCapacity: Number(modalForm.value.sessionCapacity),
             callbackUrl: modalForm.value.callbackUrl,
+            agentSecret: modalForm.value.agentSecret || null,
             ipv4: modalForm.value.ipv4 || null,
             ipv6: modalForm.value.ipv6 || null,
             ipv6LinkLocal: modalForm.value.ipv6LinkLocal || null,
@@ -193,6 +200,7 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
             autoPeering: true,
             sessionCapacity: 30,
             callbackUrl: '',
+            agentSecret: '',
             ipv4: '',
             ipv6: '',
             ipv6LinkLocal: '',
@@ -209,6 +217,7 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
         modalForm.value.autoPeering = record.autoPeering
         modalForm.value.sessionCapacity = record.sessionCapacity
         modalForm.value.callbackUrl = record.callbackUrl || ''
+        modalForm.value.agentSecret = record.agentSecret || ''
         modalForm.value.ipv4 = record.ipv4
         modalForm.value.ipv6 = record.ipv6
         modalForm.value.ipv6LinkLocal = record.ipv6LinkLocal
@@ -227,11 +236,19 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
             </template>
             {{ t('pages.manage.nodes.add') }}
         </a-button>
+        <a-button @click="fetchRouters" :loading="loading" class="refresh-button">
+            <template #icon>
+                <reload-outlined />
+            </template>
+            {{ t('pages.metrics.refresh') }}
+        </a-button>
     </div>
-    <a-table :columns="columns" :data-source="routers" :loading="loading" bordered size="small" :scroll="{ x: 'max-content' }">
+    <a-table :columns="columns" :data-source="routers" :loading="loading" bordered size="small"
+        :scroll="{ x: 'max-content' }">
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'location'">
-                <router-location-avatar v-if="record.location" :router="record" :hide-peering-dot="true"></router-location-avatar>
+                <router-location-avatar v-if="record.location" :router="record"
+                    :hide-peering-dot="true"></router-location-avatar>
                 <close-outlined v-else />
             </template>
             <template v-else-if="column.key === 'ipv4'">
@@ -259,16 +276,16 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
                 <close-outlined v-else />
             </template>
             <template v-if="column.key === 'action'">
-            <span>
-                <a @click="showAddOrEdit(record)">{{ t('pages.manage.posts.edit') }}</a>
-                <a-divider type="vertical" />
-                <a-popconfirm placement="bottomRight" @confirm="remove(record)">
-                    <template #title>
-                        <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                    </template>
-                    <a>{{ t('pages.manage.session.remove') }}</a>
-                </a-popconfirm>
-            </span>
+                <span>
+                    <a @click="showAddOrEdit(record)">{{ t('pages.manage.posts.edit') }}</a>
+                    <a-divider type="vertical" />
+                    <a-popconfirm placement="bottomRight" @confirm="remove(record)">
+                        <template #title>
+                            <p>{{ t('pages.manage.session.areYouSure') }}</p>
+                        </template>
+                        <a>{{ t('pages.manage.session.remove') }}</a>
+                    </a-popconfirm>
+                </span>
             </template>
         </template>
     </a-table>
@@ -279,7 +296,8 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
                     <a-input v-model:value="modalForm.name" :placeholder="t('pages.manage.nodes.name')" />
                 </a-form-item>
                 <a-form-item name="description" :label="t('pages.manage.nodes.description')">
-                    <a-textarea :rows="2" v-model:value="modalForm.description" :placeholder="t('pages.manage.nodes.description')" />
+                    <a-textarea :rows="2" v-model:value="modalForm.description"
+                        :placeholder="t('pages.manage.nodes.description')" />
                 </a-form-item>
                 <a-form-item name="location" :label="t('pages.manage.nodes.location')">
                     <a-input v-model:value="modalForm.location" :placeholder="t('pages.manage.nodes.location')" />
@@ -294,10 +312,14 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
                     <a-switch v-model:checked="modalForm.autoPeering" />
                 </a-form-item>
                 <a-form-item name="sessionCapacity" :label="t('pages.manage.nodes.sessionCapacity')">
-                    <a-input-number v-model:value="modalForm.sessionCapacity" :placeholder="t('pages.manage.nodes.sessionCapacity')" />
+                    <a-input-number v-model:value="modalForm.sessionCapacity"
+                        :placeholder="t('pages.manage.nodes.sessionCapacity')" />
                 </a-form-item>
                 <a-form-item name="callbackUrl" :label="t('pages.manage.nodes.callbackUrl')">
                     <a-input v-model:value="modalForm.callbackUrl" :placeholder="t('pages.manage.nodes.callbackUrl')" />
+                </a-form-item>
+                <a-form-item name="agentSecret" label="Agent Secret">
+                    <a-input v-model:value="modalForm.agentSecret" placeholder="Agent Secret" />
                 </a-form-item>
                 <a-form-item name="ipv4" label="IPv4">
                     <a-input v-model:value="modalForm.ipv4" />
@@ -314,6 +336,7 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
                         <a-checkbox value="openvpn">{{ t('pages.peering[\'openvpn\']') }}</a-checkbox>
                         <a-checkbox value="ipsec">{{ t('pages.peering[\'ipsec\']') }}</a-checkbox>
                         <a-checkbox value="gre">{{ t('pages.peering[\'gre\']') }}</a-checkbox>
+                        <a-checkbox value="ip6gre">{{ t('pages.peering[\'ip6gre\']') }}</a-checkbox>
                         <a-checkbox value="direct">{{ t('pages.peering[\'direct\']') }}</a-checkbox>
                     </a-checkbox-group>
                 </a-form-item>
@@ -327,8 +350,9 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
         </a-spin>
         <template #footer>
             <a-spin :spinning="modalLoading">
-                <a-button style="margin-right:10px" type="primary" @click="addOrEdit()">{{ t('pages.manage.config.save') }}</a-button>
-                <a-button @click="modalVisible=false">{{ t('pages.manage.posts.close') }}</a-button>
+                <a-button style="margin-right:10px" type="primary" @click="addOrEdit()">{{ t('pages.manage.config.save')
+                    }}</a-button>
+                <a-button @click="modalVisible = false">{{ t('pages.manage.posts.close') }}</a-button>
             </a-spin>
         </template>
     </a-modal>
@@ -337,7 +361,14 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
 <style scoped>
 .buttons {
     margin: 20px;
+    display: flex;
+    gap: 10px;
 }
+
+.refresh-button {
+    margin-left: 10px;
+}
+
 .small-text {
     font-size: 12px;
 }
