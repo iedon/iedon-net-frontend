@@ -1,28 +1,15 @@
 <script setup lang="ts">
-import { computed, onMounted, Ref, ref } from 'vue'
+import { onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { ApiOutlined, CloseOutlined } from '@ant-design/icons-vue'
+import { ApiOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import { loggedIn } from '../../common/helper'
 import { makeRequest, RouterMetadata, RoutersResponse, SessionMetadata, SessionsResponse } from '../../common/packetHandler'
-import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
-
-//@ts-ignore
-import markdown_it from 'markdown-it'
-//@ts-ignore
-import mila from 'markdown-it-link-attributes'
+import SessionTable from '../../components/SessionTable.vue'
 
 const t = useI18n().t
 const router = useRouter()
-
-const md = new markdown_it()
-md.use(mila, {
-  attrs: {
-    target: "_blank"
-  },
-})
-
 const loading = ref(false)
 
 interface Session extends SessionMetadata {
@@ -31,6 +18,7 @@ interface Session extends SessionMetadata {
 
 const sessions: Ref<Session[]> = ref([])
 const routers: Ref<RouterMetadata[]> = ref([])
+const searchKeywords = ref('')
 
 const fetchSessions = async () => {
     try {
@@ -52,7 +40,10 @@ const fetchSessions = async () => {
             const data = resp.response as SessionsResponse
             const newData: Session[] = []
             if (data && Array.isArray(data.sessions)) {
-                data.sessions.forEach(s => newData.push({ ...s, routerJoined: routers.value.find(r => r.uuid === s.router) }))
+                data.sessions.forEach(s => newData.push({ 
+                    ...s, 
+                    routerJoined: routers.value.find(r => r.uuid === s.router) 
+                }))
                 sessions.value = newData
             }
         }
@@ -72,8 +63,6 @@ onMounted(async () => {
     await fetchSessions()
 })
 
-const modalVisible = ref(false)
-
 const simpleActionHandler = async (session: Session, action: 'delete' | 'enable' | 'disable') => {
     try {
         loading.value = true
@@ -92,140 +81,26 @@ const simpleActionHandler = async (session: Session, action: 'delete' | 'enable'
     }
 }
 
-const enable = (session: Session) => simpleActionHandler(session, 'enable')
+const handleEnable = (session: Session) => simpleActionHandler(session, 'enable')
+const handleDisable = (session: Session) => simpleActionHandler(session, 'disable')
+const handleRemove = (session: Session) => simpleActionHandler(session, 'delete')
 
-const disable = (session: Session) => simpleActionHandler(session, 'disable')
-
-const remove = (session: Session) => simpleActionHandler(session, 'delete')
-
-const modalLoading = ref(false)
-const modalRouterName = ref('')
-const modalIpv4 = ref('')
-const modalIpv6 = ref('')
-const modalIpv6LinkLocal = ref('')
-const modalHtml = ref('')
-const modalInfoHtml = ref('')
-const modalInterface = ref('')
-const modalExtensions = ref('')
-const modalEndpoint = ref('')
-const modalRouter: Ref<RouterMetadata | undefined> = ref(undefined)
-const info = async (session: Session, event: MouseEvent) => {
+const handleViewMetrics = (session: Session, event: MouseEvent) => {
     event.stopPropagation()
-
-    try {
-
-        modalRouterName.value = ''
-        modalIpv4.value = ''
-        modalIpv6.value = ''
-        modalIpv6LinkLocal.value = ''
-        modalHtml.value = ''
-        modalInterface.value = ''
-        modalEndpoint.value = ''
-        modalRouter.value = undefined
-
-        modalRouter.value = session.routerJoined || undefined
-        modalRouterName.value = session.routerJoined?.name || t('pages.manage.session.info')
-        modalIpv4.value = session.routerJoined?.ipv4 || ''
-        modalIpv6.value = session.routerJoined?.ipv6 || ''
-        modalIpv6LinkLocal.value = session.routerJoined?.ipv6LinkLocal || ''
-        modalEndpoint.value = session.endpoint
-        modalInterface.value = session.interface
-        modalExtensions.value = ''
-        session.extensions.forEach((e, i) => {
-            if (i !== 0) modalExtensions.value += ', '
-            modalExtensions.value += t(`pages.peering['${e}']`)
-        })
-        modalHtml.value = session.data !== '' && session.data.info ? md.render(session.data.info) : ''
-    } catch (error) {
-        console.error(error)
-    }
-    modalVisible.value = true
-
-    try {
-        modalLoading.value = true
-
-        const resp = await makeRequest(t, '/session', {
-            action: 'query',
-            router: session.router,
-            session: session.uuid,
-        })
-        if (resp.success && resp.response) {
-            const data = resp.response as string
-            if (typeof data === 'string') modalInfoHtml.value = data === '' ? '' : md.render(data)
-        }
-    } catch (error) {
-        console.error(error)
-    } finally {
-        modalLoading.value = false
-    }
+    router.push({
+        path: `/manage/metrics/${session.router}/${session.uuid}`
+    })
 }
 
-const columns = ref([
-  {
-    title: t('pages.manage.session.node'),
-    dataIndex: 'node',
-    key: 'node',
-    sorter: (a: Session, b: Session) => ('' + (a.routerJoined?.name || '')).localeCompare((b.routerJoined?.name || '')),
-  },
-  {
-    title: t('pages.manage.session.type'),
-    dataIndex: 'type',
-    key: 'type',
-    sorter: (a: Session, b: Session) => ('' + a.type).localeCompare(b.type)
-  },
-  {
-    title: 'IPv4',
-    dataIndex: 'ipv4',
-    key: 'ipv4',
-    sorter: (a: Session, b: Session) => ('' + (a.ipv4 || '')).localeCompare((b.ipv4 || '')),
-  },
-  {
-    title: 'IPv6',
-    dataIndex: 'ipv6',
-    key: 'ipv6',
-    sorter: (a: Session, b: Session) => ('' + (a.ipv6 || '')).localeCompare((b.ipv6 || '')),
-  },
-  {
-    title: 'IPv6 Link Local',
-    dataIndex: 'ipv6LinkLocal',
-    key: 'ipv6LinkLocal',
-        sorter: (a: Session, b: Session) => ('' + (a.ipv6LinkLocal || '')).localeCompare((b.ipv6LinkLocal || '')),
-  },
-  {
-    title: t('pages.manage.session.status'),
-    dataIndex: 'status',
-    key: 'status',
-    sorter: (a: Session, b: Session) => a.status - b.status
-  },
-  {
-    title: t('pages.manage.session.action'),
-    dataIndex: 'action',
-    key: 'action',
-  }
-])
+const handleEdit = (session: Session) => {
+    router.push({
+        path: `/nodes/${session.router}/edit/${session.uuid}`
+    })
+}
 
 const redirectToNodes = () => {
     router.push({ path: '/nodes' })
 }
-
-const customRow = (record: any, index: number) => {
-    return {
-        onClick: (event: MouseEvent) => info(record, event)
-    }
-}
-
-const stopPropagation = (event: MouseEvent) => event.stopPropagation()
-
-const searchKeywords = ref('')
-const filteredSessions = computed(() => {
-    if (searchKeywords.value.length === 0) return sessions.value
-    return sessions.value.filter(
-        (session: Session) =>
-            (session.ipv4 !== undefined && session.ipv4 !== null && session.ipv4.indexOf(searchKeywords.value) !== -1) ||
-            (session.ipv6 !== undefined && session.ipv6 !== null && session.ipv6.indexOf(searchKeywords.value) !== -1) ||
-            (session.ipv6LinkLocal !== undefined && session.ipv6LinkLocal !== null && session.ipv6LinkLocal.indexOf(searchKeywords.value) !== -1)
-    )
-})
 </script>
 
 <template>
@@ -236,139 +111,48 @@ const filteredSessions = computed(() => {
             </template>
             {{ t('pages.manage.session.newPeeringSession') }}
         </a-button>
-        <a-input-search v-model:value="searchKeywords" :placeholder="t('pages.manage.session.search')" class="searchBox" enter-button />
+        <a-button @click="fetchSessions" :loading="loading" class="refresh-button">
+            <template #icon>
+                <reload-outlined />
+            </template>
+            {{ t('pages.metrics.refresh') }}
+        </a-button>
+        <a-input-search 
+            v-model:value="searchKeywords" 
+            :placeholder="t('pages.manage.session.search')" 
+            class="searchBox" 
+            enter-button 
+        />
     </div>
-    <a-table :columns="columns" :data-source="filteredSessions" :loading="loading" bordered size="small" :customRow="customRow" :scroll="{ x: 'max-content' }">
-        <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'node'">
-                <div class="avatar-container">
-                    <router-location-avatar :router="record.routerJoined" :hide-peering-dot="true"></router-location-avatar>
-                    <span class="node small-text">
-                        {{ record.routerJoined?.name }}
-                    </span>
-                </div>
-            </template>
-            <template v-if="column.key === 'type'">
-                <span class="small-text">
-                    {{ t(`pages.peering['${record.type}']`) }}
-                </span>
-            </template>
-            <template v-else-if="column.key === 'status'">
-                <span>
-                    <a-tag :color="record.status === -1 ? 'volcano' : record.status === 0 ? 'geekblue' : 'green'">
-                        {{ t(`pages.manage.session.statusCode['${record.status}']`) }}
-                    </a-tag>
-                </span>
-            </template>
-            <template v-else-if="column.key === 'ipv4'">
-                <span v-if="record.ipv4" class="small-text">{{ record.ipv4 }}</span>
-                <close-outlined v-else />
-            </template>
-            <template v-else-if="column.key === 'ipv6'">
-                <span v-if="record.ipv6" class="small-text">{{ record.ipv6 }}</span>
-                <close-outlined v-else />
-            </template>
-            <template v-else-if="column.key === 'ipv6LinkLocal'">
-                <span v-if="record.ipv6LinkLocal" class="small-text">{{ record.ipv6LinkLocal }}</span>
-                <close-outlined v-else />
-            </template>
-            <template v-else-if="column.key === 'action'">
-            <span>
-                <a @click="info(record, $event)">{{ t('pages.manage.session.info') }}</a>
-                <a-divider type="vertical" />
-                <a-popconfirm v-if="record.status === 1" placement="bottomRight" @confirm="disable(record)">
-                    <template #title>
-                        <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                    </template>
-                    <a @click="stopPropagation">{{ t('pages.manage.session.disable') }}</a>
-                </a-popconfirm>
-                <a-popconfirm v-else-if="record.status === 0" placement="bottomRight" @confirm="enable(record)">
-                    <template #title>
-                        <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                    </template>
-                    <a @click="stopPropagation">{{ t('pages.manage.session.enable') }}</a>
-                </a-popconfirm>
-                <a-divider v-if="record.status === 1 || record.status === 0" type="vertical" />
-                <a-popconfirm placement="bottomRight" @confirm="remove(record)">
-                    <template #title>
-                        <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                    </template>
-                    <a @click="stopPropagation">{{ t('pages.manage.session.remove') }}</a>
-                </a-popconfirm>
-            </span>
-            </template>
-        </template>
-    </a-table>
-    <a-modal v-model:open="modalVisible" :title="modalRouterName" centered>
-        <ul class="detail">
-            <li v-if="modalIpv4 !== ''">IPv4: <code>{{ modalIpv4 }}</code></li>
-            <li v-if="modalIpv6 !== ''">IPv6: <code>{{ modalIpv6 }}</code></li>
-            <li v-if="modalIpv6LinkLocal !== ''">IPv6 Link Local: <code>{{ modalIpv6LinkLocal }}</code></li>
-            <li v-if="modalInterface !== ''">{{ t('pages.peering.interface') }}: <code>{{ modalInterface }}</code></li>
-            <li v-if="modalEndpoint">{{ t('pages.peering.endpoint') }}: <code>{{ modalEndpoint }}</code></li>
-            <li v-if="modalExtensions !== ''">{{ t('pages.peering.bgpExtensions') }}: <code>{{ modalExtensions }}</code></li>
-        </ul>
-        <div class="desc" v-if="modalHtml !== ''" v-html="modalHtml"></div>
-        <a-spin :spinning="modalLoading">
-            <div class="desc" v-if="modalInfoHtml !== ''" v-html="modalInfoHtml"></div>
-        </a-spin>
-        <template #footer>
-            <a-button type="primary" @click="modalVisible=false">{{ t('pages.manage.session.ok') }}</a-button>
-        </template>
-    </a-modal>
+      <session-table
+        :sessions="sessions"
+        :loading="loading"
+        :show-asn="false"
+        :show-actions="true"
+        :is-admin-mode="false"
+        :search-keywords="searchKeywords"
+        @view-metrics="handleViewMetrics"
+        @enable="handleEnable"
+        @disable="handleDisable"
+        @remove="handleRemove"
+        @edit="handleEdit"
+    />
 </template>
 
 <style scoped>
 .buttons {
     margin: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
+
+.refresh-button {
+    margin-right: auto;
+}
+
 .searchBox {
     max-width: 500px;
     min-width: 150px;
-    float: right;
-}
-.avatar-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-}
-.node {
-    margin-left: 15px;
-    vertical-align: middle;
-}
-.small-text {
-    font-size: 12px;
-}
-.detail, .desc, .desc:deep(pre) {
-    user-select: text;
-}
-.desc:deep(pre) {
-    border: #eee 1px solid;
-    border-radius: 4px;
-    margin-top: 10px;
-    padding: 10px;
-    max-height: 200px;
-    font-size: 12px;
-    overflow: scroll;
-}
-.detail {
-    width: 100%;
-}
-.detail code {
-    border-radius: 5px;
-    color: #666;
-    font-size: 13px;
-    padding: 0.15em 0.3em;
-    margin-left: 10px;
-    line-height: 200%;
-    word-break: break-all;
-    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
-}
-.desc:deep(code) {
-    font-size: 12px;
-    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
-}
-.desc:deep(p) {
-    margin-bottom: 0.5em;
 }
 </style>

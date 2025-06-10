@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { UserOutlined, HomeOutlined, LoginOutlined, GlobalOutlined, LogoutOutlined } from '@ant-design/icons-vue'
+import { UserOutlined, HomeOutlined, LoginOutlined, GlobalOutlined, LogoutOutlined, BookOutlined, StarFilled } from '@ant-design/icons-vue'
 import { locale, setLocale, SupportedLocales, getLocaleName, getLocaleCodeAlias } from '../i18n/i18n'
 import { loggedIn, themeName } from '../common/helper'
+import { makeRequest, PostMetadaResponse, PostMetadata } from '../common/packetHandler'
 import config from "../config"
 //@ts-ignore
 import md5 from 'md5'
@@ -14,6 +15,10 @@ const t = useI18n().t
 
 const selectedKeys = ref<string[]>(['home'])
 
+// Posts state
+const postCategories = ref<{ [category: string]: PostMetadata[] }>({})
+const loadingPosts = ref(false)
+
 const router = useRouter()
 const goHome = () => {
     router.replace({ path: '/' })
@@ -22,6 +27,57 @@ const goHome = () => {
 const openNodesPage = () => {
     router.replace({ path: '/nodes' })
     window.scrollTo(0, 0)
+}
+
+const openPost = (post: PostMetadata) => {
+    router.push({ path: `/post/${post.postId}` })
+    window.scrollTo(0, 0)
+}
+
+// Fetch posts for dynamic header
+const fetchPosts = async () => {
+    try {
+        loadingPosts.value = true
+        
+        // Try to get cached posts first
+        const cachedPosts = localStorage.getItem('posts')
+        if (cachedPosts) {
+            const posts = JSON.parse(cachedPosts) as PostMetadata[]
+            processPosts(posts)
+        }
+        
+        // Fetch fresh data
+        const resp = await makeRequest(t, '/list/posts')
+        if (resp.success && resp.response) {
+            const data = resp.response as PostMetadaResponse
+            if (Array.isArray(data.posts)) {
+                localStorage.setItem('posts', JSON.stringify(data.posts))
+                processPosts(data.posts)
+            }
+        }
+    } catch (error) {
+        console.error('Failed to fetch posts for header:', error)
+    } finally {
+        loadingPosts.value = false
+    }
+}
+
+const processPosts = (posts: PostMetadata[]) => {
+    const categories: { [category: string]: PostMetadata[] } = {}
+    
+    posts.forEach(post => {
+        if (!categories[post.category]) {
+            categories[post.category] = []
+        }
+        categories[post.category].push(post)
+    })
+    
+    // Sort posts within each category by title
+    Object.keys(categories).forEach(category => {
+        categories[category].sort((a, b) => a.title.localeCompare(b.title))
+    })
+    
+    postCategories.value = categories
 }
 const openSigninPage = () => {
     router.replace({ path: '/signin' })
@@ -38,16 +94,33 @@ const signOut = () => {
 }
 
 const setHeaderFocus = () => {
-    const key = router.currentRoute.value.path.split('/')[1] || router.currentRoute.value.path
+    const path = router.currentRoute.value.path
+    const key = path.split('/')[1] || path
+    
+    // Handle post routes specifically
+    if (path.startsWith('/post/')) {
+        const postId = path.split('/')[2]
+        if (postId) {
+            selectedKeys.value = [`post_${postId}`]
+            return
+        }
+    }
+    
     switch (key) {
-        case 'home': case '/': case 'post': selectedKeys.value[0] = 'home'; break;
-        case 'nodes': selectedKeys.value[0] = 'nodes'; break;
-        default: selectedKeys.value[0] = key; break;
+        case 'home': case '/': selectedKeys.value = ['home']; break;
+        case 'nodes': selectedKeys.value = ['nodes']; break;
+        case 'posts': selectedKeys.value = ['posts']; break;
+        default: selectedKeys.value = [key]; break;
     }
 }
 
 const stopWatchPagePath = watch(() => router.currentRoute.value.path, (newValue: string) => setHeaderFocus())
-const onSelect = (_: { item: HTMLElement, key: string, selectedKeys: string[] }) => setHeaderFocus()
+const onSelect = (menuInfo: { item: HTMLElement, key: string, selectedKeys: string[] }) => {
+    // Don't override the selection for post items, let the navigation handle it
+    if (!menuInfo.key.startsWith('post_')) {
+        setHeaderFocus()
+    }
+}
 
 const asn = ref('')
 const person = ref('')
@@ -72,6 +145,12 @@ person.value = localStorage.getItem('person') || ''
 email.value = localStorage.getItem('email') || ''
 if (email.value.length !== 0) email.value = getGravatar(email.value)
 if (asn.value && person.value && localStorage.getItem('token')) loggedIn.value = true
+
+// Fetch posts on component mount
+onMounted(() => {
+    fetchPosts()
+    setHeaderFocus() // Initialize header focus based on current route
+})
 
 onUnmounted(() => {
     stopWatchPagePath()
@@ -109,6 +188,22 @@ const login = () => {
                 </template>
                 {{ t('header.nodes') }}
             </a-menu-item>
+            
+            <!-- Dynamic Post Categories -->
+            <template v-for="(posts, category) in postCategories" :key="`category_${category}`">
+                <a-sub-menu>
+                    <template #title>
+                        {{ category }}
+                    </template>
+                    <a-menu-item 
+                        v-for="post in posts" 
+                        :key="`post_${post.postId}`" 
+                        @click="openPost(post)"
+                    >
+                        {{ post.title }}
+                    </a-menu-item>
+                </a-sub-menu>
+            </template>
             <a-sub-menu>
                 <template #icon>
                     <img :src="`${config.root}flags/${getLocaleCodeAlias(locale)}.svg`" width="16" class="flag" />
@@ -182,7 +277,7 @@ const login = () => {
     padding: 0 15px !important;
   }
   #header .logo {
-    width: 80px !important;
+    width: 100px !important;
     margin-right: 0px !important;
   }
   #header:deep(.menu) {
@@ -190,7 +285,7 @@ const login = () => {
   }
 }
 #header .logo {
-    width: 100px;
+    width: 128px;
     margin-right: 30px;
     cursor: pointer;
 }

@@ -7,8 +7,8 @@ import { locale, setLocale, SupportedLocale, SupportedLocales } from './i18n/i18
 import LayoutHeader from './components/LayoutHeader.vue'
 import LayoutContent from './components/LayoutContent.vue'
 import LayoutFooter from './components/LayoutFooter.vue'
-import ThemeTrigger from './components/ThemeTrigger.vue'
 import { useHeartBeat, applyTheme, themeName } from './common/helper'
+import { BulbFilled, BulbOutlined } from '@ant-design/icons-vue'
 
 const vueI18n = useI18n()
 const t = vueI18n.t
@@ -68,8 +68,15 @@ const changeTheme = () => {
             <layout-header></layout-header>
             <layout-content></layout-content>
             <layout-footer></layout-footer>
-            <a-back-top />
-            <theme-trigger :trigger="themeTrigger" @click="changeTheme" />
+            <a-float-button-group shape="circle" :style="{ right: '24px' }">
+                <a-float-button @click="changeTheme">
+                    <template #icon>
+                        <bulb-outlined v-if="themeTrigger" />
+                        <bulb-filled v-else />
+                    </template>
+                </a-float-button>
+                <a-back-top :visibility-height="0" />
+            </a-float-button-group>
         </a-layout>
     </a-config-provider>
 </template>
@@ -80,6 +87,7 @@ html,
     width: 100%;
     height: 100%;
     user-select: none;
+    scroll-behavior: smooth;
 }
 
 body {

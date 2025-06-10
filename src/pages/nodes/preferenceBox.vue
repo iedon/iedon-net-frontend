@@ -30,7 +30,7 @@ const getRoutingPolicyOptions = () => {
     const options = []
     for (let i = 0; i <= 4; i++) {
         // Hide UPSTREAM (4) option for non-admin users
-        if (i === RoutingPolicy.UPSTREAM && !isAdmin) continue
+        if (i === RoutingPolicy.UPSTREAM && !isAdmin.value) continue
         
         options.push({
             value: i,

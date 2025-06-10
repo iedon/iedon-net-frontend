@@ -92,6 +92,33 @@ export const formatDate = (dateString: string) => {
   return parsed.toString()
 }
 
+export const formatRelativeTime = (dateString: string, t: (key: string) => string) => {
+  const now = dayjs()
+  const target = dayjs(dateString)
+  const diffSeconds = now.diff(target, 'second')
+
+  if (diffSeconds < 60) {
+    return `${diffSeconds} ${t('pages.metrics.timeAgo.seconds')}`
+  } else if (diffSeconds < 3600) { // less than 1 hour
+    const minutes = Math.floor(diffSeconds / 60)
+    return `${minutes} ${minutes === 1 ? t('pages.metrics.timeAgo.minute') : t('pages.metrics.timeAgo.minutes')}`
+  } else if (diffSeconds < 86400) { // less than 1 day
+    const hours = Math.floor(diffSeconds / 3600)
+    return `${hours} ${hours === 1 ? t('pages.metrics.timeAgo.hour') : t('pages.metrics.timeAgo.hours')}`
+  } else {
+    const days = Math.floor(diffSeconds / 86400)
+    return `${days} ${days === 1 ? t('pages.metrics.timeAgo.day') : t('pages.metrics.timeAgo.days')}`
+  }
+}
+
+export const formatBytes = (bytes: number) => {
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'K', 'M', 'G', 'T', 'P', 'E']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
 export const isAdmin = computed(() => siteConfig.value.netAsn === localStorage.getItem('asn'))
 
 export const themeName = ref('light')

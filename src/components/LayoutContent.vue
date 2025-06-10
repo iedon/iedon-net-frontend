@@ -3,49 +3,50 @@ import { themeName } from '../common/helper'
 </script>
 
 <template>
-  <a-layout-content id="content">
-    <a-layout class="page" :class="themeName">
-      <router-view v-slot="{ Component }">
-        <transition name="fade">
-            <component :is="Component"></component>
-        </transition>
-      </router-view>
-    </a-layout>
-  </a-layout-content>
+    <a-layout-content id="content">
+        <a-layout class="page" :class="themeName">
+            <router-view v-slot="{ Component }">
+                <transition name="fade">
+                    <component :is="Component"></component>
+                </transition>
+            </router-view>
+        </a-layout>
+    </a-layout-content>
 </template>
 
 <style scoped>
 #content {
-  margin-top: 64px;
-  padding: 0 50px;
+    width: 100%;
 }
-@media (min-width: 0px) and (max-width: 992px /* lg */) {
-  #content {
-    padding: 0 5px;
-  }
-}
+
 #content:deep(.page) {
-  margin-top: 30px;
-  border-radius: 5px;
-  overflow: hidden;
+    padding-top: 65px;
+    overflow: hidden;
+    max-width: 1440px;
+    margin: 0 auto;
 }
+
 #content:deep(.page).light {
-  background: #fff;
-  box-shadow: 0 2px 8px #f0f1f2;
+    background-color: #fff;
 }
+
 #content:deep(.page).dark {
-  background: #161616;
-  color: #949fa9;
-  box-shadow: 0 2px 8px #101010;
+    background-color: #161616;
+    color: #949fa9;
 }
-.fade-enter-active, .fade-leave-active {
-  transition-property: opacity;
-  transition-duration: .25s;
+
+.fade-enter-active,
+.fade-leave-active {
+    transition-property: opacity;
+    transition-duration: .25s;
 }
+
 .fade-enter-active {
-  transition-delay: .25s;
+    transition-delay: .25s;
 }
-.fade-enter, .fade-leave-active {
-  opacity: 0
+
+.fade-enter,
+.fade-leave-active {
+    opacity: 0
 }
 </style>

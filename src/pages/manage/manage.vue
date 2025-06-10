@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { UserOutlined, NodeIndexOutlined, SettingOutlined, BookOutlined, GlobalOutlined } from '@ant-design/icons-vue'
+import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, NodeIndexOutlined, SettingOutlined, BookOutlined, GlobalOutlined } from '@ant-design/icons-vue'
 import { isAdmin, themeName, VAR_SIZE_LG } from '../../common/helper'
-import MenuTrigger from '../../components/MenuTrigger.vue'
 import MySessions from './mySessions.vue'
 import MyAccount from './myAccount.vue'
 import ManageSessions from './manageSessions.vue'
@@ -111,7 +110,17 @@ const backToTop = () => {
                 <my-account v-else-if="selectedKeys[0] === 'myAccount'"></my-account>
             </template>
         </a-layout-content>
-        <menu-trigger :trigger="collapsed" @click="toggleMenu" />
+        <a-float-button
+            class="trigger"
+            @click="toggleMenu"
+            :style="{ left: '30px' }"
+            :tooltip="collapsed ? t('pages.manage.openMenu') : t('pages.manage.closeMenu')"
+        >
+            <template #icon>
+                <menu-unfold-outlined v-if="collapsed" />
+                <menu-fold-outlined v-else />
+            </template>
+        </a-float-button>
     </section>
 </template>
 
@@ -121,14 +130,15 @@ const backToTop = () => {
     display: flex;
 }
 .sider {
-    background-color: #fafafa;
+    padding-top: 110px;
+    background-color: #fff;
     min-height: 500px;
 }
 .sider.light {
-    background-color: #fafafa;
+    background-color: #fff !important;
 }
 .sider.dark {
-    background-color: #1d1d1d;
+    background-color: #141414 !important;
 }
 .menu {
     height: 100%;

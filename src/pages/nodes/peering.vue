@@ -3,7 +3,7 @@ import { onMounted, Ref, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
-import { makeRequest, RouterInfoResponse, RouterMetadata, RoutingPolicy } from '../../common/packetHandler'
+import { CurrentSessionMetadata, GetCurrentSessionResponse, makeRequest, RouterInfoResponse, RouterMetadata, RoutingPolicy, SessionMetadata } from '../../common/packetHandler'
 import { ASN_MAX, ASN_MIN, isAdmin, loggedIn } from '../../common/helper'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 import stepsBar from './stepsBar.vue'
@@ -17,7 +17,10 @@ const router = useRouter()
 const loading = ref(false)
 
 const nodeUuid = router.currentRoute.value.params.uuid as string || null
+const sessionId = router.currentRoute.value.params.sessionId as string || null
+const isEditMode = !!sessionId
 const node: Ref<RouterMetadata | null> = ref(null)
+const existingSession: Ref<CurrentSessionMetadata | null> = ref(null)
 try {
     const nodes = localStorage.getItem('routers')
     if (nodes) node.value = (JSON.parse(nodes) as RouterMetadata[]).find(r => r.uuid === nodeUuid) || null
@@ -27,7 +30,7 @@ try {
 
 const currentStep: Ref<'preference' | 'interface' | 'setup' | 'done'> = ref('preference')
 
-onMounted(() => {
+onMounted(async () => {
     window.scrollTo(0, 0)
     if (!loggedIn.value) {
         message.info(t('pages.nodes.pleaseSignIn'))
@@ -38,6 +41,11 @@ onMounted(() => {
         message.error(t('pages.peering.couldNotGetData'))
         router.back()
         return
+    }
+    
+    // Load existing session data if in edit mode
+    if (isEditMode) {
+        await loadExistingSession()
     }
 })
 
@@ -103,7 +111,7 @@ const startPeering = async () => {
     try {
         loading.value = true
         const options = {
-            action: 'add',
+            action: isEditMode ? 'modify' : 'add',
             router: node.value?.uuid,
             ipv4: interfaceForm.value.ipv4,
             ipv6: interfaceForm.value.ipv6,
@@ -116,6 +124,12 @@ const startPeering = async () => {
             credential: interfaceForm.value.credential,
             data: routerInfo.value
         }
+        
+        // Add session ID for modify action
+        if (isEditMode && sessionId) {
+            Object.assign(options, { session: sessionId })
+        }
+        
         if (isAdmin.value) Object.assign(options, { asn: Number(preferenceForm.value.asn) })
 
         if ((await makeRequest(t, '/session', options)).success) {
@@ -137,13 +151,56 @@ const startPeering = async () => {
     }
 }
 
+const loadExistingSession = async () => {
+    if (!isEditMode || !sessionId) return
+    
+    try {
+        loading.value = true
+        const resp = await makeRequest(t, '/session', {
+            action: 'get',
+            session: sessionId
+        })
+          if (resp.success && resp.response) {
+            const exist = (resp.response as unknown as GetCurrentSessionResponse).session
+            existingSession.value = exist
+            // Pre-populate the forms with existing session data
+            if (existingSession.value) {
+                preferenceForm.value.asn = existingSession.value.asn.toString()
+                preferenceForm.value.linkType = existingSession.value.type
+                preferenceForm.value.bgpExtensions = existingSession.value.extensions
+                preferenceForm.value.routingPolicy = existingSession.value.policy
+                
+                interfaceForm.value.ipv4 = existingSession.value.ipv4 || ""
+                interfaceForm.value.ipv6 = existingSession.value.ipv6 || ""
+                interfaceForm.value.ipv6LinkLocal = existingSession.value.ipv6LinkLocal || ""
+                interfaceForm.value.endpoint = existingSession.value.endpoint || ""
+                interfaceForm.value.credential = existingSession.value.credential || ""
+                interfaceForm.value.mtu = parseInt(existingSession.value.interface) || 1280
+                
+                // Set IPv4/IPv6 usage flags based on data
+                interfaceForm.value.useIpv4 = !!existingSession.value.ipv4
+                interfaceForm.value.useIpv6 = !!existingSession.value.ipv6
+                interfaceForm.value.useIpv6LinkLocal = !!existingSession.value.ipv6LinkLocal
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load existing session:', error)
+        message.error(t('pages.peering.couldNotGetData'))
+        router.back()
+    } finally {
+        loading.value = false
+    }
+}
+
 </script>
 
-<template>
-    <section>
+<template>    <section>
         <h1 class="header" v-if="node">
             <div class="avatar"><router-location-avatar :router="node"></router-location-avatar></div>
             {{ node?.name }}
+            <span v-if="isEditMode" style="font-size: 0.7em; color: #666; margin-left: 10px;">
+                ({{ t('pages.manage.session.edit') }})
+            </span>
         </h1>
         <a-layout-content id="peering" v-if="node">
             <steps-bar class="steps" :step="currentStep" :loading="loading"></steps-bar>

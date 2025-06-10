@@ -1,6 +1,71 @@
 #post {
-    margin: 30px 20px 100px 20px;
-    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji",sans-serif
+    margin: 0 auto;
+    color: #2c3e50;
+    line-height: 1.7;
+    scroll-behavior: smooth;
+}
+
+/* Dark mode for main post container */
+.dark #post {
+    color: #d1d5db;
+}
+
+@media (max-width: 768px) {
+    #post {
+        padding: 1.5rem;
+        margin: 1rem;
+        border-radius: 8px;
+    }
+    
+    #post h1 {
+        font-size: 2rem;
+        line-height: 1.3;
+    }
+    
+    #post h2 {
+        font-size: 1.75rem;
+    }
+    
+    #post h3 {
+        font-size: 1.25rem;
+    }
+    
+    #post p {
+        font-size: 16px;
+        text-align: left;
+    }
+    
+    #post blockquote {
+        padding: 1rem 1.5rem;
+    }
+    
+    #post pre {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+}
+
+@media print {
+    #post {
+        box-shadow: none;
+        margin: 0;
+        padding: 1rem;
+    }
+    
+    #post pre {
+        background: #f8f9fa !important;
+        box-shadow: none;
+        border: 1px solid #dee2e6;
+    }
+    
+    #post pre code {
+        color: #212529 !important;
+    }
+    
+    #post a {
+        color: #007bff !important;
+        text-decoration: underline !important;
+    }
 }
 
 #post * {
@@ -10,135 +75,471 @@
 #post p {
     line-height: 1.8;
     word-wrap: break-word;
-    font-weight: normal;
-    font-size: 14px;
-    margin: 1rem;
+    font-weight: 400;
+    font-size: 16px;
+    margin: 1.2rem 0;
+    color: #34495e;
+    text-align: justify;
 }
 
-#post h2, #post h3, #post h4, #post h5, #post h6 {
-    clear: both;
-    margin: 1.6em 0 0.6em;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+/* Dark mode for paragraphs */
+.dark #post p {
+    color: #c9d1d9;
 }
 
 #post h1 {
-    letter-spacing: 0.5px;
-	font-size: 26px;
-    margin-top: 8px;
-    margin-bottom: 20px;
-    font-weight: 500;
-    font-size: 30px;
-    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji",sans-serif;
-    line-height: 38px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 2rem 0;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    border-bottom: 3px solid #3182ce;
+    padding-bottom: 1rem;
+}
+
+/* Dark mode for h1 */
+.dark #post h1 {
+    color: #e2e8f0;
+    border-bottom-color: #63b3ed;
+}
+
+#post h2 {
+    font-weight: 600;
+    color: #2d3748;
+    margin: 2.5rem 0 1rem 0;
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+}
+
+/* Dark mode for h2 */
+.dark #post h2 {
+    color: #d1d5db;
 }
 
 #post h3 {
-	font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 2rem 0 0.8rem 0;
+    line-height: 1.4;
+}
+
+/* Dark mode for h3 */
+.dark #post h3 {
+    color: #d1d5db;
 }
 
 #post h4 {
-	font-size: 16px;
+    font-weight: 600;
+    color: #4a5568;
+    margin: 1.8rem 0 0.6rem 0;
+    line-height: 1.4;
+}
+
+/* Dark mode for h4 */
+.dark #post h4 {
+    color: #cbd5e0;
 }
 
 #post h5 {
-	font-size: 14px;
+    font-weight: 600;
+    color: #4a5568;
+    margin: 1.6rem 0 0.5rem 0;
+    line-height: 1.4;
+}
+
+/* Dark mode for h5 */
+.dark #post h5 {
+    color: #cbd5e0;
 }
 
 #post h6 {
-	font-size: 12px;
+    font-weight: 600;
+    color: #718096;
+    margin: 1.4rem 0 0.4rem 0;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Dark mode for h6 */
+.dark #post h6 {
+    color: #a0aec0;
+}
+
+#post ul {
+    margin: 1.5rem 0;
+    padding-left: 0;
 }
 
 #post ul > li {
-    margin-left: 20px;
-    padding-left: 4px;
-    list-style-type: circle;
+    margin: 0.8rem 0 0.8rem 2rem;
+    padding-left: 0.5rem;
+    list-style: none;
+    position: relative;
+    line-height: 1.6;
+}
+
+#post ul > li::before {
+    content: "•";
+    color: #3182ce;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+/* Dark mode for list bullets */
+.dark #post ul > li::before {
+    color: #63b3ed;
 }
 
 #post ul > li:empty {
     display: none;
 }
 
+#post ol {
+    margin: 1.5rem 0;
+    padding-left: 0;
+}
+
 #post ol > li {
-    margin-left: 20px;
-    padding-left: 4px;
-    list-style-type: decimal;
+    margin: 0.8rem 0 0.8rem 2rem;
+    padding-left: 0.5rem;
+    list-style: decimal;
+    list-style-position: outside;
+    line-height: 1.6;
+    color: inherit;
+}
+
+/* Dark mode for ordered list items */
+.dark #post ol > li {
+    color: #c9d1d9;
 }
 
 #post ul > li > p, #post ol > li > p {
-    margin: .2em 0;
+    margin: 0.4rem 0;
+    font-size: 16px;
 }
 
 #post code {
-    line-height: 24pt;
-    margin: 0 1px;
-    padding: .2em .4em;
-    font-size: .9em;
-    border: 1px solid #cbcbcb;
-    border-radius: 3px;
-    word-break: break-all;
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    background-color: #f7fafc;
+    color: #e53e3e;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.85em;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+/* Dark mode for inline code */
+.dark #post code {
+    background-color: #2d3748;
+    color: #f56565;
+    border-color: #4a5568;
 }
 
 #post pre {
-    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
-    background: #f2f4f5;
-    border-radius: 2px;
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    overflow-x: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+}
+
+/* Dark mode for pre blocks */
+.dark #post pre {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#post pre::before {
+    content: "";
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ff5f56;
+    box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27ca3f;
 }
 
 #post pre code {
     margin: 0;
     padding: 0;
-    overflow: auto;
-    font-size: 13px;
-    direction: ltr;
-    text-align: left;
-    background: #cbcbcb;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ffffff;
+    background: transparent;
     border: none;
-    word-break: break-all;
+    word-break: normal;
+    white-space: pre;
+    font-weight: 400;
+    display: block;
+    overflow-x: auto;
+}
+
+#post pre[class*="language-"] {
+    position: relative;
+}
+
+#post pre[class*="language-"]::after {
+    content: attr(data-language);
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 #post strong, #post b {
-    font-weight: 500;
+    font-weight: 600;
+    color: #2d3748;
 }
 
-#post > table {
+/* Dark mode for strong/bold text */
+.dark #post strong, .dark #post b {
+    color: #d1d5db;
+}
+
+#post em, #post i {
+    font-style: italic;
+    color: #4a5568;
+}
+
+/* Dark mode for emphasis/italic text */
+.dark #post em, .dark #post i {
+    color: #cbd5e0;
+}
+
+#post a {
+    color: #3182ce;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+#post a:hover {
+    color: #2c5aa0;
+    border-bottom-color: #3182ce;
+}
+
+#post a:focus {
+    outline: 2px solid #3182ce;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Dark mode for links */
+.dark #post a {
+    color: #63b3ed;
+}
+
+.dark #post a:hover {
+    color: #90cdf4;
+    border-bottom-color: #63b3ed;
+}
+
+.dark #post a:focus {
+    outline-color: #63b3ed;
+}
+
+#post img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+#post img:hover {
+    transform: scale(1.02);
+}
+
+#post hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+    margin: 3rem 0;
+}
+
+/* Dark mode for horizontal rules */
+.dark #post hr {
+    background: linear-gradient(to right, transparent, #4a5568, transparent);
+}
+
+#post table {
     width: 100%;
-    margin: 8px 0 16px;
-    direction: ltr;
-    empty-cells: show;
-    border: 1px solid #f0f0f0;
+    margin: 2rem 0;
     border-collapse: collapse;
     border-spacing: 0;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-#post > table th {
-    color: #5c6b77;
-    font-weight: 500;
-    white-space: nowrap;
+/* Dark mode for tables */
+.dark #post table {
+    background-color: #1a1a1a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-#post > table th, #post>table td {
-    padding: 16px 24px;
+#post table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
     text-align: left;
-    border: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-#post table td > a:not(:last-child) {
-    margin-right: 0 !important;
+/* Dark mode for table headers */
+.dark #post table th {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
 }
 
-#post table td > a:not(:last-child):after {
-    position: relative !important;
+#post table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+    transition: background-color 0.2s ease;
+}
+
+/* Dark mode for table cells */
+.dark #post table td {
+    border-bottom-color: #4a5568;
+    color: #c9d1d9;
+}
+
+#post table tr:nth-child(even) td {
+    background-color: #f7fafc;
+}
+
+/* Dark mode for even table rows */
+.dark #post table tr:nth-child(even) td {
+    background-color: #2d3748;
+}
+
+#post table tr:hover td {
+    background-color: #edf2f7;
+}
+
+/* Dark mode for table row hover */
+.dark #post table tr:hover td {
+    background-color: #4a5568;
+}
+
+#post table tr:last-child td {
+    border-bottom: none;
 }
 
 #post blockquote {
-    margin: 1em 0;
-    padding-left: .8em;
-    /* color: #00000073; */
-    font-size: 90%;
-    border-left: 4px solid #f0f0f0;
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    border-left: 4px solid #3182ce;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode for blockquotes */
+.dark #post blockquote {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    border-left-color: #63b3ed;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#post blockquote::before {
+    content: '"';
+    font-size: 4rem;
+    color: #3182ce;
+    position: absolute;
+    top: -0.5rem;
+    left: 0.5rem;
+    opacity: 0.3;
+    font-family: Georgia, serif;
+}
+
+/* Dark mode for blockquote quotes */
+.dark #post blockquote::before {
+    color: #63b3ed;
 }
 
 #post blockquote p {
     margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #4a5568;
+}
+
+/* Dark mode for blockquote paragraphs */
+.dark #post blockquote p {
+    color: #cbd5e0;
+}
+
+#post blockquote cite {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #718096;
+    font-style: normal;
+}
+
+/* Dark mode for blockquote citations */
+.dark #post blockquote cite {
+    color: #a0aec0;
+}
+
+#post blockquote cite::before {
+    content: "— ";
+}
+
+#post ::selection {
+    background-color: #bee3f8;
+    color: #2c5aa0;
+}
+
+#post ::-moz-selection {
+    background-color: #bee3f8;
+    color: #2c5aa0;
+}
+
+#post .lead {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: #4a5568;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* Dark mode for lead text */
+.dark #post .lead {
+    color: #cbd5e0;
+}
+
+#post .small {
+    font-size: 0.875rem;
+    color: #718096;
+}
+
+/* Dark mode for small text */
+.dark #post .small {
+    color: #a0aec0;
+}
+
+#post .text-center {
+    text-align: center;
 }

@@ -37,7 +37,7 @@ const props = defineProps<{
 const interfaceForm = computed(() => {
     const result = {}
     for (const key in props.interfaceForm) {
-        const data: string | boolean = props.interfaceForm[key as keyof typeof props.interfaceForm]
+        const data: string | boolean | number = props.interfaceForm[key as keyof typeof props.interfaceForm]
         if ((typeof data === 'string' && data !== '') || (typeof data !== 'string' && !data) || (typeof data === 'number' && data && !isNaN(data)) ) Object.assign(result, {
             [key]: data
         })
@@ -69,13 +69,13 @@ const getRoutingPolicyName = (value: number): string => {
             <a-descriptions-item 
                 v-for="(data, key) in preferenceForm" 
                 :key="`preferenceForm_${key}`" 
-                :label="t(`pages.peering.${key}`)"
+                :label="t(`pages.peering.${String(key)}`)"
             >
                 <template v-if="key === 'linkType'">
-                    {{ t(`pages.peering.${data}`) }}
+                    {{ t(`pages.peering.${String(data)}`) }}
                 </template>
                 <template v-else-if="key === 'bgpExtensions' && Array.isArray(data)">
-                    <span class="tag" v-for="item in data" :key="item">{{ t(`pages.peering.${item}`) }}</span>
+                    <span class="tag" v-for="item in data" :key="item">{{ t(`pages.peering.${String(item)}`) }}</span>
                 </template>
                 <template v-else-if="key === 'routingPolicy'">
                     {{ t(`pages.peering.routingPolicyTypes.${getRoutingPolicyName(data as number)}`) }}
@@ -87,7 +87,7 @@ const getRoutingPolicyName = (value: number): string => {
             <a-descriptions-item 
                 v-for="(data, key) in interfaceForm" 
                 :key="`interfaceForm_${key}`" 
-                :label="t(`pages.peering.${key}`)"
+                :label="t(`pages.peering.${String(key)}`)"
             >
                 <template v-if="typeof data === 'boolean'">
                     <check-circle-outlined v-if="data" />

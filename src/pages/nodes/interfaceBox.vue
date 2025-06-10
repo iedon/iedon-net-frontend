@@ -119,8 +119,18 @@ const checkAndContinue = () => {
                 props.preferenceForm.linkType !== 'direct'
             ) throw new Error('Invalid endpoint')
 
-            const url = new URL(`https://${props.interfaceForm.endpoint}`)
-            props.interfaceForm.endpoint = url.host
+            if (props.preferenceForm.linkType === 'gre' ||
+                props.preferenceForm.linkType === 'ip6gre' ||
+                props.preferenceForm.linkType === 'direct') {
+                    if (props.preferenceForm.linkType === 'gre') {
+                        if (!IPV4_REGEX.test(props.interfaceForm.endpoint)) throw new Error('Invalid endpoint for GRE')
+                    } else if (props.preferenceForm.linkType === 'ip6gre') {
+                        if (!IPV6_REGEX.test(props.interfaceForm.endpoint)) throw new Error('Invalid endpoint for IP6GRE')
+                    }
+            } else {
+                const url = new URL(`https://${props.interfaceForm.endpoint}`)
+                props.interfaceForm.endpoint = url.host
+            }
         } else {
             if (props.preferenceForm.linkType !== 'wireguard') throw new Error('Invalid endpoint')
             props.interfaceForm.endpoint = ''

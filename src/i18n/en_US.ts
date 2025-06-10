@@ -2,6 +2,7 @@ export default {
   header: {
     home: 'Home',
     nodes: 'Peering',
+    posts: 'Posts',
     signIn: 'Sign In',
     signOut: 'Sign Out',
     signOutConfirm: 'Are you sure you want to sign out?',
@@ -78,10 +79,27 @@ export default {
       copied: 'Details copied',
       pleaseSignIn: 'Please sign in first.',
       statusOpen: 'OPEN',
-      statusOpenManuallyReview: 'OPEN (STAFF REVIEW)',
-      statusClosed: 'CLOSED to newcomers',
+      statusOpenManuallyReview: 'OPEN (STAFF REVIEW)', statusClosed: 'CLOSED to newcomers',
       statusFull: 'CLOSED (FULL)',
-      statusCapacity: 'Capacity'
+      statusCapacity: 'Capacity',
+      routerOffline: 'Router Offline',
+      routerOfflineDescription: 'This router appears to be offline (last update more than 15 minutes ago). Please try again later or contact the administrator.',
+      maintenanceMode: 'Maintenance Mode',
+      // Connection types
+      connectionTypes: 'Connection Types',
+      // System metrics
+      systemMetrics: 'System Metrics',
+      uptime: 'Uptime',
+      loadAvg: 'Load Avg',
+      txRx: 'TX/RX',
+      tcpUdp: 'TCP/UDP',
+      router: 'Router',
+      kernel: 'Kernel',
+      agent: 'API',
+      // Statistics
+      totalRouters: 'Total Routers',
+      totalSessions: 'Sessions Configured',
+      availableForAuto: 'Instant Peering',
     },
     peering: {
       couldNotGetData: 'Could not retrieve node data.',
@@ -95,21 +113,21 @@ export default {
       routingPolicy: 'Routing Policy (Your Role)',
       routingPolicyTypes: {
         FULL: 'Full Table',
-        FULL_DESC: 'Default and recommended for DN42. Send all valid routes. Receive all valid routes.',
+        FULL_DESC: '⭐ Default and recommended for DN42. Send and receive all valid routes.',
         TRANSIT: 'Transit',
-        TRANSIT_DESC: 'Send our valid self and downstream routes. Receive all valid routes.',
+        TRANSIT_DESC: 'Send ours and downstream routes. Receive all valid routes.',
         PEER: 'Peer',
-        PEER_DESC: 'Send our valid self and downstream routes. Receive remote owned valid and remote downstream routes.',
+        PEER_DESC: 'Send ours and downstream routes. Receive yours and your "downstream"(AS Path <= 2) routes, fun for DN42.',
         DOWNSTREAM: 'Downstream',
-        DOWNSTREAM_DESC: 'Send all valid routes. Receive remote owned valid and remote downstream routes.',
-        UPSTREAM: 'Upstream (admin)',
-        UPSTREAM_DESC: 'Receive all valid routes, send self routes and downstream routes to remote.'
+        DOWNSTREAM_DESC: 'Send all valid routes. Receive yours and your "downstream"(AS Path <= 2) routes, fun for DN42.',
+        UPSTREAM: 'Upstream (Admin)',
+        UPSTREAM_DESC: 'Receive all valid routes, send ours and downstream routes to remote (Admin).'
       },
-      openvpn: 'OpenVPN Tunnel',
-      wireguard: 'WireGuard Tunnel',
-      ipsec: 'IPSec Tunnel',
-      gre: 'GRE over IPv4 Tunnel',
-      ip6gre: 'GRE over IPv6 Tunnel',
+      openvpn: 'OpenVPN',
+      wireguard: 'WireGuard',
+      ipsec: 'IPSec',
+      gre: 'GRE (IPv4)',
+      ip6gre: 'GRE (IPv6)',
       direct: 'Direct Ethernet',
       'mp-bgp': 'Multi-protocol BGP',
       'extended-nexthop': 'Extended Nexthop',
@@ -137,6 +155,20 @@ export default {
       step4Introduction: 'We are configuring your session. Check your peering status later.',
       step4IntroductionReview: 'This session requires manual review. We will process your request shortly.',
     },
+    landing: {
+      subTitle: 'iEdon Networks (iEdon-Net), Since 2017. Part of the DN42 Network since March 2019.',
+      startPeering: 'Instant Peering',
+      viewGlobalMap: 'View Global Map',
+      globalNetworkMap: 'Global Network Map',
+      mapDescription: 'Explore our global network of DN42 nodes and peering sessions.',
+      whyChoose: 'Why Choose Our Network?',
+      automaticPeering: 'Automatic Peering',
+      automaticPeeringDescription: 'Set up peering sessions automatically without manual intervention. \nOur system handles the technical details for you.',
+      globalNetwork: 'Global Network',
+      globalNetworkDescription: 'Connect through multiple locations worldwide for optimal routing \nand redundancy across the DN42 network.',
+      secureAndReliable: 'Secure and Reliable',
+      secureAndReliableDescription: 'Industry-standard encryption with WireGuard and other choices. \nHigh availability with 42% uptime guarantee. ^_^ As fun as DN42 itself.',
+    },
     manage: {
       mySessions: 'My Sessions',
       myAccount: 'My Account',
@@ -150,9 +182,9 @@ export default {
         search: 'Search by ASN or IP address...',
         node: 'Node',
         type: 'Interface Type',
-        status: 'Status',
-        action: 'Action',
+        status: 'Status', action: 'Action',
         info: 'Info',
+        viewMetrics: 'View Metrics',
         newPeeringSession: 'New Peering Session',
         statusCode: {
           '0': 'Deleted',
@@ -168,6 +200,7 @@ export default {
         disable: 'Disable',
         remove: 'Remove',
         approve: 'Approve',
+        edit: 'Edit',
         areYouSure: 'Are you sure?',
         ok: 'OK'
       },
@@ -207,9 +240,77 @@ export default {
         location: 'Location',
         description: 'Description',
         name: 'Name',
-        addOrEdit: 'Add or Edit Node',
-        add: 'Add Node',
+        addOrEdit: 'Add or Edit Node', add: 'Add Node',
         callbackUrl: 'Callback URL'
+      }
+    },
+    metrics: {
+      sessionMetrics: 'Session Metrics',
+      back: 'Back',
+      clickToCopy: 'Click to copy',
+      refresh: 'Refresh',
+      sessionId: 'Session ID',
+      bgpExtensions: 'BGP Extensions',
+      routingPolicy: 'Routing Policy',
+      sessionInfo: 'Session Info',
+      lastUpdated: 'Last Updated',
+      loadingMetrics: 'Loading metrics...',
+      noMetricsFound: 'No Metrics Found',
+      noMetricsFoundDesc: 'Unable to find metrics data for this session.',
+      goBack: 'Go Back',
+      fetchError: 'Failed to fetch metrics data',
+      invalidSession: 'Invalid session parameters',
+      noData: 'No data available',
+      // BGP Metrics
+      bgpMetrics: 'BGP Metrics',
+      received: 'Imported',
+      advertised: 'Exported',
+      bgpSessionStatus: 'BGP Session Status',
+      bgpDetails: 'BGP Details',
+      bgpInfo: 'BGP Info',
+      routesReceived: 'Routes Imported',
+      routesAdvertised: 'Routes Exported',
+      // Interface Metrics
+      interfaceMetrics: 'Interface Metrics',
+      interfaceDetails: 'Interface Details',
+      rxBytes: 'RX Bytes',
+      txBytes: 'TX Bytes',
+      bytes: 'Bytes',
+      // Network Metrics
+      networkMetrics: 'Network Metrics',
+      rtt: 'RTT',
+      currentRtt: 'Current RTT',
+      timeout: 'Timeout',
+
+      // Interface 
+      interfaceIPv4: 'IPv4',
+      interfaceIPv6: 'IPv6',
+      interfaceIPv6LinkLocal: 'IPv6 Link Local',
+      interfaceMAC: 'MAC Address',
+      interfaceMTU: 'MTU',
+      interfaceStatus: 'Status',
+      currentRates: 'Current TX/RX Rates',
+      txTotal: 'TX Total',
+      rxTotal: 'RX Total',
+
+      // BGP Details
+      bgpPeerName: 'Peer Name',
+      bgpState: 'State',
+      // General
+      sessionStatus: 'Session Status',
+      detailedMetrics: 'Detailed Metrics',
+      clickToViewDetails: 'Click to view detailed information',
+      clickToViewChart: 'Click to view chart',
+
+      // Relative time
+      timeAgo: {
+        seconds: 'seconds ago',
+        minute: 'minute ago',
+        minutes: 'minutes ago',
+        hour: 'hour ago',
+        hours: 'hours ago',
+        day: 'day ago',
+        days: 'days ago'
       }
     }
   }
