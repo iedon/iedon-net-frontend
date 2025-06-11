@@ -35,8 +35,8 @@
                                     <span class="session-value copyable" @click="copyBgpExtensions"
                                         :title="t('pages.metrics.clickToCopy')">
                                         {{ sessionMetadata?.extensions ? formatBgpExtensions(sessionMetadata.extensions)
-                                        :
-                                        'Loading...' }}
+                                            :
+                                            'Loading...' }}
                                     </span>
                                 </div>
                                 <div class="session-item">
@@ -45,17 +45,18 @@
                                         :title="t('pages.metrics.clickToCopy')">
                                         {{ sessionMetadata?.policy !== undefined ?
                                             getRoutingPolicyName(sessionMetadata.policy) :
-                                        'Loading...' }}
+                                            'Loading...' }}
                                     </span>
                                 </div>
                                 <div class="session-item">
-                                    <span class="session-label">{{ t('pages.metrics.lastUpdated') }}</span>
+                                    <span class="session-label">{{ t('pages.metrics.lastUpdated') }} ({{
+                                        formatRelativeTime(new
+                                            Date(sessionMetrics.timestamp || +new
+                                                Date()).toISOString(), t) }})</span>
                                     <span class="session-value copyable" @click="copyLastUpdated"
                                         :title="t('pages.metrics.clickToCopy')">
-                                        {{ formatRelativeTime(new Date(sessionMetrics.timestamp || +new
-                                            Date()).toISOString(), t) }}
-                                        ({{ formatDate(new Date(sessionMetrics.timestamp || +new Date()).toISOString())
-                                        }})</span>
+                                        {{ formatDate(new Date(sessionMetrics.timestamp || +new
+                                            Date()).toISOString()) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -68,9 +69,8 @@
                 </div>
             </div> <!-- Metrics Overview -->
             <div class="metrics-overview" v-if="getLatestMetrics">
-                <div class="metrics-grid">
-                    <!-- BGP Routes Combined Metric -->
-                    <div class="metric-item bgp-routes-combined" @click="scrollToBgpCharts" style="cursor: pointer;"
+                <div class="metrics-grid"> <!-- BGP IPv4 Routes Metric -->
+                    <div class="metric-item bgp-routes-ipv4" @click="scrollToBgpCharts" style="cursor: pointer;"
                         :title="t('pages.metrics.clickToViewChart')">
                         <div class="metric-icon bgp-routes">
                             <line-chart-outlined />
@@ -80,13 +80,36 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{ getLatestMetrics.bgp?.routes?.ipv4?.imported?.current
                                         || 0 }}</div>
-                                    <div class="metric-sub-label">{{ t('pages.metrics.received') }}</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.receivedIPv4') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{ getLatestMetrics.bgp?.routes?.ipv4?.exported?.current
                                         || 0 }}</div>
-                                    <div class="metric-sub-label">{{ t('pages.metrics.advertised') }}</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.advertisedIPv4') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BGP IPv6 Routes Metric -->
+                    <div class="metric-item bgp-routes-ipv6" @click="scrollToBgpCharts" style="cursor: pointer;"
+                        :title="t('pages.metrics.clickToViewChart')">
+                        <div class="metric-icon bgp-routes">
+                            <line-chart-outlined />
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value-row">
+                                <div class="metric-value-pair">
+                                    <div class="metric-value">{{ getLatestMetrics.bgp?.routes?.ipv6?.imported?.current
+                                        || 0 }}</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.receivedIPv6') }}</div>
+                                </div>
+                                <div class="metric-separator">|</div>
+                                <div class="metric-value-pair">
+                                    <div class="metric-value">{{ getLatestMetrics.bgp?.routes?.ipv6?.exported?.current
+                                        || 0 }}</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.advertisedIPv6') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -117,6 +140,31 @@
                         </div>
                     </div>
 
+                    <!-- Traffic Current Rates Metric -->
+                    <div class="metric-item traffic-current" @click="scrollToInterfaceChart" style="cursor: pointer;"
+                        :title="t('pages.metrics.clickToViewChart')">
+                        <div class="metric-icon traffic-total">
+                            <swap-outlined />
+                        </div>
+                        <div class="metric-content">
+                            <div class="metric-value-row">
+                                <div class="metric-value-pair">
+                                    <div class="metric-value">{{
+                                        formatBytes(getLatestMetrics.interface?.traffic?.current?.[0] || 0)
+                                    }}/s</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.txCurrent') }}</div>
+                                </div>
+                                <div class="metric-separator">|</div>
+                                <div class="metric-value-pair">
+                                    <div class="metric-value">{{
+                                        formatBytes(getLatestMetrics.interface?.traffic?.current?.[1] || 0)
+                                    }}/s</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.rxCurrent') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- RTT Metric -->
                     <div class="metric-item" @click="scrollToRttChart" style="cursor: pointer;"
                         :title="t('pages.metrics.clickToViewChart')">
@@ -135,41 +183,70 @@
                         </div>
                     </div>
 
-                    <!-- BGP Status Metric -->
-                    <div class="metric-item" @click="scrollToBgpDetails" style="cursor: pointer;"
+                    <!-- BGP Session Status Cards (Individual for each session) -->
+                    <div v-if="sessionMetrics?.bgp && sessionMetrics.bgp.length > 0"
+                        v-for="(bgpSession, index) in sessionMetrics.bgp" :key="index" class="metric-item"
+                        @click="scrollToBgpDetails" style="cursor: pointer;"
                         :title="t('pages.metrics.clickToViewDetails')">
                         <div class="metric-icon bgp-status" :class="{
-                            active: bgpInfo.includes('Established'),
-                            timeout: isBgpInErrorState
+                            active: bgpSession.info?.includes('Established'),
+                            timeout: bgpSession.info && !bgpSession.info.includes('Established') && bgpSession.info !== 'Unknown'
                         }">
                             <api-outlined />
                         </div>
                         <div class="metric-content">
                             <div class="metric-value status" :class="{
-                                active: bgpInfo.includes('Established'),
-                                timeout: isBgpInErrorState
+                                active: bgpSession.info?.includes('Established'),
+                                timeout: bgpSession.info && !bgpSession.info.includes('Established') && bgpSession.info !== 'Unknown'
                             }">
-                                {{ bgpInfo }}
+                                {{ bgpSession.info?.split(' ')[0] || 'Unknown' }}
                             </div>
-                            <div class="metric-label">{{ t('pages.metrics.bgpInfo') }}</div>
+                            <div class="metric-label">{{
+                                bgpSession.name?.toLowerCase().includes('v4') ? `${t('pages.metrics.bgpSession')}
+                                (IPv4)` :
+                                    bgpSession.name?.toLowerCase().includes('v6') ? `${t('pages.metrics.bgpSession')}
+                                (IPv6)` :
+                                        bgpSession.name ? `${t('pages.metrics.bgpSession')} (MP-BGP)` :
+                                            t('pages.metrics.bgpSession')
+                            }}</div>
                         </div>
                     </div>
                 </div>
             </div> <!-- Charts Section -->
-            <div class="charts-section">
-                <!-- BGP Metrics Charts -->
+            <div class="charts-section"> <!-- BGP Metrics Charts -->
                 <div class="chart-group" ref="bgpChartsSection">
                     <h2 class="section-title">{{ t('pages.metrics.bgpMetrics') }}</h2>
                     <div v-if="sessionMetrics.bgp && sessionMetrics.bgp.length > 0" class="charts-grid">
-                        <div class="chart-container">
-                            <h3 class="chart-title">{{ t('pages.metrics.routesReceived') }}</h3>
-                            <v-chart ref="bgpReceivedChart" :option="bgpReceivedOption"
+                        <!-- IPv4 BGP Charts -->
+                        <div v-if="hasBgpIPv4ReceivedData" class="chart-container">
+                            <h3 class="chart-title">{{ t('pages.metrics.routesReceivedIPv4') }}</h3>
+                            <v-chart ref="bgpIPv4ReceivedChart" :option="bgpIPv4ReceivedOption"
                                 :style="{ height: '300px', width: '100%' }" :autoresize="true" />
                         </div>
-                        <div class="chart-container">
-                            <h3 class="chart-title">{{ t('pages.metrics.routesAdvertised') }}</h3>
-                            <v-chart ref="bgpAdvertisedChart" :option="bgpAdvertisedOption"
+                        <div v-if="hasBgpIPv4AdvertisedData" class="chart-container">
+                            <h3 class="chart-title">{{ t('pages.metrics.routesAdvertisedIPv4') }}</h3>
+                            <v-chart ref="bgpIPv4AdvertisedChart" :option="bgpIPv4AdvertisedOption"
                                 :style="{ height: '300px', width: '100%' }" :autoresize="true" />
+                        </div>
+                        <!-- IPv6 BGP Charts -->
+                        <div v-if="hasBgpIPv6ReceivedData" class="chart-container">
+                            <h3 class="chart-title">{{ t('pages.metrics.routesReceivedIPv6') }}</h3>
+                            <v-chart ref="bgpIPv6ReceivedChart" :option="bgpIPv6ReceivedOption"
+                                :style="{ height: '300px', width: '100%' }" :autoresize="true" />
+                        </div>
+                        <div v-if="hasBgpIPv6AdvertisedData" class="chart-container">
+                            <h3 class="chart-title">{{ t('pages.metrics.routesAdvertisedIPv6') }}</h3>
+                            <v-chart ref="bgpIPv6AdvertisedChart" :option="bgpIPv6AdvertisedOption"
+                                :style="{ height: '300px', width: '100%' }" :autoresize="true" />
+                        </div>
+
+                        <!-- Show empty state if no BGP data available -->
+                        <div v-if="!hasBgpIPv4ReceivedData && !hasBgpIPv4AdvertisedData && !hasBgpIPv6ReceivedData && !hasBgpIPv6AdvertisedData"
+                            class="chart-container full-width">
+                            <div class="empty-state">
+                                <div class="empty-icon">📊</div>
+                                <div class="empty-text">{{ t('pages.metrics.noData') }}</div>
+                            </div>
                         </div>
                     </div>
                     <div v-else class="chart-container full-width">
@@ -302,7 +379,8 @@ import {
     LineChartOutlined,
     DashboardOutlined,
     ApiOutlined,
-    PieChartOutlined
+    PieChartOutlined,
+    SwapOutlined
 } from '@ant-design/icons-vue'
 
 // ECharts imports
@@ -320,7 +398,7 @@ import {
 import VChart from 'vue-echarts'
 
 // Application imports
-import { loggedIn, formatDate, formatRelativeTime, themeName, isAdmin } from '../../common/helper'
+import { loggedIn, formatDate, formatRelativeTime, themeName, isAdmin, formatBytes } from '../../common/helper'
 import { makeRequest, SessionMetric, RouterMetadata, RoutersResponse, CurrentSessionMetadata, GetCurrentSessionResponse, RoutingPolicy } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 
@@ -379,8 +457,10 @@ const interfaceChartSection = ref<HTMLElement>()
 const activeTabKey = ref('interface-details')
 
 // Chart refs for manual resize
-const bgpReceivedChart = ref()
-const bgpAdvertisedChart = ref()
+const bgpIPv4ReceivedChart = ref()
+const bgpIPv4AdvertisedChart = ref()
+const bgpIPv6ReceivedChart = ref()
+const bgpIPv6AdvertisedChart = ref()
 const interfaceChart = ref()
 const rttChart = ref()
 
@@ -399,8 +479,39 @@ const chartTheme = computed(() => ({
 // Get latest metrics data
 const getLatestMetrics = computed(() => {
     if (!sessionMetrics.value) return null
+
+    // For BGP data, we need to aggregate from all sessions to handle traditional BGP setups
+    let bgpData = null
+    if (sessionMetrics.value.bgp && sessionMetrics.value.bgp.length > 0) {
+        // Find IPv4 and IPv6 sessions based on type and data presence
+        const ipv4Session = sessionMetrics.value.bgp.find(session => {
+            const isValidForIPv4 = session.type === 'mpbgp' || session.type === 'ipv4' || session.type === ''
+            const hasValidData = session.routes?.ipv4?.imported?.current > 0 || session.routes?.ipv4?.exported?.current > 0
+            return isValidForIPv4 && hasValidData
+        })
+        const ipv6Session = sessionMetrics.value.bgp.find(session => {
+            const isValidForIPv6 = session.type === 'mpbgp' || session.type === 'ipv6' || session.type === ''
+            const hasValidData = session.routes?.ipv6?.imported?.current > 0 || session.routes?.ipv6?.exported?.current > 0
+            return isValidForIPv6 && hasValidData
+        })
+
+        // Create aggregated BGP data
+        bgpData = {
+            routes: {
+                ipv4: {
+                    imported: { current: ipv4Session?.routes?.ipv4?.imported?.current || 0 },
+                    exported: { current: ipv4Session?.routes?.ipv4?.exported?.current || 0 }
+                },
+                ipv6: {
+                    imported: { current: ipv6Session?.routes?.ipv6?.imported?.current || 0 },
+                    exported: { current: ipv6Session?.routes?.ipv6?.exported?.current || 0 }
+                }
+            }
+        }
+    }
+
     return {
-        bgp: sessionMetrics.value.bgp?.[0] || null,
+        bgp: bgpData,
         interface: sessionMetrics.value.interface || null,
         rtt: sessionMetrics.value.rtt || null
     }
@@ -632,11 +743,17 @@ const handleResize = () => {
     resizeTimeout = setTimeout(() => {
         nextTick(() => {
             // Manually trigger resize for all charts
-            if (bgpReceivedChart.value) {
-                bgpReceivedChart.value.resize()
+            if (bgpIPv4ReceivedChart.value) {
+                bgpIPv4ReceivedChart.value.resize()
             }
-            if (bgpAdvertisedChart.value) {
-                bgpAdvertisedChart.value.resize()
+            if (bgpIPv4AdvertisedChart.value) {
+                bgpIPv4AdvertisedChart.value.resize()
+            }
+            if (bgpIPv6ReceivedChart.value) {
+                bgpIPv6ReceivedChart.value.resize()
+            }
+            if (bgpIPv6AdvertisedChart.value) {
+                bgpIPv6AdvertisedChart.value.resize()
             }
             if (interfaceChart.value) {
                 interfaceChart.value.resize()
@@ -646,15 +763,6 @@ const handleResize = () => {
             }
         })
     }, 100) // Debounce resize events
-}
-
-// Utility functions
-const formatBytes = (bytes: number) => {
-    if (bytes === 0) return '0 B'
-    const k = 1024
-    const sizes = ['B', 'K', 'M', 'G', 'T', 'P', 'E']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
 const formatNumber = (num: number) => {
@@ -702,18 +810,72 @@ onUnmounted(() => {
 })
 
 // =============================================================================
+// BGP DATA AVAILABILITY CHECKS
+// =============================================================================
+const hasBgpIPv4ReceivedData = computed(() => {
+    if (!sessionMetrics.value?.bgp) return false
+    return sessionMetrics.value.bgp.some(session => {
+        // Only show IPv4 charts for MP-BGP sessions or explicit IPv4 sessions
+        const isValidForIPv4 = session.type === 'mpbgp' || session.type === 'ipv4' || session.type === ''
+        // Check if there's meaningful IPv4 data
+        const hasValidData = session.routes?.ipv4?.imported?.metric && session.routes.ipv4.imported.metric.length > 0
+        return isValidForIPv4 && hasValidData
+    })
+})
+
+const hasBgpIPv4AdvertisedData = computed(() => {
+    if (!sessionMetrics.value?.bgp) return false
+    return sessionMetrics.value.bgp.some(session => {
+        // Only show IPv4 charts for MP-BGP sessions or explicit IPv4 sessions
+        const isValidForIPv4 = session.type === 'mpbgp' || session.type === 'ipv4' || session.type === ''
+        // Check if there's meaningful IPv4 data
+        const hasValidData = session.routes?.ipv4?.exported?.metric && session.routes.ipv4.exported.metric.length > 0
+        return isValidForIPv4 && hasValidData
+    })
+})
+
+const hasBgpIPv6ReceivedData = computed(() => {
+    if (!sessionMetrics.value?.bgp) return false
+    return sessionMetrics.value.bgp.some(session => {
+        // Only show IPv6 charts for MP-BGP sessions or explicit IPv6 sessions
+        const isValidForIPv6 = session.type === 'mpbgp' || session.type === 'ipv6' || session.type === ''
+        // Check if there's meaningful IPv6 data
+        const hasValidData = session.routes?.ipv6?.imported?.metric && session.routes.ipv6.imported.metric.length > 0
+        return isValidForIPv6 && hasValidData
+    })
+})
+
+const hasBgpIPv6AdvertisedData = computed(() => {
+    if (!sessionMetrics.value?.bgp) return false
+    return sessionMetrics.value.bgp.some(session => {
+        // Only show IPv6 charts for MP-BGP sessions or explicit IPv6 sessions
+        const isValidForIPv6 = session.type === 'mpbgp' || session.type === 'ipv6' || session.type === ''
+        // Check if there's meaningful IPv6 data
+        const hasValidData = session.routes?.ipv6?.exported?.metric && session.routes.ipv6.exported.metric.length > 0
+        return isValidForIPv6 && hasValidData
+    })
+})
+
+// =============================================================================
 // CHART OPTIONS
 // =============================================================================
-const bgpReceivedOption = computed(() => {
+const bgpIPv4ReceivedOption = computed(() => {
     if (!sessionMetrics.value?.bgp || sessionMetrics.value.bgp.length === 0) return {}
 
-    const bgpData = sessionMetrics.value.bgp[0] // Get first BGP session
-    if (!bgpData.routes) return {}
+    // Find the IPv4 BGP session using type-based filtering and meaningful data check
+    const ipv4Session = sessionMetrics.value.bgp.find(session => {
+        // Only show IPv4 charts for MP-BGP sessions or explicit IPv4 sessions
+        const isValidForIPv4 = session.type === 'mpbgp' || session.type === 'ipv4' || session.type === ''
+        const hasMetrics = session.routes?.ipv4?.imported?.metric && session.routes.ipv4.imported.metric.length > 0
+        return isValidForIPv4 && hasMetrics
+    })
 
-    // Extract timestamps and route counts for received routes
+    if (!ipv4Session?.routes?.ipv4?.imported?.metric) return {}
+
+    // Extract timestamps and route counts for IPv4 received routes
     const timestamps: string[] = []
     const routesReceived: number[] = []
-    bgpData.routes.ipv4.imported.metric.forEach(([timestamp, value]: [number, number]) => {
+    ipv4Session.routes.ipv4.imported.metric.forEach(([timestamp, value]: [number, number]) => {
         timestamps.push(new Date(timestamp).toLocaleString())
         routesReceived.push(value)
     })
@@ -745,7 +907,7 @@ const bgpReceivedOption = computed(() => {
         },
         series: [
             {
-                name: t('pages.metrics.routesReceived'),
+                name: t('pages.metrics.routesReceivedIPv4'),
                 type: 'line',
                 smooth: true,
                 symbol: 'circle',
@@ -769,16 +931,23 @@ const bgpReceivedOption = computed(() => {
     }
 })
 
-const bgpAdvertisedOption = computed(() => {
+const bgpIPv4AdvertisedOption = computed(() => {
     if (!sessionMetrics.value?.bgp || sessionMetrics.value.bgp.length === 0) return {}
 
-    const bgpData = sessionMetrics.value.bgp[0] // Get first BGP session
-    if (!bgpData.routes) return {}
+    // Find the IPv4 BGP session using type-based filtering and meaningful data check
+    const ipv4Session = sessionMetrics.value.bgp.find(session => {
+        // Only show IPv4 charts for MP-BGP sessions or explicit IPv4 sessions
+        const isValidForIPv4 = session.type === 'mpbgp' || session.type === 'ipv4' || session.type === ''
+        const hasMetrics = session.routes?.ipv4?.exported?.metric && session.routes.ipv4.exported.metric.length > 0
+        return isValidForIPv4 && hasMetrics
+    })
 
-    // Extract timestamps and route counts for advertised routes
+    if (!ipv4Session?.routes?.ipv4?.exported?.metric) return {}
+
+    // Extract timestamps and route counts for IPv4 advertised routes
     const timestamps: string[] = []
     const routesAdvertised: number[] = []
-    bgpData.routes.ipv4.exported.metric.forEach(([timestamp, value]: [number, number]) => {
+    ipv4Session.routes.ipv4.exported.metric.forEach(([timestamp, value]: [number, number]) => {
         timestamps.push(new Date(timestamp).toLocaleString())
         routesAdvertised.push(value)
     })
@@ -810,7 +979,7 @@ const bgpAdvertisedOption = computed(() => {
         },
         series: [
             {
-                name: t('pages.metrics.routesAdvertised'),
+                name: t('pages.metrics.routesAdvertisedIPv4'),
                 type: 'line',
                 smooth: true,
                 symbol: 'circle',
@@ -834,50 +1003,179 @@ const bgpAdvertisedOption = computed(() => {
     }
 })
 
-const interfaceMetricsOption = computed(() => {
-    if (!sessionMetrics.value?.interface?.traffic?.metric) return {}
+const bgpIPv6ReceivedOption = computed(() => {
+    if (!sessionMetrics.value?.bgp || sessionMetrics.value.bgp.length === 0) return {}
 
-    const trafficData = sessionMetrics.value.interface.traffic
+    // Find the IPv6 BGP session using type-based filtering and meaningful data check
+    const ipv6Session = sessionMetrics.value.bgp.find(session => {
+        // Only show IPv6 charts for MP-BGP sessions or explicit IPv6 sessions
+        const isValidForIPv6 = session.type === 'mpbgp' || session.type === 'ipv6' || session.type === ''
+        const hasMetrics = session.routes?.ipv6?.imported?.metric && session.routes.ipv6.imported.metric.length > 0
+        return isValidForIPv6 && hasMetrics
+    })
+
+    if (!ipv6Session?.routes?.ipv6?.imported?.metric) return {}
+
+    // Extract timestamps and route counts for IPv6 received routes
     const timestamps: string[] = []
-    const rxBytes: number[] = []
-    const txBytes: number[] = []
-
-    // Extract data from traffic metrics array [timestamp, Tx, Rx]
-    trafficData.metric.forEach(([timestamp, tx, rx]: [number, number, number]) => {
+    const routesReceived: number[] = []
+    ipv6Session.routes.ipv6.imported.metric.forEach(([timestamp, value]: [number, number]) => {
         timestamps.push(new Date(timestamp).toLocaleString())
-        // Make TX negative for stacked area visualization (TX goes down, RX goes up)
-        txBytes.push(-tx)
-        rxBytes.push(rx)
+        routesReceived.push(value)
     })
 
     return {
         ...chartTheme.value,
         tooltip: {
             trigger: 'axis',
-            axisPointer: { type: 'cross' },
-            formatter: (params: any) => {
-                let html = `${params[0].axisValue}<br/>`
-                params.forEach((item: any) => {
-                    const value = Math.abs(item.value) // Show absolute value in tooltip
-                    let displayValue: string
-                    if (value === 0) {
-                        displayValue = '0 B/s'
-                    } else if (value < 1024) {
-                        displayValue = `${value.toFixed(0)} B/s`
-                    } else if (value < 1024 * 1024) {
-                        displayValue = `${(value / 1024).toFixed(1)} KB/s`
-                    } else if (value < 1024 * 1024 * 1024) {
-                        displayValue = `${(value / (1024 * 1024)).toFixed(2)} MB/s`
-                    } else {
-                        displayValue = `${(value / (1024 * 1024 * 1024)).toFixed(3)} GB/s`
-                    }
-                    html += `${item.marker} ${item.seriesName}: ${displayValue}<br/>`
-                })
-                return html
+            axisPointer: { type: 'cross' }
+        },
+        grid: { left: '5%', right: '5%', bottom: '10%', top: '5%', containLabel: true },
+        toolbox: {
+            feature: {
+                saveAsImage: {},
+                dataZoom: { yAxisIndex: 'none' }
             }
         },
-        legend: {
-            data: [t('pages.metrics.rxBytes'), t('pages.metrics.txBytes')],
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: timestamps,
+            axisLabel: { color: isDark.value ? '#ffffff' : '#333333' }
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: { color: isDark.value ? '#ffffff' : '#333333' },
+            scale: true,
+            splitNumber: 5
+        }, series: [
+            {
+                name: t('pages.metrics.routesReceivedIPv6'),
+                type: 'line',
+                smooth: true,
+                symbol: 'circle',
+                symbolSize: 6,
+                lineStyle: { width: 3 },
+                areaStyle: {
+                    opacity: 0.3,
+                    color: {
+                        type: 'linear',
+                        x: 0, y: 0, x2: 0, y2: 1,
+                        colorStops: [
+                            { offset: 0, color: 'rgba(250, 173, 20, 0.3)' },
+                            { offset: 1, color: 'rgba(250, 173, 20, 0.1)' }
+                        ]
+                    }
+                },
+                data: routesReceived,
+                itemStyle: { color: '#faad14' }
+            }
+        ]
+    }
+})
+
+const bgpIPv6AdvertisedOption = computed(() => {
+    if (!sessionMetrics.value?.bgp || sessionMetrics.value.bgp.length === 0) return {}
+
+    // Find the IPv6 BGP session using type-based filtering and meaningful data check
+    const ipv6Session = sessionMetrics.value.bgp.find(session => {
+        // Only show IPv6 charts for MP-BGP sessions or explicit IPv6 sessions
+        const isValidForIPv6 = session.type === 'mpbgp' || session.type === 'ipv6' || session.type === ''
+        const hasMetrics = session.routes?.ipv6?.exported?.metric && session.routes.ipv6.exported.metric.length > 0
+        return isValidForIPv6 && hasMetrics
+    })
+
+    if (!ipv6Session?.routes?.ipv6?.exported?.metric) return {}
+
+    // Extract timestamps and route counts for IPv6 advertised routes
+    const timestamps: string[] = []
+    const routesAdvertised: number[] = []
+    ipv6Session.routes.ipv6.exported.metric.forEach(([timestamp, value]: [number, number]) => {
+        timestamps.push(new Date(timestamp).toLocaleString())
+        routesAdvertised.push(value)
+    })
+
+    return {
+        ...chartTheme.value,
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'cross' }
+        },
+        grid: { left: '5%', right: '5%', bottom: '10%', top: '5%', containLabel: true },
+        toolbox: {
+            feature: {
+                saveAsImage: {},
+                dataZoom: { yAxisIndex: 'none' }
+            }
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: timestamps,
+            axisLabel: { color: isDark.value ? '#ffffff' : '#333333' }
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: { color: isDark.value ? '#ffffff' : '#333333' },
+            scale: true,
+            splitNumber: 5
+        }, series: [
+            {
+                name: t('pages.metrics.routesAdvertisedIPv6'),
+                type: 'line',
+                smooth: true,
+                symbol: 'circle',
+                symbolSize: 6,
+                lineStyle: { width: 3 },
+                areaStyle: {
+                    opacity: 0.3,
+                    color: {
+                        type: 'linear',
+                        x: 0, y: 0, x2: 0, y2: 1,
+                        colorStops: [
+                            { offset: 0, color: 'rgba(255, 135, 135, 0.3)' },
+                            { offset: 1, color: 'rgba(255, 135, 135, 0.1)' }
+                        ]
+                    }
+                },
+                data: routesAdvertised,
+                itemStyle: { color: '#ff8787' }
+            }
+        ]
+    }
+})
+
+const interfaceMetricsOption = computed(() => {
+    if (!sessionMetrics.value?.interface?.traffic?.metric) return {}
+
+    const trafficData = sessionMetrics.value.interface.traffic
+    const timestamps: string[] = []
+    const rxBytes: number[] = []
+    const txBytes: number[] = []    // Extract data from traffic metrics array [timestamp, Tx, Rx]
+    trafficData.metric.forEach(([timestamp, tx, rx]: [number, number, number]) => {
+        timestamps.push(new Date(timestamp).toLocaleString())
+        // TX is positive (above x-axis), RX is negative (below x-axis)
+        txBytes.push(tx)
+        rxBytes.push(-rx)
+    })
+
+    return {
+        ...chartTheme.value,
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'cross' }, formatter: (params: any) => {
+                let tooltipText = `<div style="margin: 0px 0 0;line-height:1;">${params[0].axisValue}</div>`
+                params.forEach((param: any) => {
+                    const value = Math.abs(param.value) // Show absolute value in tooltip
+                    const formattedValue = formatBytes(value)
+                    const color = param.color
+                    const name = param.seriesName
+                    tooltipText += `<div style="margin: 5px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>${name}: ${formattedValue}/s</div>`
+                })
+                return tooltipText
+            }
+        }, legend: {
+            data: ['TX', 'RX'], // TX first in legend
             textStyle: { color: isDark.value ? '#ffffff' : '#333333' }
         },
         grid: { left: '5%', right: '5%', bottom: '10%', top: '15%', containLabel: true },
@@ -894,7 +1192,6 @@ const interfaceMetricsOption = computed(() => {
             axisLabel: { color: isDark.value ? '#ffffff' : '#333333' }
         }, yAxis: {
             type: 'value',
-            name: t('pages.metrics.bytes'),
             axisLabel: {
                 color: isDark.value ? '#ffffff' : '#333333',
                 formatter: (value: number) => {
@@ -906,62 +1203,54 @@ const interfaceMetricsOption = computed(() => {
                     return `${(absValue / (1024 * 1024 * 1024)).toFixed(2)}GB/s`
                 }
             },
-            axisLine: {
-                show: true,
-                lineStyle: { color: isDark.value ? '#ffffff' : '#333333' }
-            },
             splitLine: {
-                show: true,
                 lineStyle: {
-                    color: isDark.value ? '#434343' : '#e8e8e8',
-                    type: 'dashed'
+                    color: isDark.value ? '#444444' : '#e8e8e8'
                 }
             },
-            scale: true,
             splitNumber: 6
-        },
-        series: [
+        }, series: [
             {
-                name: t('pages.metrics.rxBytes'),
+                name: 'TX',
                 type: 'line',
                 smooth: true,
-                symbol: 'none',
+                symbol: 'circle',
+                symbolSize: 4,
                 lineStyle: { width: 2 },
                 areaStyle: {
-                    opacity: 0.6,
+                    opacity: 0.4,
                     color: {
                         type: 'linear',
                         x: 0, y: 0, x2: 0, y2: 1,
                         colorStops: [
-                            { offset: 0, color: 'rgba(82, 196, 26, 0.8)' },
-                            { offset: 1, color: 'rgba(82, 196, 26, 0.2)' }
-                        ]
-                    }
-                },
-                data: rxBytes,
-                itemStyle: { color: '#52c41a' },
-                stack: 'traffic'
-            },
-            {
-                name: t('pages.metrics.txBytes'),
-                type: 'line',
-                smooth: true,
-                symbol: 'none',
-                lineStyle: { width: 2 },
-                areaStyle: {
-                    opacity: 0.6,
-                    color: {
-                        type: 'linear',
-                        x: 0, y: 0, x2: 0, y2: 1,
-                        colorStops: [
-                            { offset: 0, color: 'rgba(255, 77, 79, 0.2)' },
-                            { offset: 1, color: 'rgba(255, 77, 79, 0.8)' }
+                            { offset: 0, color: '#1890ff' },
+                            { offset: 1, color: 'rgba(24, 144, 255, 0.1)' }
                         ]
                     }
                 },
                 data: txBytes,
-                itemStyle: { color: '#ff4d4f' },
-                stack: 'traffic'
+                itemStyle: { color: '#1890ff' }
+            },
+            {
+                name: 'RX',
+                type: 'line',
+                smooth: true,
+                symbol: 'circle',
+                symbolSize: 4,
+                lineStyle: { width: 2 },
+                areaStyle: {
+                    opacity: 0.4,
+                    color: {
+                        type: 'linear',
+                        x: 0, y: 0, x2: 0, y2: 1,
+                        colorStops: [
+                            { offset: 0, color: 'rgba(255, 77, 79, 0.1)' },
+                            { offset: 1, color: '#ff4d4f' }
+                        ]
+                    }
+                },
+                data: rxBytes,
+                itemStyle: { color: '#ff4d4f' }
             }
         ]
     }
@@ -977,9 +1266,9 @@ const rttMetricsOption = computed(() => {
         timestamps.push(new Date(timestamp).toLocaleString())
         rttValues.push(value)
     })
-
     return {
-        ...chartTheme.value, tooltip: {
+        ...chartTheme.value,
+        tooltip: {
             trigger: 'axis',
             axisPointer: { type: 'cross' },
             formatter: (params: any) => {
@@ -1008,7 +1297,8 @@ const rttMetricsOption = computed(() => {
             boundaryGap: false,
             data: timestamps,
             axisLabel: { color: isDark.value ? '#ffffff' : '#333333' }
-        }, yAxis: {
+        },
+        yAxis: {
             type: 'value',
             name: t('pages.metrics.rtt') + ' (ms)',
             axisLabel: { color: isDark.value ? '#ffffff' : '#333333' },
@@ -1117,7 +1407,7 @@ const bgpColumns = computed(() => [
         width: 100
     },
     {
-        title: t('pages.metrics.bgpInfo'),
+        title: t('pages.metrics.bgpSession'),
         dataIndex: 'info',
         key: 'info',
         width: 200,
@@ -1125,17 +1415,31 @@ const bgpColumns = computed(() => [
         responsive: ['md'] as const
     },
     {
-        title: t('pages.metrics.routesReceived'),
+        title: t('pages.metrics.routesReceivedIPv4'),
         dataIndex: ['routes', 'ipv4', 'imported', 'current'],
-        key: 'routesReceived',
-        width: 120,
+        key: 'routesReceivedIPv4',
+        width: 140,
         customRender: ({ text }: { text: number }) => formatNumber(text)
     },
     {
-        title: t('pages.metrics.routesAdvertised'),
+        title: t('pages.metrics.routesAdvertisedIPv4'),
         dataIndex: ['routes', 'ipv4', 'exported', 'current'],
-        key: 'routesAdvertised',
-        width: 120,
+        key: 'routesAdvertisedIPv4',
+        width: 140,
+        customRender: ({ text }: { text: number }) => formatNumber(text)
+    },
+    {
+        title: t('pages.metrics.routesReceivedIPv6'),
+        dataIndex: ['routes', 'ipv6', 'imported', 'current'],
+        key: 'routesReceivedIPv6',
+        width: 140,
+        customRender: ({ text }: { text: number }) => formatNumber(text)
+    },
+    {
+        title: t('pages.metrics.routesAdvertisedIPv6'),
+        dataIndex: ['routes', 'ipv6', 'exported', 'current'],
+        key: 'routesAdvertisedIPv6',
+        width: 140,
         customRender: ({ text }: { text: number }) => formatNumber(text)
     }
 ])
@@ -1361,7 +1665,7 @@ const bgpColumns = computed(() => [
 
 .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
 }
 
@@ -1694,8 +1998,15 @@ const bgpColumns = computed(() => [
 
 .charts-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
+}
+
+@media (max-width: 1024px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 }
 
 .chart-container {

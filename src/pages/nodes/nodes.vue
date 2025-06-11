@@ -18,6 +18,7 @@ import {
     DatabaseOutlined,
     ThunderboltOutlined,
     DesktopOutlined,
+    TwitterOutlined,
     CloudOutlined
 } from '@ant-design/icons-vue'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
@@ -410,18 +411,18 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
                             <wifi-outlined class="metric-icon" />
                             <div class="metric-content">
                                 <span class="metric-label">{{ t('pages.nodes.txRx') }}</span>
-                                <span class="metric-value">{{ formatBytes(r.metric.tx) }}/{{ formatBytes(r.metric.rx) }}</span>
+                                <span class="metric-value">{{ formatBytes(r.metric.tx) }} / {{ formatBytes(r.metric.rx) }}</span>
                             </div>
                         </div>
                         <div class="metric-item">
                             <global-outlined class="metric-icon" />
                             <div class="metric-content">
                                 <span class="metric-label">{{ t('pages.nodes.tcpUdp') }}</span>
-                                <span class="metric-value">{{ r.metric.tcp || 0 }}/{{ r.metric.udp || 0 }}</span>
+                                <span class="metric-value">{{ r.metric.tcp || 0 }} / {{ r.metric.udp || 0 }}</span>
                             </div>
                         </div>
                         <div v-if="r.metric.rs" class="metric-item">
-                            <desktop-outlined class="metric-icon" />
+                            <twitter-outlined class="metric-icon" />
                             <div class="metric-content">
                                 <span class="metric-label">{{ t('pages.nodes.router') }}</span>
                                 <span class="metric-value">{{ getRouterInfo(r.metric.rs) }}</span>

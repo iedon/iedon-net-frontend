@@ -73,6 +73,7 @@ export type BGPMetric = {
   name: string;
   state: string;
   info: string;
+  type: 'mpbgp' | 'ipv4' | 'ipv6' | ''; // 'mpbgp' for multiprotocol BGP, 'ipv4' for IPv4, 'ipv6' for IPv6, '' if not applicable
   routes: BGPRoutesMetric;
 };
 

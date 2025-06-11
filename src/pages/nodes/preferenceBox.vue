@@ -98,7 +98,6 @@ const routingPolicyOptions = getRoutingPolicyOptions()
 }
 
 .policy-description {
-    color: rgba(0, 0, 0, 0.65);
     font-size: 0.9em;
     margin-top: 2px;
     margin-bottom: 8px;
