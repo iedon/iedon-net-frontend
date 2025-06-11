@@ -180,16 +180,15 @@ const checkAndContinue = () => {
             :label="t('pages.peering.ipv6LinkLocal')">
             <a-textarea auto-size v-model:value="props.interfaceForm.ipv6LinkLocal"
                 :placeholder="`${t('pages.signIn.pleaseInput')} ${t('pages.peering.ipv6LinkLocal')}`" />
-        </a-form-item>        <template v-if="preferenceForm.linkType !== 'direct'">
-            <a-form-item name="endpoint" :label="t('pages.peering.endpoint')">
-                <a-textarea auto-size v-model:value="props.interfaceForm.endpoint"
-                    :placeholder="`${t('pages.peering.tunnelEndpointHint')}`" />
-            </a-form-item>
-            <a-form-item name="credential" :label="t('pages.peering.credential')">
-                <a-textarea auto-size v-model:value="props.interfaceForm.credential"
-                    :placeholder="`${t('pages.peering.tunnelCredentialHint')}`" />
-            </a-form-item>
-        </template>
+        </a-form-item>
+        <a-form-item name="endpoint" :label="t('pages.peering.endpoint')">
+            <a-textarea auto-size v-model:value="props.interfaceForm.endpoint"
+                :placeholder="`${t('pages.peering.tunnelEndpointHint')}`" />
+        </a-form-item>
+        <a-form-item v-if="props.preferenceForm.linkType !== 'direct' && props.preferenceForm.linkType !== 'gre' && props.preferenceForm.linkType !== 'ip6gre'" name="credential" :label="t('pages.peering.credential')">
+            <a-textarea auto-size v-model:value="props.interfaceForm.credential"
+                :placeholder="`${t('pages.peering.tunnelCredentialHint')}`" />
+        </a-form-item>
 
         <a-form-item name="mtu" :label="t('pages.peering.mtu')">
             <a-input-number 
