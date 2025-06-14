@@ -51,11 +51,11 @@
                                 <div class="session-item">
                                     <span class="session-label">{{ t('pages.metrics.lastUpdated') }} ({{
                                         formatRelativeTime(new
-                                            Date(sessionMetrics.timestamp || +new
+                                            Date(sessionMetrics.timestamp * 1000 || +new
                                                 Date()).toISOString(), t) }})</span>
                                     <span class="session-value copyable" @click="copyLastUpdated"
                                         :title="t('pages.metrics.clickToCopy')">
-                                        {{ formatDate(new Date(sessionMetrics.timestamp || +new
+                                        {{ formatDate(new Date(sessionMetrics.timestamp * 1000 || +new
                                             Date()).toISOString()) }}</span>
                                 </div>
                             </div>
@@ -73,7 +73,7 @@
                     <div class="metric-item bgp-routes-ipv4" @click="scrollToBgpCharts" style="cursor: pointer;"
                         :title="t('pages.metrics.clickToViewChart')">
                         <div class="metric-icon bgp-routes">
-                            <line-chart-outlined />
+                            <span>IPv4</span>
                         </div>
                         <div class="metric-content">
                             <div class="metric-value-row">
@@ -96,7 +96,7 @@
                     <div class="metric-item bgp-routes-ipv6" @click="scrollToBgpCharts" style="cursor: pointer;"
                         :title="t('pages.metrics.clickToViewChart')">
                         <div class="metric-icon bgp-routes">
-                            <line-chart-outlined />
+                            <span>IPv6</span>
                         </div>
                         <div class="metric-content">
                             <div class="metric-value-row">
@@ -126,14 +126,14 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.total?.[0] || 0)
-                                    }}</div>
+                                        }}</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.txTotal') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.total?.[1] || 0)
-                                    }}</div>
+                                        }}</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.rxTotal') }}</div>
                                 </div>
                             </div>
@@ -151,14 +151,14 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.current?.[0] || 0)
-                                    }}/s</div>
+                                        }}/s</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.txCurrent') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.current?.[1] || 0)
-                                    }}/s</div>
+                                        }}/s</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.rxCurrent') }}</div>
                                 </div>
                             </div>
@@ -723,8 +723,8 @@ const copyRoutingPolicy = () => {
     }
 }
 const copyLastUpdated = () => {
-    const dateStr = formatDate(new Date(sessionMetrics.value?.timestamp || +new Date()).toISOString())
-    const relativeStr = formatRelativeTime(new Date(sessionMetrics.value?.timestamp || +new Date()).toISOString(), t)
+    const dateStr = formatDate(new Date(sessionMetrics.value?.timestamp * 1000 || +new Date()).toISOString())
+    const relativeStr = formatRelativeTime(new Date(sessionMetrics.value?.timestamp * 1000 || +new Date()).toISOString(), t)
     copyToClipboard(`${dateStr} ${relativeStr}`, 'last updated')
 }
 
@@ -876,7 +876,7 @@ const bgpIPv4ReceivedOption = computed(() => {
     const timestamps: string[] = []
     const routesReceived: number[] = []
     ipv4Session.routes.ipv4.imported.metric.forEach(([timestamp, value]: [number, number]) => {
-        timestamps.push(new Date(timestamp).toLocaleString())
+        timestamps.push(new Date(timestamp * 1000).toLocaleString())
         routesReceived.push(value)
     })
 
@@ -948,7 +948,7 @@ const bgpIPv4AdvertisedOption = computed(() => {
     const timestamps: string[] = []
     const routesAdvertised: number[] = []
     ipv4Session.routes.ipv4.exported.metric.forEach(([timestamp, value]: [number, number]) => {
-        timestamps.push(new Date(timestamp).toLocaleString())
+        timestamps.push(new Date(timestamp * 1000).toLocaleString())
         routesAdvertised.push(value)
     })
 
@@ -1020,7 +1020,7 @@ const bgpIPv6ReceivedOption = computed(() => {
     const timestamps: string[] = []
     const routesReceived: number[] = []
     ipv6Session.routes.ipv6.imported.metric.forEach(([timestamp, value]: [number, number]) => {
-        timestamps.push(new Date(timestamp).toLocaleString())
+        timestamps.push(new Date(timestamp * 1000).toLocaleString())
         routesReceived.push(value)
     })
 
@@ -1091,7 +1091,7 @@ const bgpIPv6AdvertisedOption = computed(() => {
     const timestamps: string[] = []
     const routesAdvertised: number[] = []
     ipv6Session.routes.ipv6.exported.metric.forEach(([timestamp, value]: [number, number]) => {
-        timestamps.push(new Date(timestamp).toLocaleString())
+        timestamps.push(new Date(timestamp * 1000).toLocaleString())
         routesAdvertised.push(value)
     })
 
@@ -1153,7 +1153,7 @@ const interfaceMetricsOption = computed(() => {
     const rxBytes: number[] = []
     const txBytes: number[] = []    // Extract data from traffic metrics array [timestamp, Tx, Rx]
     trafficData.metric.forEach(([timestamp, tx, rx]: [number, number, number]) => {
-        timestamps.push(new Date(timestamp).toLocaleString())
+        timestamps.push(new Date(timestamp * 1000).toLocaleString())
         // TX is positive (above x-axis), RX is negative (below x-axis)
         txBytes.push(tx)
         rxBytes.push(-rx)
@@ -1263,7 +1263,7 @@ const rttMetricsOption = computed(() => {
     const rttValues: number[] = []
 
     sessionMetrics.value.rtt.metric.forEach(([timestamp, value]: [number, number]) => {
-        timestamps.push(new Date(timestamp).toLocaleString())
+        timestamps.push(new Date(timestamp * 1000).toLocaleString())
         rttValues.push(value)
     })
     return {
