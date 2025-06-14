@@ -80,13 +80,13 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{ getLatestMetrics.bgp?.routes?.ipv4?.imported?.current
                                         || 0 }}</div>
-                                    <div class="metric-sub-label">{{ t('pages.metrics.receivedIPv4') }}</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.received') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{ getLatestMetrics.bgp?.routes?.ipv4?.exported?.current
                                         || 0 }}</div>
-                                    <div class="metric-sub-label">{{ t('pages.metrics.advertisedIPv4') }}</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.advertised') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -103,13 +103,13 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{ getLatestMetrics.bgp?.routes?.ipv6?.imported?.current
                                         || 0 }}</div>
-                                    <div class="metric-sub-label">{{ t('pages.metrics.receivedIPv6') }}</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.received') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{ getLatestMetrics.bgp?.routes?.ipv6?.exported?.current
                                         || 0 }}</div>
-                                    <div class="metric-sub-label">{{ t('pages.metrics.advertisedIPv6') }}</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.advertised') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -723,8 +723,8 @@ const copyRoutingPolicy = () => {
     }
 }
 const copyLastUpdated = () => {
-    const dateStr = formatDate(new Date(sessionMetrics.value?.timestamp * 1000 || +new Date()).toISOString())
-    const relativeStr = formatRelativeTime(new Date(sessionMetrics.value?.timestamp * 1000 || +new Date()).toISOString(), t)
+    const dateStr = formatDate(new Date((sessionMetrics.value?.timestamp || +new Date()) * 1000).toISOString())
+    const relativeStr = formatRelativeTime(new Date((sessionMetrics.value?.timestamp || +new Date()) * 1000).toISOString(), t)
     copyToClipboard(`${dateStr} ${relativeStr}`, 'last updated')
 }
 
