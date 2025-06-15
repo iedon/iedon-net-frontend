@@ -3,7 +3,7 @@ import { onMounted, Ref, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { makeRequest, PostMetadaResponse, PostMetadata, PostResponse } from '../../common/packetHandler'
-import { postCache, formatDate } from '../../common/helper'
+import { postCache, formatDate, registerPageTitle } from '../../common/helper'
 import './post.css'
 
 //@ts-ignore
@@ -33,6 +33,7 @@ const fetchPost = async (post: PostMetadata) => {
     if (currentPost.value?.postId === post.postId) return
     try {
         const cache = postCache.get(`post_${post.postId}`)
+        registerPageTitle(post.title)
         if (!cache) {
             loadingPost.value = post
         } else {
@@ -50,6 +51,7 @@ const fetchPost = async (post: PostMetadata) => {
             if (data) {
                 currentPost.value = data
                 postCache.set(`post_${post.postId}`, currentPost.value)
+                registerPageTitle(data.title)
             }
         }
 

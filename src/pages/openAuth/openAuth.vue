@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
 import { LoadingOutlined } from '@ant-design/icons-vue'
 import { AuthOpenResponse, makeRequest } from '../../common/packetHandler'
-import { loggedIn, splitMessageToVNodes } from '../../common/helper'
+import { loggedIn, registerPageTitle, splitMessageToVNodes } from '../../common/helper'
 
 const t = useI18n().t
 const router = useRouter()
@@ -29,6 +29,8 @@ onMounted(async () => {
         if (token === 'kioubit.dn42') type = 'kioubit';
     }
     if (!type) return signInFailed()
+
+    registerPageTitle('DN42 Open Auth')
 
     if (type === 'kioubit') kioubit()
 })

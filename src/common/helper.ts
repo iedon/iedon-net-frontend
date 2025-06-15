@@ -4,11 +4,7 @@ import config from '../config'
 import { makeRequest, PostResponse, SiteConfigDataResponse, TokenRefreshResponse } from './packetHandler'
 import dayjs from 'dayjs'
 
-export const splitMessageToVNodes = (message: string) => {
-  const paras: VNode[] = []
-  message.split('\n').forEach(line => paras.push(h('p', line.trim())))
-  return paras
-}
+export const splitMessageToVNodes = (message: string) => message.split('\n').map(line => h('p', line.trim()))
 
 export const openNotification = (placement: NotificationPlacement, type: 'error' | 'info' | 'success' | 'warning', title: string, message: string | VNode, duration?: number) => {
   notification[type]({
@@ -27,6 +23,7 @@ export const siteConfig: Ref<SiteConfigDataResponse> = ref({
   footerText: config.configFallback.footerText,
   maintenanceText: config.configFallback.maintenanceText
 })
+
 export const refreshSiteConfig = async (t: (i18n: string) => string) => {
   try {
     const resp = await makeRequest(t, '/list/config', undefined, true)
@@ -39,7 +36,11 @@ export const refreshSiteConfig = async (t: (i18n: string) => string) => {
         footerText: footerText,
         maintenanceText: maintenanceText || config.configFallback.maintenanceText
       }
-      document.title = `${netName}(${netAsn}) - ${netDesc}`
+      if (pageTitle) {
+        document.title = `${pageTitle} - ${netName}(${netAsn})`
+      } else {
+        document.title = `${netName}(${netAsn}) - ${netDesc}`
+      }
       if (siteConfig.value.maintenanceText !== '') openNotification("topLeft", "info", t('notification.maintenance'), maintenanceText, 20)
     }
   } catch (error) {
@@ -47,6 +48,7 @@ export const refreshSiteConfig = async (t: (i18n: string) => string) => {
     siteConfig.value.footerText = config.configFallback.footerText
   }
 }
+
 export const useHeartBeat = (t: (i18n: string) => string) => {
   const heartBeat = async () => {
     refreshSiteConfig(t)
@@ -74,6 +76,16 @@ export const useHeartBeat = (t: (i18n: string) => string) => {
   const handle = setInterval(heartBeat, config.pingIntervalMs)
   heartBeat()
   return () => clearInterval(handle)
+}
+
+let pageTitle = ''
+export const registerPageTitle = (title: string) => {
+  pageTitle = title
+  if (title !== '') {
+    document.title = `${title} - ${siteConfig.value.netName}(${siteConfig.value.netAsn})`
+  } else {
+    document.title = `${siteConfig.value.netName}(${siteConfig.value.netAsn}) - ${siteConfig.value.netDesc}`
+  }
 }
 
 export const postCache = new Map<string, PostResponse>()

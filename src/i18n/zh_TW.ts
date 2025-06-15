@@ -76,6 +76,7 @@ export default {
     nodes: {
       search: '依名稱或 IP 位址搜尋...',
       nodes: 'BGP 網路節點',
+      subTitle: '請選擇一個 BGP 路由器以建立對等連線',
       copied: '詳細資料已複製',
       pleaseSignIn: '請先登入。',
       statusOpen: '開放',
@@ -120,6 +121,7 @@ export default {
         UPSTREAM: '上游（管理員）',
         UPSTREAM_DESC: '接收所有有效路由，將我們的路由和直接下游路由傳送到遠端（管理員）。'
       },
+      v4v6force: '💡 若要強制使用 IPv4 或 IPv6，請在端點前加上「v4.」或「v6.」前綴（若支援）。',
       openvpn: 'OpenVPN',
       wireguard: 'WireGuard',
       ipsec: 'IPSec',
@@ -128,7 +130,7 @@ export default {
       direct: '直接乙太網路',
       'mp-bgp': '多重通訊協定 BGP',
       'extended-nexthop': '擴充下一躍點',
-      step1Introduction: '此節點支援下列功能。\n選取一或多個以使用。\n請注意，路由原則對於 DN42 而言只是一個有趣的選項，請使用 BGP community (65535:65281) 和 (65535:65282) 以及「完整路由表」來精確控制路由傳播。',
+      step1Introduction: '此節點支援下列功能。\n選取一或多個以使用。\n請注意，路由原則對於 DN42 而言只是一個有趣的選項，請使用 BGP community (65535, 65281) 和 (65535, 65282) 以及「完整路由表」來精確控制路由傳播。',
       step2Introduction: '這些設定有助於設定您的介面。',
       useIpv4: '啟用 IPv4',
       useIpv6: '使用 IPv6 ULA',
@@ -140,7 +142,7 @@ export default {
       mustEnterTunnelInformation: '需要通道資訊，包括端點和認證。',
       inputValid: '提供的資訊無效。請檢查並重試。',
       back: '返回修改',
-      backTop: '返回所有節點',
+      backTop: '返回',
       step3Introduction: '您的對等申請詳細資料。請檢閱。',
       ipv4: 'DN42 IPv4',
       ipv6: 'DN42 IPv6',
@@ -208,7 +210,10 @@ export default {
         password: '密碼',
         confirmPassword: '確認',
         setPassword: '設定密碼',
-        successSetPassword: '密碼設定或清除成功。'
+        successSetPassword: '密碼設定或清除成功。',
+        hint1: '你的密碼已使用 bcrypt 進行加密，包含 10 輪加鹽保護。',
+        hint2: '設定密碼後，你可以使用該密碼登入本站。',
+        hint3: '將欄位留空並儲存，即可清除密碼並停用密碼登入方式。',
       },
       config: {
         changeConfig: '修改網站設定',
@@ -276,6 +281,16 @@ export default {
       bytes: '位元組',
       txCurrent: '目前傳送',
       rxCurrent: '目前接收',
+      bgpStatus: {
+        Established: '已建立連線',
+        Idle: '等待連線',
+        Active: '連線失敗',
+        Connect: '連線中',
+        Open: '協商中',
+        OpenSent: '協商中',
+        OpenConfirm: '最終確認中',
+        Unknown: '未知狀態'
+      },
       networkMetrics: '網路指標',
       rtt: 'RTT',
       currentRtt: '目前 RTT',

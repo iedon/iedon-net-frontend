@@ -22,7 +22,7 @@ import {
     CloudOutlined
 } from '@ant-design/icons-vue'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
-import { loggedIn, formatBytes, siteConfig } from '../../common/helper'
+import { loggedIn, formatBytes, siteConfig, registerPageTitle } from '../../common/helper'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 import { Empty } from 'ant-design-vue'
 
@@ -47,7 +47,6 @@ const routers: Ref<RouterMetadata[]> = ref([])
 const fetchRouters = async () => {
     try {
         loading.value = true
-
         let resp = await makeRequest(t, '/list/routers')
         if (resp.success && resp.response) {
             const data = resp.response as RoutersResponse
@@ -65,6 +64,7 @@ const fetchRouters = async () => {
 }
 
 onMounted(async () => {
+    registerPageTitle(t('pages.nodes.nodes'))
     try {
         const oldRouters = localStorage.getItem('routers')
         if (oldRouters) routers.value = JSON.parse(oldRouters)
@@ -252,10 +252,12 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
         <!-- Header Section -->
         <div class="page-header">
             <h1 class="page-title">
-                <cloud-server-outlined class="title-icon" />
+                <span class="title-icon">
+                    <cloud-server-outlined />
+                </span>
                 {{ t('pages.nodes.nodes') }}
             </h1>
-            <p class="page-subtitle">Choose a BGP router to establish peering connection</p>
+            <p class="page-subtitle">{{ t('pages.nodes.subTitle') }}</p>
         </div>
 
         <!-- Statistics Section -->
@@ -474,6 +476,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     text-align: center;
     margin-bottom: 40px;
     padding: 20px 0;
+    margin-top: 20px;
 }
 
 .page-title {

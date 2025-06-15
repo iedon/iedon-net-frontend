@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { ApiOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import { loggedIn } from '../../common/helper'
-import { makeRequest, RouterMetadata, RoutersResponse, SessionMetadata, SessionsResponse } from '../../common/packetHandler'
+import { makeRequest, RouterMetadata, RoutersResponse, SessionMetadata, SessionsResponse, SessionStatus } from '../../common/packetHandler'
 import SessionTable from '../../components/SessionTable.vue'
 
 const t = useI18n().t
@@ -87,6 +87,10 @@ const handleRemove = (session: Session) => simpleActionHandler(session, 'delete'
 
 const handleViewMetrics = (session: Session, event: MouseEvent) => {
     event.stopPropagation()
+    if (session.status === SessionStatus.QUEUED_FOR_DELETE || session.status === SessionStatus.PENDING_APPROVAL) {
+        message.error(t(`pages.manage.session.statusCode['${session.status}']`))
+        return
+    }
     router.push({
         path: `/manage/metrics/${session.router}/${session.uuid}`
     })

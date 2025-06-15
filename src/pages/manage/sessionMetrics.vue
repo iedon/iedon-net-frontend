@@ -1,6 +1,6 @@
 <template>
     <a-layout>
-        <a-layout-content id="metrics" v-if="sessionMetrics && routerInfo">
+        <a-layout-content id="metrics" v-if="sessionMetrics && routerInfo && !loading">
             <!-- Header Actions -->
             <div class="header-actions">
                 <a-button @click="goBack" type="text" size="large" class="back-button">
@@ -9,6 +9,55 @@
                     </template>
                     {{ t('pages.metrics.back') }}
                 </a-button>
+
+                <!-- Session Management Actions -->
+                <template v-if="sessionMetadata">
+                    <a-button-group>
+                        <!-- Enable/Disable Button -->
+                        <a-popconfirm
+                            v-if="sessionMetadata.status === SessionStatus.ENABLED || sessionMetadata.status === SessionStatus.PROBLEM"
+                            placement="bottom" @confirm="handleDisable" :title="t('pages.manage.session.areYouSure')">
+                            <a-button size="large">
+                                <template #icon>
+                                    <pause-outlined />
+                                </template>
+                                {{ t('pages.manage.session.disable') }}
+                            </a-button>
+                        </a-popconfirm>
+
+                        <a-popconfirm
+                            v-else-if="sessionMetadata.status === SessionStatus.DISABLED || sessionMetadata.status === SessionStatus.TEARDOWN"
+                            placement="bottom" @confirm="handleEnable" :title="t('pages.manage.session.areYouSure')">
+                            <a-button size="large" type="default">
+                                <template #icon>
+                                    <caret-right-outlined />
+                                </template>
+                                {{ t('pages.manage.session.enable') }}
+                            </a-button>
+                        </a-popconfirm>
+
+                        <!-- Edit Button -->
+                        <a-button size="large" @click="handleEdit"
+                            v-if="sessionMetadata.status !== SessionStatus.PENDING_APPROVAL && sessionMetadata.status !== SessionStatus.QUEUED_FOR_DELETE && sessionMetadata.status !== SessionStatus.TEARDOWN && sessionMetadata.status !== SessionStatus.QUEUED_FOR_SETUP">
+                            <template #icon>
+                                <edit-outlined />
+                            </template>
+                            {{ t('pages.manage.session.edit') }}
+                        </a-button>
+
+                        <!-- Delete Button -->
+                        <a-popconfirm placement="bottom" @confirm="handleRemove"
+                            :title="t('pages.manage.session.areYouSure')">
+                            <a-button size="large" danger>
+                                <template #icon>
+                                    <delete-outlined />
+                                </template>
+                                {{ t('pages.manage.session.remove') }}
+                            </a-button>
+                        </a-popconfirm>
+                    </a-button-group>
+                </template>
+
                 <a-button @click="refreshData" :loading="loading" type="primary" size="large">
                     <template #icon>
                         <reload-outlined />
@@ -22,7 +71,13 @@
                 <div class="session-header-main">
                     <router-location-avatar :router="routerInfo" :hide-peering-dot="true" />
                     <div class="session-info">
-                        <h1 class="session-title">{{ routerInfo.name }}</h1>
+                        <h1 class="session-title">
+                            {{ routerInfo.name }}
+                            <a-tag v-if="sessionMetadata" :color="getStatusColor(sessionMetadata.status)"
+                                class="session-status-badge">
+                                {{ t(`pages.manage.session.statusCode['${sessionMetadata.status}']`) }}
+                            </a-tag>
+                        </h1>
                         <div class="session-metadata">
                             <div class="session-row">
                                 <div class="session-item">
@@ -64,10 +119,12 @@
                 </div>
 
                 <!-- Session Info Section -->
-                <div class="session-info-section" v-if="sessionInfo">
+                <div ref="cardRef" class="session-info-section" v-if="sessionInfo">
                     <div class="session-info-content" v-html="sessionInfo.parsed"></div>
                 </div>
-            </div> <!-- Metrics Overview -->
+            </div>
+
+            <!-- Metrics Overview -->
             <div class="metrics-overview" v-if="getLatestMetrics">
                 <div class="metrics-grid"> <!-- BGP IPv4 Routes Metric -->
                     <div class="metric-item bgp-routes-ipv4" @click="scrollToBgpCharts" style="cursor: pointer;"
@@ -126,14 +183,14 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.total?.[0] || 0)
-                                        }}</div>
+                                    }}</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.txTotal') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.total?.[1] || 0)
-                                        }}</div>
+                                    }}</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.rxTotal') }}</div>
                                 </div>
                             </div>
@@ -151,14 +208,14 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.current?.[0] || 0)
-                                        }}/s</div>
+                                    }}/s</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.txCurrent') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.current?.[1] || 0)
-                                        }}/s</div>
+                                    }}/s</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.rxCurrent') }}</div>
                                 </div>
                             </div>
@@ -199,7 +256,7 @@
                                 active: bgpSession.info?.includes('Established'),
                                 timeout: bgpSession.info && !bgpSession.info.includes('Established') && bgpSession.info !== 'Unknown'
                             }">
-                                {{ bgpSession.info?.split(' ')[0] || 'Unknown' }}
+                                {{ t(`pages.metrics.bgpStatus['${bgpSession.info?.split(' ')[0] || 'Unknown'}']`) }}
                             </div>
                             <div class="metric-label">{{
                                 bgpSession.name?.toLowerCase().includes('v4') ? `${t('pages.metrics.bgpSession')}
@@ -212,7 +269,9 @@
                         </div>
                     </div>
                 </div>
-            </div> <!-- Charts Section -->
+            </div>
+
+            <!-- Charts Section -->
             <div class="charts-section"> <!-- BGP Metrics Charts -->
                 <div class="chart-group" ref="bgpChartsSection">
                     <h2 class="section-title">{{ t('pages.metrics.bgpMetrics') }}</h2>
@@ -285,7 +344,9 @@
                         </div>
                     </div>
                 </div>
-            </div> <!-- Details Section -->
+            </div>
+
+            <!-- Details Section -->
             <div class="details-section" ref="detailsSection">
                 <h2 class="section-title">{{ t('pages.metrics.detailedMetrics') }}</h2>
                 <div class="details-tabs">
@@ -320,6 +381,7 @@
                 </div>
             </div>
         </a-layout-content>
+
         <!-- Loading State -->
         <a-layout-content v-else-if="loading" id="metrics">
             <div class="header-actions">
@@ -369,7 +431,7 @@
 // =============================================================================
 // IMPORTS
 // =============================================================================
-import { onMounted, Ref, ref, computed, onUnmounted, nextTick } from 'vue'
+import { onMounted, Ref, ref, computed, onUnmounted, nextTick, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
@@ -380,7 +442,11 @@ import {
     DashboardOutlined,
     ApiOutlined,
     PieChartOutlined,
-    SwapOutlined
+    SwapOutlined,
+    PauseOutlined,
+    EditOutlined,
+    DeleteOutlined,
+    CaretRightOutlined
 } from '@ant-design/icons-vue'
 
 // ECharts imports
@@ -398,8 +464,8 @@ import {
 import VChart from 'vue-echarts'
 
 // Application imports
-import { loggedIn, formatDate, formatRelativeTime, themeName, isAdmin, formatBytes } from '../../common/helper'
-import { makeRequest, SessionMetric, RouterMetadata, RoutersResponse, CurrentSessionMetadata, GetCurrentSessionResponse, RoutingPolicy } from '../../common/packetHandler'
+import { loggedIn, formatDate, formatRelativeTime, themeName, isAdmin, formatBytes, registerPageTitle } from '../../common/helper'
+import { makeRequest, SessionMetric, RouterMetadata, RoutersResponse, CurrentSessionMetadata, GetCurrentSessionResponse, RoutingPolicy, SessionStatus } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 
 // Markdown imports
@@ -414,6 +480,8 @@ import mila from 'markdown-it-link-attributes'
 // Initialize markdown parser
 const md = new markdown_it({ html: true })
 md.use(mila, { attrs: { target: "_blank" } })
+const cardRef = ref<HTMLElement>()
+const codeClickHandlers = new Map<HTMLElement, () => void>()
 
 // Register ECharts components
 use([
@@ -551,14 +619,11 @@ const sessionInfo = computed(() => {
     }
 })
 
-// Check if BGP session is in an error/warning state (not established, not unknown)
-const isBgpInErrorState = computed(() => {
-    return !bgpInfo.value.includes('Established') && bgpInfo.value !== 'Unknown'
-})
-
-// Get the local user's ASN from localStorage
-const localUserAsn = computed(() => {
-    return localStorage.getItem('asn') || ''
+const codeBlockWatcher = watchEffect(() => {
+    if (sessionInfo.value?.parsed) {
+        cleanupCodeListeners()
+        setupCodeListeners()
+    }
 })
 
 // Check if there's any meaningful interface data to display
@@ -692,6 +757,7 @@ const goBack = () => {
 const copyToClipboard = async (value: string, label: string) => {
     try {
         await navigator.clipboard.writeText(value)
+        message.info(t('pages.nodes.copied'))
     } catch (error) {
         console.error(`Failed to copy ${label}:`, error)
     }
@@ -730,6 +796,82 @@ const copyLastUpdated = () => {
 
 const refreshData = async () => {
     await fetchSessionMetrics()
+}
+
+// Session management functions
+const simpleActionHandler = async (baseAction: 'delete' | 'enable' | 'disable') => {
+    if (!sessionMetadata.value) return
+
+    try {
+        loading.value = true
+
+        // Different endpoints and action names for admin vs normal user
+        if (isAdmin.value) {
+            // Admin uses /admin endpoint with longer action names
+            const adminAction = baseAction === 'delete' ? 'deleteSession' :
+                baseAction === 'enable' ? 'enableSession' : 'disableSession'
+
+            await makeRequest(t, '/admin', {
+                action: adminAction,
+                router: routerId,
+                session: sessionId,
+            })
+        } else {
+            // Normal user uses /session endpoint with shorter action names
+            await makeRequest(t, '/session', {
+                action: baseAction,
+                router: routerId,
+                session: sessionId,
+            })
+        }
+
+        // Refresh session metadata after action
+        await fetchSessionMetadata()
+
+        if (baseAction === 'delete') {
+            router.back()
+        }
+
+    } catch (error) {
+        console.error(error)
+    } finally {
+        loading.value = false
+    }
+}
+
+const handleEnable = () => simpleActionHandler('enable')
+const handleDisable = () => simpleActionHandler('disable')
+const handleRemove = () => simpleActionHandler('delete')
+
+const handleEdit = () => {
+    if (!sessionMetadata.value) return
+    router.push({
+        path: `/nodes/${routerId}/edit/${sessionId}`
+    })
+}
+
+// Get status color for badge
+const getStatusColor = (status: SessionStatus) => {
+    switch (status) {
+        case SessionStatus.ENABLED:
+            return 'green'
+        case SessionStatus.DISABLED:
+            return 'geekblue'
+        case SessionStatus.PENDING_APPROVAL:
+            return 'orange'
+        case SessionStatus.PROBLEM:
+            return 'volcano'
+        case SessionStatus.QUEUED_FOR_SETUP:
+            return 'blue'
+        case SessionStatus.QUEUED_FOR_DELETE:
+            return 'red'
+        case SessionStatus.TEARDOWN:
+            return 'gray'
+        case SessionStatus.DELETED:
+            return 'default'
+        default:
+            return 'default'
+    }
 }
 
 // Handle window resize to trigger chart resize
@@ -797,6 +939,8 @@ onMounted(async () => {
         return
     }
 
+    registerPageTitle(`${t('pages.metrics.sessionMetrics')} - ${sessionId}`)
+
     await fetchSessionMetrics()
     await fetchRouterInfo()
     await fetchSessionMetadata()
@@ -806,8 +950,35 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+    cleanupCodeListeners()
+    codeBlockWatcher()
     window.removeEventListener('resize', handleResize)
 })
+
+const setupCodeListeners = () => {
+    if (!cardRef.value) return
+
+    const codeElements = cardRef.value.querySelectorAll('code')
+    codeElements.forEach(code => {
+        const handler = () => {
+            copyToClipboard(code.textContent || '', 'code block')
+        }
+
+        code.addEventListener('click', handler)
+        code.style.cursor = 'pointer'
+
+        // Store handler for cleanup
+        codeClickHandlers.set(code as HTMLElement, handler)
+    })
+}
+
+const cleanupCodeListeners = () => {
+    codeClickHandlers.forEach((handler, element) => {
+        element.removeEventListener('click', handler)
+    })
+    codeClickHandlers.clear()
+}
+
 
 // =============================================================================
 // BGP DATA AVAILABILITY CHECKS
@@ -1411,8 +1582,7 @@ const bgpColumns = computed(() => [
         dataIndex: 'info',
         key: 'info',
         width: 200,
-        ellipsis: true,
-        responsive: ['md'] as const
+        ellipsis: true
     },
     {
         title: t('pages.metrics.routesReceivedIPv4'),
@@ -1463,11 +1633,14 @@ const bgpColumns = computed(() => [
     align-items: center;
     margin-bottom: 24px;
     padding: 0 4px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .back-button {
     color: #666 !important;
     font-weight: 500;
+    margin-right: auto;
 }
 
 .back-button:hover {
@@ -1522,6 +1695,14 @@ const bgpColumns = computed(() => [
     font-weight: 600;
     color: #1a1a1a;
     line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.session-status-badge {
+    font-size: 12px !important;
+    margin-left: 8px;
 }
 
 .dark .session-title {
@@ -1651,6 +1832,14 @@ const bgpColumns = computed(() => [
     background-color: #2d3748;
     color: #f56565;
     border-color: #4a5568;
+}
+
+.session-info-content:deep(code:hover) {
+    background-color: #edf2f7;
+}
+
+.dark .session-info-content:deep(code:hover) {
+    background-color: #4a5568;
 }
 
 .dark .session-id,

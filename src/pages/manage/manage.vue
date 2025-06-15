@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref } from 'vue'
+import { onMounted, onUnmounted, Ref, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined, NodeIndexOutlined, SettingOutlined, BookOutlined, GlobalOutlined } from '@ant-design/icons-vue'
-import { isAdmin, themeName, VAR_SIZE_LG } from '../../common/helper'
+import { isAdmin, registerPageTitle, themeName, VAR_SIZE_LG } from '../../common/helper'
 import MySessions from './mySessions.vue'
 import MyAccount from './myAccount.vue'
 import ManageSessions from './manageSessions.vue'
@@ -23,8 +23,16 @@ const title = {
     manageNodes: t('pages.manage.manageNodes'),
 }
 
+const titleWatcher = watchEffect(() => {
+   registerPageTitle(title[selectedKeys.value[0] as keyof typeof title] || '')
+})
+
 onMounted(async () => {
     selectedKeys.value[0] = isAdmin.value ? 'manageSessions' : 'mySessions'
+})
+
+onUnmounted(() => {
+    titleWatcher()
 })
 
 const collapsed: Ref<boolean> =  ref(false)
@@ -146,7 +154,7 @@ const backToTop = () => {
 }
 .content {
     padding: 0 30px;
-    min-height: 500px;
+    min-height: 800px;
     overflow: hidden;
 }
 .content .header {

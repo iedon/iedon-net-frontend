@@ -76,6 +76,7 @@ export default {
     nodes: {
       search: '按名称或 IP 地址搜索...',
       nodes: 'BGP 网络节点',
+      subTitle: '请选择一个 BGP 路由器以建立对等连接',
       copied: '详细信息已复制',
       pleaseSignIn: '请先登录。',
       statusOpen: '开放',
@@ -120,6 +121,7 @@ export default {
         UPSTREAM: '上游（管理员）',
         UPSTREAM_DESC: '接收所有有效路由，将我们的路由和直接下游路由发送到远程（管理员）。'
       },
+      v4v6force: '💡 如需强制使用 IPv4 或 IPv6，请在我们的端点前添加 “v4.” 或 “v6.” 前缀（如果支持）。',
       openvpn: 'OpenVPN',
       wireguard: 'WireGuard',
       ipsec: 'IPSec',
@@ -128,7 +130,7 @@ export default {
       direct: '直接以太网',
       'mp-bgp': '多协议 BGP',
       'extended-nexthop': '扩展下一跳',
-      step1Introduction: '此节点支持以下功能。\n选择一个或多个以使用。\n请注意，路由策略对于 DN42 来说只是一个有趣的选项，请使用 BGP community (65535:65281) 和 (65535:65282) 以及“完整路由表”来精确控制路由传播。',
+      step1Introduction: '此节点支持以下功能。\n选择一个或多个以使用。\n请注意，路由策略对于 DN42 来说只是一个有趣的选项，请使用 BGP community (65535, 65281) 和 (65535, 65282) 以及“完整路由表”来精确控制路由传播。',
       step2Introduction: '这些设置有助于配置您的接口。',
       useIpv4: '启用 IPv4',
       useIpv6: '使用 IPv6 ULA',
@@ -140,7 +142,7 @@ export default {
       mustEnterTunnelInformation: '需要隧道信息，包括端点和凭据。',
       inputValid: '提供的信息无效。请检查并重试。',
       back: '返回修改',
-      backTop: '返回所有节点',
+      backTop: '返回',
       step3Introduction: '您的对等申请详细信息。请查看。',
       ipv4: 'DN42 IPv4',
       ipv6: 'DN42 IPv6',
@@ -208,7 +210,10 @@ export default {
         password: '密码',
         confirmPassword: '确认',
         setPassword: '设置密码',
-        successSetPassword: '密码设置或清除成功。'
+        successSetPassword: '密码设置或清除成功。',
+        hint1: '你的密码通过 bcrypt 加密，使用了 10 轮加盐保护。',
+        hint2: '设置密码后，你可以使用该密码登录本站。',
+        hint3: '留空后保存将清除密码，并禁用密码登录方式。',
       },
       config: {
         changeConfig: '修改站点配置',
@@ -276,6 +281,16 @@ export default {
       bytes: '字节',
       txCurrent: '当前发送',
       rxCurrent: '当前接收',
+      bgpStatus: {
+        Established: '已连接上',
+        Idle: '等待连接',
+        Active: '连接失败',
+        Connect: '连接中',
+        Open: '协商中',
+        OpenSent: '协商中',
+        OpenConfirm: '最终确认中',
+        Unknown: '未知状态'
+      },
       networkMetrics: '网络指标',
       rtt: 'RTT',
       currentRtt: '当前 RTT',

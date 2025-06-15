@@ -1,17 +1,25 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { h, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
-import { SendOutlined } from '@ant-design/icons-vue'
+import { SendOutlined, UserOutlined } from '@ant-design/icons-vue'
 import { loggedIn } from '../../common/helper'
 import { makeRequest, SetPasswordResponse } from '../../common/packetHandler'
+import config from "../../config"
+
+//@ts-ignore
+import md5 from 'md5'
 
 const t = useI18n().t
 const router = useRouter()
 
 const loading = ref(false)
 const asn = ref('')
+const person = ref('')
+const email = ref('')
+
+const getGravatar = (_email: string) => `${config.gravatarUrlPrefix}${md5(_email.trim().toLocaleLowerCase())}`
 
 onMounted(async () => {
     if (!loggedIn.value) {
@@ -20,6 +28,9 @@ onMounted(async () => {
         return
     }
     asn.value = localStorage.getItem('asn') || ''
+    person.value = localStorage.getItem('person') || ''
+    email.value = localStorage.getItem('email') || ''
+    if (email.value.length !== 0) email.value = getGravatar(email.value)
 })
 
 const setPasswordForm = ref({
@@ -69,6 +80,28 @@ const setPassword = async () => {
 <template>
     <a-spin :spinning="loading">
         <h2>{{ t('pages.manage.account.setYourPassword') }}</h2>
+        <div class="hint">
+            <a-alert
+                :message="[h('p', t('pages.manage.account.hint1')), h('p', t('pages.manage.account.hint2')), h('p', t('pages.manage.account.hint3'))]"
+                type="info" />
+        </div>
+        <div class="user-info">
+            <div class="avatar-section">
+                <a-avatar class="avatar" size="large" v-if="email.length !== 0" :src="email"></a-avatar>
+                <a-avatar class="avatar" size="large"
+                    v-else-if="person.substring(0, 1) || asn.substring(asn.length - 4 - 1)">{{ person.substring(0, 1) ||
+                        asn.substring(asn.length - 4 - 1) }}</a-avatar>
+                <a-avatar class="avatar" size="large" v-else>
+                    <template #icon>
+                        <user-outlined />
+                    </template>
+                </a-avatar>
+                <div class="user-details">
+                    <div class="user-name">{{ person || asn }}</div>
+                    <div class="user-asn">{{ asn }}</div>
+                </div>
+            </div>
+        </div>
         <a-form :model="setPasswordForm" class="setPasswordForm">
             <a-form-item style="display:none">
                 <input type="text" name="username" :value="asn" autocomplete="username" />
@@ -98,5 +131,54 @@ const setPassword = async () => {
 .setPasswordForm {
     max-width: 500px;
     margin: 0 auto;
+}
+
+.hint {
+    max-width: 500px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.hint:deep(.ant-alert-message) p:first-child {
+    margin-top: auto;
+}
+
+.hint:deep(.ant-alert-message) p:last-child {
+    margin-bottom: auto;
+}
+
+.user-info {
+    max-width: 500px;
+    margin: 0 auto;
+    margin-bottom: 30px;
+}
+
+.avatar-section {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+}
+
+.avatar {
+    margin-right: 16px;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #262626;
+    margin-bottom: 4px;
+}
+
+.user-asn {
+    font-size: 14px;
+    color: #8c8c8c;
 }
 </style>

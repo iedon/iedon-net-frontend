@@ -3,7 +3,7 @@ import { Ref, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
 import { AuthQueryResponse, AuthRequestResponse, AuthChallengeResponse, makeRequest, AvailableAuthMethod } from '../../common/packetHandler'
-import { loggedIn, splitMessageToVNodes } from '../../common/helper'
+import { loggedIn, registerPageTitle, splitMessageToVNodes } from '../../common/helper'
 import stepsBar from './stepsBar.vue'
 import queryBox from './queryBox.vue'
 import chooseBox from './chooseBox.vue'
@@ -12,6 +12,7 @@ import doneBox from './doneBox.vue'
 
 onMounted(() => {
     window.scrollTo(0, 0)
+    registerPageTitle(t('pages.signIn.signIn'))
 })
 
 const ASN_MIN = 0

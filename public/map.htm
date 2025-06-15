@@ -112,7 +112,9 @@
             });
 
             const map = L.map('map', {
-                worldCopyJump: true
+                worldCopyJump: true,
+                scrollWheelZoom: false,
+                doubleClickZoom: false
             }).setView([35, 20], 2);
             const customIcon = L.icon({
                 iconUrl: './map/icon-pin.png',

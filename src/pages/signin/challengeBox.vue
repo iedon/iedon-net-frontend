@@ -69,12 +69,12 @@ const copyChallengeText = async (c: string) => {
                 <a-textarea auto-size v-model:value="challengeForm.publicKey"
                     :placeholder="`${t('pages.signIn.pgpPublicKey')}`" />
             </a-form-item>
-
             <a-form-item name="challengeText" :label="t('pages.signIn.challengeText')"
                 :rules="[{ required: true, message: `${t('pages.signIn.pleaseInput')} ${t('pages.signIn.challengeText')}` }]">
                 <a-input-password v-if="props.type === AvailableAuthMethod.PASSWORD" autocomplete="password"
                     v-model:value="challengeForm.challengeText"
-                    :placeholder="t('pages.signIn.challengeTextPlaceholder')" />
+                    :placeholder="t('pages.signIn.challengeTextPlaceholder')"
+                    @keydown.enter="props.challenge(challengeForm)" />
                 <a-textarea v-else auto-size v-model:value="challengeForm.challengeText"
                     :placeholder="`${t('pages.signIn.challengeTextPlaceholder')}`" />
             </a-form-item>

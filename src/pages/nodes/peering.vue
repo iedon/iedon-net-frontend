@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { CurrentSessionMetadata, GetCurrentSessionResponse, makeRequest, RouterInfoResponse, RouterMetadata, RoutingPolicy, SessionMetadata } from '../../common/packetHandler'
-import { ASN_MAX, ASN_MIN, isAdmin, loggedIn } from '../../common/helper'
+import { ASN_MAX, ASN_MIN, isAdmin, loggedIn, registerPageTitle } from '../../common/helper'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 import stepsBar from './stepsBar.vue'
 import preferenceBox from './preferenceBox.vue'
@@ -42,6 +42,8 @@ onMounted(async () => {
         router.back()
         return
     }
+
+    registerPageTitle(`${node.value?.name} ${t('header.nodes')}`)
     
     // Load existing session data if in edit mode
     if (isEditMode) {
@@ -194,7 +196,8 @@ const loadExistingSession = async () => {
 
 </script>
 
-<template>    <section>
+<template>
+    <section>
         <h1 class="header" v-if="node">
             <div class="avatar"><router-location-avatar :router="node"></router-location-avatar></div>
             {{ node?.name }}

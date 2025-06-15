@@ -20,8 +20,8 @@ const props = defineProps<{
 const t = useI18n().t
 
 const router = useRouter()
-const openNodesPage = () => {
-    router.replace({ path: '/nodes' })
+const backToTop = () => {
+    router.back()
     window.scrollTo(0, 0)
 }
 
@@ -81,7 +81,7 @@ const routingPolicyOptions = getRoutingPolicyOptions()
 
         <br />
         <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
-            <a-button style="margin-right:20px" @click="openNodesPage()">{{ t('pages.peering.backTop') }}</a-button>
+            <a-button style="margin-right:20px" @click="backToTop()">{{ t('pages.peering.backTop') }}</a-button>
             <a-button type="primary" @click="props.nextStep()">
                 <template #icon>
                     <send-outlined />

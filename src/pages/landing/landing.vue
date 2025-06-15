@@ -112,7 +112,7 @@ import {
     SafetyOutlined
 } from '@ant-design/icons-vue'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
-import { siteConfig } from '../../common/helper'
+import { registerPageTitle, siteConfig } from '../../common/helper'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -153,6 +153,7 @@ const scrollToMap = () => {
 
 // Lifecycle
 onMounted(() => {
+    registerPageTitle(''); // Empty title for landing page
     fetchNodes()
 })
 </script>

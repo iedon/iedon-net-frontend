@@ -76,6 +76,7 @@ export default {
     nodes: {
       search: 'Search by name or IP address...',
       nodes: 'BGP Network Nodes',
+      subTitle: 'Choose a BGP router to establish a peering connection',
       copied: 'Details copied',
       pleaseSignIn: 'Please sign in first.',
       statusOpen: 'OPEN',
@@ -123,6 +124,7 @@ export default {
         UPSTREAM: 'Upstream (Admin)',
         UPSTREAM_DESC: 'Receive all valid routes, send ours and direct downstream routes to remote (Admin).'
       },
+      v4v6force: '💡 Add the “v4.” or “v6.” prefix to our endpoint to force IPv4 or IPv6 usage, if supported.',
       openvpn: 'OpenVPN',
       wireguard: 'WireGuard',
       ipsec: 'IPSec',
@@ -131,7 +133,7 @@ export default {
       direct: 'Direct Ethernet',
       'mp-bgp': 'Multi-protocol BGP',
       'extended-nexthop': 'Extended Nexthop',
-      step1Introduction: 'This node supports the following features.\nSelect one or more to use.\nNotice that routing policy is just fun for DN42, use BGP communities (65535:65281) and (65535:65282) with \"Full Table\" to control routes propagation accurately. ',
+      step1Introduction: 'This node supports the following features.\nSelect one or more to use.\nNotice that routing policy is just fun for DN42, use BGP communities (65535, 65281) and (65535, 65282) with \"Full Table\" to control routes propagation accurately. ',
       step2Introduction: 'These settings assist with configuring your interface.',
       useIpv4: 'Enable IPv4',
       useIpv6: 'Use IPv6 ULA',
@@ -143,7 +145,7 @@ export default {
       mustEnterTunnelInformation: 'Tunnel information, including endpoint and credentials, is required.',
       inputValid: 'Invalid information provided. Please check and try again.',
       back: 'Back to Modify',
-      backTop: 'Back to All Nodes',
+      backTop: 'Go Back',
       step3Introduction: 'Your peering application details. Please review.',
       ipv4: 'DN42 IPv4',
       ipv6: 'DN42 IPv6',
@@ -211,7 +213,10 @@ export default {
         password: 'Password',
         confirmPassword: 'Confirm',
         setPassword: 'Set Password',
-        successSetPassword: 'Password set or cleared successfully.'
+        successSetPassword: 'Password set or cleared successfully.',
+        hint1: 'Your password is protected using bcrypt with 10 rounds of salting.',
+        hint2: 'Once the password is set, you can use it to log in to our site.',
+        hint3: 'Leave it blank and save to clear the password and disable password login.',
       },
       config: {
         changeConfig: 'Modify site configuration',
@@ -281,6 +286,16 @@ export default {
       bytes: 'Bytes',
       txCurrent: 'TX Current',
       rxCurrent: 'RX Current',
+      bgpStatus: {
+        Established: 'Established',
+        Idle: 'Idle',
+        Active: 'Failed to connect',
+        Connect: 'Connecting',
+        Open: 'Negotiating',
+        OpenSent: 'Negotiating',
+        OpenConfirm: 'Confirming',
+        Unknown: 'Unknown'
+      },
       // Network Metrics
       networkMetrics: 'Network Metrics',
       rtt: 'RTT',

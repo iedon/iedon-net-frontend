@@ -76,6 +76,7 @@ export default {
     nodes: {
       search: 'Suche nach Name oder IP-Adresse...',
       nodes: 'BGP-Netzwerkknoten',
+      subTitle: 'Wähle einen BGP-Router, um eine Peering-Verbindung herzustellen',
       copied: 'Details kopiert',
       pleaseSignIn: 'Bitte zuerst anmelden.',
       statusOpen: 'OFFEN',
@@ -120,6 +121,7 @@ export default {
         UPSTREAM: 'Upstream (Admin)',
         UPSTREAM_DESC: 'Empfangen Sie alle gültigen Routen, senden Sie unsere und direkte Downstream-Routen an Remote (Admin).'
       },
+      v4v6force: '💡 Füge dem Endpunkt den Präfix „v4.“ oder „v6.“ hinzu, um IPv4- bzw. IPv6-Nutzung zu erzwingen, falls unterstützt.',
       openvpn: 'OpenVPN',
       wireguard: 'WireGuard',
       ipsec: 'IPSec',
@@ -128,7 +130,7 @@ export default {
       direct: 'Direktes Ethernet',
       'mp-bgp': 'Multi-Protokoll-BGP',
       'extended-nexthop': 'Erweiterter Nexthop',
-      step1Introduction: 'Dieser Knoten unterstützt die folgenden Funktionen.\nWählen Sie eine oder mehrere zur Verwendung aus.\nBeachten Sie, dass die Routing-Richtlinie für DN42 nur zum Spaß dient. Verwenden Sie BGP-Communities (65535:65281) und (65535:65282) mit "Volle Tabelle", um die Routenverbreitung genau zu steuern.',
+      step1Introduction: 'Dieser Knoten unterstützt die folgenden Funktionen.\nWählen Sie eine oder mehrere zur Verwendung aus.\nBeachten Sie, dass die Routing-Richtlinie für DN42 nur zum Spaß dient. Verwenden Sie BGP-Communities (65535, 65281) und (65535, 65282) mit "Volle Tabelle", um die Routenverbreitung genau zu steuern.',
       step2Introduction: 'Diese Einstellungen helfen bei der Konfiguration Ihrer Schnittstelle.',
       useIpv4: 'IPv4 aktivieren',
       useIpv6: 'IPv6 ULA verwenden',
@@ -140,7 +142,7 @@ export default {
       mustEnterTunnelInformation: 'Tunnelinformationen, einschließlich Endpunkt und Anmeldeinformationen, sind erforderlich.',
       inputValid: 'Ungültige Informationen bereitgestellt. Bitte überprüfen und erneut versuchen.',
       back: 'Zurück zum Ändern',
-      backTop: 'Zurück zu allen Knoten',
+      backTop: 'Zurück',
       step3Introduction: 'Details zu Ihrer Peering-Anwendung. Bitte überprüfen.',
       ipv4: 'DN42 IPv4',
       ipv6: 'DN42 IPv6',
@@ -208,7 +210,10 @@ export default {
         password: 'Passwort',
         confirmPassword: 'Bestätigen',
         setPassword: 'Passwort festlegen',
-        successSetPassword: 'Passwort erfolgreich festgelegt oder gelöscht.'
+        successSetPassword: 'Passwort erfolgreich festgelegt oder gelöscht.',
+        hint1: 'Dein Passwort wird mit bcrypt und 10-facher Salzung geschützt.',
+        hint2: 'Sobald das Passwort gesetzt ist, kannst du dich damit auf unserer Seite anmelden.',
+        hint3: 'Lass das Feld leer und speichere, um das Passwort zu löschen und die Passwort-Anmeldung zu deaktivieren.',
       },
       config: {
         changeConfig: 'Website-Konfiguration ändern',
@@ -276,6 +281,16 @@ export default {
       bytes: 'Bytes',
       txCurrent: 'TX Aktuell',
       rxCurrent: 'RX Aktuell',
+      bgpStatus: {
+        Established: 'Verbindung hergestellt',
+        Idle: 'Wartet auf Verbindung',
+        Active: 'Verbindung fehlgeschlagen',
+        Connect: 'Verbindungsaufbau',
+        Open: 'Verhandlung läuft',
+        OpenSent: 'Verhandlung läuft',
+        OpenConfirm: 'Bestätigung läuft',
+        Unknown: 'Unbekannt'
+      },
       networkMetrics: 'Netzwerkmetriken',
       rtt: 'RTT',
       currentRtt: 'Aktuelle RTT',

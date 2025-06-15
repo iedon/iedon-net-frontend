@@ -76,6 +76,7 @@ export default {
     nodes: {
       search: '名前または IP アドレスで検索...',
       nodes: 'BGP ネットワークノード',
+      subTitle: 'ピア接続を確立する BGP ルーターを選択してください',
       copied: '詳細をコピーしました',
       pleaseSignIn: '最初にサインインしてください。',
       statusOpen: 'オープン',
@@ -120,6 +121,7 @@ export default {
         UPSTREAM: 'アップストリーム（管理者）',
         UPSTREAM_DESC: 'すべての有効なルートを受信し、当社のルートと直接ダウンストリームルートをリモート（管理者）に送信します。'
       },
+      v4v6force: '💡 IPv4 または IPv6 を強制的に使用するには、エンドポイントの先頭に「v4.」または「v6.」を追加してください（対応している場合）。',
       openvpn: 'OpenVPN',
       wireguard: 'WireGuard',
       ipsec: 'IPSec',
@@ -140,7 +142,7 @@ export default {
       mustEnterTunnelInformation: 'エンドポイントと認証情報を含むトンネル情報が必要です。',
       inputValid: '無効な情報が提供されました。確認してもう一度お試しください。',
       back: '変更に戻る',
-      backTop: 'すべてのノードに戻る',
+      backTop: '戻る',
       step3Introduction: 'ピアリングアプリケーションの詳細です。確認してください。',
       ipv4: 'DN42 IPv4',
       ipv6: 'DN42 IPv6',
@@ -208,7 +210,10 @@ export default {
         password: 'パスワード',
         confirmPassword: '確認',
         setPassword: 'パスワードの設定',
-        successSetPassword: 'パスワードが正常に設定またはクリアされました。'
+        successSetPassword: 'パスワードが正常に設定またはクリアされました。',
+        hint1: 'あなたのパスワードは、10ラウンドのソルトを使用した bcrypt によって保護されています。',
+        hint2: 'パスワードを設定すると、それを使って当サイトにログインできます。',
+        hint3: '空欄のまま保存すると、パスワードが削除され、パスワードによるログインが無効になります。',
       },
       config: {
         changeConfig: 'サイト設定の変更',
@@ -276,6 +281,16 @@ export default {
       bytes: 'バイト',
       txCurrent: '現在の TX',
       rxCurrent: '現在の RX',
+      bgpStatus: {
+        Established: '確立済み',
+        Idle: '接続待機中',
+        Active: '接続に失敗',
+        Connect: '接続中',
+        Open: 'ネゴシエーション中',
+        OpenSent: 'ネゴシエーション中',
+        OpenConfirm: '最終確認中',
+        Unknown: '不明'
+      },
       networkMetrics: 'ネットワークメトリック',
       rtt: 'RTT',
       currentRtt: '現在の RTT',

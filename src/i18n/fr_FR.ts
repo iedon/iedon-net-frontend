@@ -76,6 +76,7 @@ export default {
     nodes: {
       search: 'Rechercher par nom ou adresse IP...',
       nodes: 'Nœuds du réseau BGP',
+      subTitle: 'Choisissez un routeur BGP pour établir une connexion de peering',
       copied: 'Détails copiés',
       pleaseSignIn: 'Veuillez d\'abord vous connecter.',
       statusOpen: 'OUVERT',
@@ -120,6 +121,7 @@ export default {
         UPSTREAM: 'Amont (Admin)',
         UPSTREAM_DESC: 'Recevez toutes les routes valides, envoyez nos routes et les routes directes en aval à distance (Admin).'
       },
+      v4v6force: '💡 Ajoutez le préfixe « v4. » ou « v6. » à notre point de terminaison pour forcer l’utilisation d’IPv4 ou IPv6, si pris en charge.',
       openvpn: 'OpenVPN',
       wireguard: 'WireGuard',
       ipsec: 'IPSec',
@@ -128,7 +130,7 @@ export default {
       direct: 'Ethernet direct',
       'mp-bgp': 'BGP multiprotocole',
       'extended-nexthop': 'Nexthop étendu',
-      step1Introduction: 'Ce nœud prend en charge les fonctionnalités suivantes.\nSélectionnez-en une ou plusieurs à utiliser.\nNotez que la politique de routage est juste pour le plaisir pour DN42, utilisez les communautés BGP (65535:65281) et (65535:65282) avec "Table complète" pour contrôler précisément la propagation des routes.',
+      step1Introduction: 'Ce nœud prend en charge les fonctionnalités suivantes.\nSélectionnez-en une ou plusieurs à utiliser.\nNotez que la politique de routage est juste pour le plaisir pour DN42, utilisez les communautés BGP (65535, 65281) et (65535, 65282) avec "Table complète" pour contrôler précisément la propagation des routes.',
       step2Introduction: 'Ces paramètres aident à configurer votre interface.',
       useIpv4: 'Activer IPv4',
       useIpv6: 'Utiliser IPv6 ULA',
@@ -140,7 +142,7 @@ export default {
       mustEnterTunnelInformation: 'Les informations du tunnel, y compris le point de terminaison et les informations d\'identification, sont requises.',
       inputValid: 'Informations invalides fournies. Veuillez vérifier et réessayer.',
       back: 'Retour à la modification',
-      backTop: 'Retour à tous les nœuds',
+      backTop: 'Retour',
       step3Introduction: 'Détails de votre application de peering. Veuillez vérifier.',
       ipv4: 'DN42 IPv4',
       ipv6: 'DN42 IPv6',
@@ -208,7 +210,10 @@ export default {
         password: 'Mot de passe',
         confirmPassword: 'Confirmer',
         setPassword: 'Définir le mot de passe',
-        successSetPassword: 'Mot de passe défini ou effacé avec succès.'
+        successSetPassword: 'Mot de passe défini ou effacé avec succès.',
+        hint1: 'Votre mot de passe est protégé avec bcrypt et 10 itérations de salage.',
+        hint2: 'Une fois défini, vous pourrez utiliser ce mot de passe pour vous connecter à notre site.',
+        hint3: 'Laissez vide puis enregistrez pour effacer le mot de passe et désactiver la connexion par mot de passe.',
       },
       config: {
         changeConfig: 'Modifier la configuration du site',
@@ -276,6 +281,16 @@ export default {
       bytes: 'Octets',
       txCurrent: 'TX actuel',
       rxCurrent: 'RX actuel',
+      bgpStatus: {
+        Established: 'Connecté',
+        Idle: 'En attente de connexion',
+        Active: 'Échec de la connexion',
+        Connect: 'Connexion en cours',
+        Open: 'Négociation en cours',
+        OpenSent: 'Négociation en cours',
+        OpenConfirm: 'Confirmation en cours',
+        Unknown: 'Inconnu'
+      },
       networkMetrics: 'Métriques réseau',
       rtt: 'RTT',
       currentRtt: 'RTT actuel',

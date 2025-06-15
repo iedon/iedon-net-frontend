@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { CloseOutlined } from '@ant-design/icons-vue'
+import {
+    CloseOutlined,
+    SearchOutlined,
+    CaretRightOutlined,
+    PauseOutlined,
+    CheckCircleOutlined,
+    EditOutlined,
+    DeleteOutlined
+} from '@ant-design/icons-vue'
 import { SessionStatus, RouterMetadata, SessionMetadata } from '../common/packetHandler'
 import RouterLocationAvatar from './RouterLocationAvatar.vue'
 
@@ -94,7 +102,8 @@ const columns = computed(() => {
             dataIndex: 'ipv6LinkLocal',
             key: 'ipv6LinkLocal',
             sorter: (a: Session, b: Session) => ('' + (a.ipv6LinkLocal || '')).localeCompare((b.ipv6LinkLocal || ''))
-        },        {
+        },
+        {
             title: t('pages.manage.session.status'),
             dataIndex: 'status',
             key: 'status',
@@ -192,13 +201,33 @@ const getBgpStatusDisplay = (session: Session) => {
     if (session.status !== SessionStatus.ENABLED || !session.bgpStatus || !Array.isArray(session.bgpStatus) || session.bgpStatus.length === 0) {
         return null
     }
-    
+
     return session.bgpStatus.map((bgp, index) => {
         const firstWord = bgp.info ? bgp.info.split(' ')[0] : 'Unknown'
-        return {
-            text: firstWord,
-            color: firstWord === 'Established' ? 'green' : 'red',
-            key: `${session.uuid}-bgp-${index}`
+        const statusText = t(`pages.metrics.bgpStatus['${bgp.info?.split(' ')[0] || 'Unknown'}']`)
+
+        // For IPv4 and IPv6 types, show formatted display with protocol prefix
+        if (bgp.type === 'ipv4') {
+            return {
+                text: statusText,
+                color: firstWord === 'Established' ? 'green' : 'red',
+                key: `${session.uuid}-bgp-${index}`,
+                type: 'ipv4'
+            }
+        } else if (bgp.type === 'ipv6') {
+            return {
+                text: statusText,
+                color: firstWord === 'Established' ? 'green' : 'red',
+                key: `${session.uuid}-bgp-${index}`,
+                type: 'ipv6'
+            }
+        } else {
+            // For mpbgp or empty type, keep current format
+            return {
+                text: statusText,
+                color: firstWord === 'Established' ? 'green' : 'red',
+                key: `${session.uuid}-bgp-${index}`
+            }
         }
     })
 }
@@ -217,23 +246,13 @@ const getStatusSortValue = (session: Session) => {
 </script>
 
 <template>
-    <a-table 
-        :columns="columns" 
-        :data-source="filteredSessions" 
-        :loading="loading" 
-        bordered 
-        size="small"
-        :customRow="customRow" 
-        :scroll="{ x: 'max-content' }"
-    >
+    <a-table :columns="columns" :data-source="filteredSessions" :loading="loading" bordered size="small"
+        :customRow="customRow" :rowClassName="() => 'clickable'" :scroll="{ x: 'max-content' }">
         <template #bodyCell="{ column, record }">
             <!-- Node Column -->
             <template v-if="column.key === 'node'">
                 <div class="avatar-container">
-                    <router-location-avatar 
-                        :router="record.routerJoined" 
-                        :hide-peering-dot="true"
-                    />
+                    <router-location-avatar :router="record.routerJoined" :hide-peering-dot="true" />
                     <span class="node small-text">
                         {{ record.routerJoined?.name }}
                     </span>
@@ -250,12 +269,26 @@ const getStatusSortValue = (session: Session) => {
                 <span class="small-text">
                     {{ t(`pages.peering['${record.type}']`) }}
                 </span>
-            </template>            <!-- Status Column -->
+            </template> <!-- Status Column -->
             <template v-else-if="column.key === 'status'">
                 <template v-if="getBgpStatusDisplay(record)">
                     <!-- Show detailed BGP status when available -->
                     <span v-for="bgpStatus in getBgpStatusDisplay(record)" :key="bgpStatus.key">
-                        <a-tag :color="bgpStatus.color" style="margin-right: 4px;">
+                        <a-tag v-if="bgpStatus.type === 'ipv4'" :color="bgpStatus.color"
+                            style="margin-right: 4px; display: inline-flex; align-items: center;">
+                            <span>V4</span>
+                            <a-divider type="vertical"
+                                :style="`margin: 0 4px;border-color:${bgpStatus.color};font-size:10px`" />
+                            <span>{{ bgpStatus.text }}</span>
+                        </a-tag>
+                        <a-tag v-else-if="bgpStatus.type === 'ipv6'" :color="bgpStatus.color"
+                            style="margin-right: 4px; display: inline-flex; align-items: center;">
+                            <span>V6</span>
+                            <a-divider type="vertical"
+                                :style="`margin: 0 4px;border-color:${bgpStatus.color};font-size:10px`" />
+                            <span>{{ bgpStatus.text }}</span>
+                        </a-tag>
+                        <a-tag v-else :color="bgpStatus.color" style="margin-right: 4px;">
                             {{ bgpStatus.text }}
                         </a-tag>
                     </span>
@@ -284,92 +317,93 @@ const getStatusSortValue = (session: Session) => {
             <template v-else-if="column.key === 'ipv6LinkLocal'">
                 <span v-if="record.ipv6LinkLocal" class="small-text">{{ record.ipv6LinkLocal }}</span>
                 <close-outlined v-else />
-            </template>
-
-            <!-- Action Column -->
+            </template> <!-- Action Column -->
             <template v-else-if="column.key === 'action'">
-                <span>
-                    <a @click="handleViewMetrics(record, $event)">
-                        {{ t('pages.manage.session.viewMetrics') }}
-                    </a>
-                    
+                <a-button-group size="small">
+                    <!-- View Metrics Button -->
+                    <a-tooltip :title="t('pages.manage.session.viewMetrics')">
+                        <a-button type="primary" size="small" @click="handleViewMetrics(record, $event)">
+                            <search-outlined />
+                        </a-button>
+                    </a-tooltip>
+
                     <template v-if="isAdminMode">
-                        <a-divider type="vertical" />
                         <!-- Admin Actions -->
-                        <a-popconfirm 
+                        <a-popconfirm
                             v-if="record.status === SessionStatus.ENABLED || record.status === SessionStatus.PROBLEM"
-                            placement="bottomRight" 
-                            @confirm="handleDisable(record)"
-                        >
-                            <template #title>
-                                <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                            </template>
-                            <a @click="stopPropagation">{{ t('pages.manage.session.disable') }}</a>
+                            placement="bottomRight" :title="t('pages.manage.session.areYouSure')"
+                            @confirm="handleDisable(record)">
+                            <a-tooltip :title="t('pages.manage.session.disable')">
+                                <a-button size="small" @click="stopPropagation">
+                                    <pause-outlined />
+                                </a-button>
+                            </a-tooltip>
                         </a-popconfirm>
-                        
-                        <a-popconfirm 
-                            v-else-if="record.status === SessionStatus.DISABLED || record.status === SessionStatus.TEARDOWN" 
-                            placement="bottomRight" 
-                            @confirm="handleEnable(record)"
-                        >
-                            <template #title>
-                                <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                            </template>
-                            <a @click="stopPropagation">{{ t('pages.manage.session.enable') }}</a>
+
+                        <a-popconfirm
+                            v-else-if="record.status === SessionStatus.DISABLED || record.status === SessionStatus.TEARDOWN"
+                            placement="bottomRight" :title="t('pages.manage.session.areYouSure')"
+                            @confirm="handleEnable(record)">
+                            <a-tooltip :title="t('pages.manage.session.enable')">
+                                <a-button size="small" @click="stopPropagation">
+                                    <caret-right-outlined />
+                                </a-button>
+                            </a-tooltip>
                         </a-popconfirm>
-                        
-                        <a-popconfirm 
-                            v-else-if="record.status === SessionStatus.PENDING_APPROVAL" 
-                            placement="bottomRight" 
-                            @confirm="handleApprove(record)"
-                        >
-                            <template #title>
-                                <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                            </template>
-                            <a @click="stopPropagation">{{ t('pages.manage.session.approve') }}</a>
+
+                        <a-popconfirm v-else-if="record.status === SessionStatus.PENDING_APPROVAL"
+                            placement="bottomRight" :title="t('pages.manage.session.areYouSure')"
+                            @confirm="handleApprove(record)">
+                            <a-tooltip :title="t('pages.manage.session.approve')">
+                                <a-button type="primary" size="small" @click="stopPropagation">
+                                    <check-circle-outlined />
+                                </a-button>
+                            </a-tooltip>
                         </a-popconfirm>
                     </template>
-                    
+
                     <template v-else>
                         <!-- User Actions -->
-                        <a-divider type="vertical" />
-                        <a-popconfirm 
+                        <a-popconfirm
                             v-if="record.status === SessionStatus.ENABLED || record.status === SessionStatus.PROBLEM"
-                            placement="bottomRight" 
-                            @confirm="handleDisable(record)"
-                        >
-                            <template #title>
-                                <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                            </template>
-                            <a @click="stopPropagation">{{ t('pages.manage.session.disable') }}</a>
+                            placement="bottomRight" :title="t('pages.manage.session.areYouSure')"
+                            @confirm="handleDisable(record)">
+                            <a-tooltip :title="t('pages.manage.session.disable')">
+                                <a-button size="small" @click="stopPropagation">
+                                    <pause-outlined />
+                                </a-button>
+                            </a-tooltip>
                         </a-popconfirm>
-                        
-                        <a-popconfirm 
-                            v-else-if="record.status === SessionStatus.DISABLED" 
-                            placement="bottomRight" 
-                            @confirm="handleEnable(record)"
-                        >
-                            <template #title>
-                                <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                            </template>
-                            <a @click="stopPropagation">{{ t('pages.manage.session.enable') }}</a>
+
+                        <a-popconfirm v-else-if="record.status === SessionStatus.DISABLED" placement="bottomRight"
+                            :title="t('pages.manage.session.areYouSure')" @confirm="handleEnable(record)">
+                            <a-tooltip :title="t('pages.manage.session.enable')">
+                                <a-button size="small" @click="stopPropagation">
+                                    <caret-right-outlined />
+                                </a-button>
+                            </a-tooltip>
                         </a-popconfirm>
                     </template>
-                    
+
                     <!-- Edit Button -->
-                    <template v-if="record.status !== SessionStatus.PENDING_APPROVAL && record.status !== SessionStatus.QUEUED_FOR_DELETE && record.status !== SessionStatus.TEARDOWN && record.status !== SessionStatus.QUEUED_FOR_SETUP">
-                        <a-divider type="vertical" />
-                        <a @click="stopPropagation($event); handleEdit(record)">{{ t('pages.manage.session.edit') }}</a>
-                    </template>
-                    
-                    <a-divider type="vertical" />
-                    <a-popconfirm placement="bottomRight" @confirm="handleRemove(record)">
-                        <template #title>
-                            <p>{{ t('pages.manage.session.areYouSure') }}</p>
-                        </template>
-                        <a @click="stopPropagation">{{ t('pages.manage.session.remove') }}</a>
+                    <a-tooltip
+                        v-if="record.status !== SessionStatus.PENDING_APPROVAL && record.status !== SessionStatus.QUEUED_FOR_DELETE && record.status !== SessionStatus.TEARDOWN && record.status !== SessionStatus.QUEUED_FOR_SETUP"
+                        :title="t('pages.manage.session.edit')">
+                        <a-button size="small" @click="stopPropagation($event); handleEdit(record)">
+                            <edit-outlined />
+                        </a-button>
+                    </a-tooltip>
+
+                    <!-- Remove Button -->
+                    <a-popconfirm placement="bottomRight" :title="t('pages.manage.session.areYouSure')"
+                        @confirm="handleRemove(record)">
+                        <a-tooltip :title="t('pages.manage.session.remove')">
+                            <a-button danger size="small" @click="stopPropagation">
+                                <delete-outlined />
+                            </a-button>
+                        </a-tooltip>
                     </a-popconfirm>
-                </span>
+                </a-button-group>
             </template>
         </template>
     </a-table>
@@ -391,8 +425,50 @@ const getStatusSortValue = (session: Session) => {
     font-size: 12px;
 }
 
+:deep(tr.clickable) {
+    cursor: pointer !important;
+}
+
 /* BGP Status styling */
 .ant-tag {
     margin-bottom: 2px;
+}
+
+/* BGP Status with protocol prefix styling */
+:deep(.ant-tag) {
+    border-radius: 4px;
+}
+
+:deep(.ant-divider-vertical) {
+    height: 12px;
+    margin: 0 4px;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Action button group styling */
+:deep(.ant-btn-group) {
+    display: flex;
+    align-items: center;
+}
+
+:deep(.ant-btn-group .ant-btn) {
+    padding: 0 6px;
+    height: 24px;
+    line-height: 22px;
+    border-radius: 0;
+}
+
+:deep(.ant-btn-group .ant-btn:first-child) {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+:deep(.ant-btn-group .ant-btn:last-child) {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+:deep(.ant-btn-group .ant-btn .anticon) {
+    font-size: 12px;
 }
 </style>
