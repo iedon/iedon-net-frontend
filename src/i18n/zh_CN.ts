@@ -294,6 +294,7 @@ export default {
       networkMetrics: '网络指标',
       rtt: 'RTT',
       currentRtt: '当前 RTT',
+      packetLoss: '丢包率',
       timeout: '超时',
       interfaceIPv4: 'IPv4',
       interfaceIPv6: 'IPv6',

@@ -95,6 +95,7 @@ export type InterfaceMetric = {
 
 export type RTTMetric = {
   current: number; // -1 means timeout or error
+  loss: number;  // los rate, float64
   metric: [number, number][]; // each metric is [timestamp, value] where value -1 means timeout or error
 };
 

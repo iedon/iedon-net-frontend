@@ -294,6 +294,7 @@ export default {
       networkMetrics: 'ネットワークメトリック',
       rtt: 'RTT',
       currentRtt: '現在の RTT',
+      packetLoss: 'パケットロス',
       timeout: 'タイムアウト',
       interfaceIPv4: 'IPv4',
       interfaceIPv6: 'IPv6',

@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
 import { SendOutlined, UserOutlined } from '@ant-design/icons-vue'
-import { loggedIn } from '../../common/helper'
+import { loggedIn, themeName } from '../../common/helper'
 import { makeRequest, SetPasswordResponse } from '../../common/packetHandler'
 import config from "../../config"
 
@@ -157,9 +157,21 @@ const setPassword = async () => {
     display: flex;
     align-items: center;
     padding: 20px;
-    background: #fafafa;
     border-radius: 8px;
-    border: 1px solid #f0f0f0;
+    border: 1px solid;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light theme (default) */
+.avatar-section {
+    background: #fafafa;
+    border-color: #f0f0f0;
+}
+
+/* Dark theme support */
+.dark .avatar-section {
+    background: #1f1f1f;
+    border-color: #434343;
 }
 
 .avatar {
@@ -173,12 +185,32 @@ const setPassword = async () => {
 .user-name {
     font-size: 16px;
     font-weight: 500;
-    color: #262626;
     margin-bottom: 4px;
+    transition: color 0.3s ease;
+}
+
+/* Light theme (default) */
+.user-name {
+    color: #262626;
+}
+
+/* Dark theme support */
+.dark .user-name {
+    color: #ffffff;
 }
 
 .user-asn {
     font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+/* Light theme (default) */
+.user-asn {
     color: #8c8c8c;
+}
+
+/* Dark theme support */
+.dark .user-asn {
+    color: #bfbfbf;
 }
 </style>

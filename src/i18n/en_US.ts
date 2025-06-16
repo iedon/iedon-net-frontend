@@ -300,6 +300,7 @@ export default {
       networkMetrics: 'Network Metrics',
       rtt: 'RTT',
       currentRtt: 'Current RTT',
+      packetLoss: 'Packet Loss',
       timeout: 'Timeout',
 
       // Interface 

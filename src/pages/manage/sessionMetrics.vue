@@ -126,7 +126,8 @@
 
             <!-- Metrics Overview -->
             <div class="metrics-overview" v-if="getLatestMetrics">
-                <div class="metrics-grid"> <!-- BGP IPv4 Routes Metric -->
+                <div class="metrics-grid">
+                    <!-- BGP IPv4 Routes Metric -->
                     <div class="metric-item bgp-routes-ipv4" @click="scrollToBgpCharts" style="cursor: pointer;"
                         :title="t('pages.metrics.clickToViewChart')">
                         <div class="metric-icon bgp-routes">
@@ -220,9 +221,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- RTT Metric -->
+                    </div> <!-- RTT Metric -->
                     <div class="metric-item" @click="scrollToRttChart" style="cursor: pointer;"
                         :title="t('pages.metrics.clickToViewChart')">
                         <div class="metric-icon rtt"
@@ -230,13 +229,22 @@
                             <dashboard-outlined />
                         </div>
                         <div class="metric-content">
-                            <div class="metric-value"
-                                :class="{ timeout: rttDisplayValue === t('pages.metrics.timeout') }">
-                                {{ rttDisplayValue }}
-                                <span v-if="rttDisplayValue !== t('pages.metrics.timeout')"
-                                    class="metric-unit">ms</span>
+                            <div class="metric-value-row">
+                                <div class="metric-value-pair">
+                                    <div class="metric-value"
+                                        :class="{ timeout: rttDisplayValue === t('pages.metrics.timeout') }">
+                                        {{ rttDisplayValue }}
+                                        <span v-if="rttDisplayValue !== t('pages.metrics.timeout')"
+                                            class="metric-unit">ms</span>
+                                    </div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.currentRtt') }}</div>
+                                </div>
+                                <div class="metric-separator">|</div>
+                                <div class="metric-value-pair">
+                                    <div class="metric-value">{{ rttLossDisplayValue }}%</div>
+                                    <div class="metric-sub-label">{{ t('pages.metrics.packetLoss') }}</div>
+                                </div>
                             </div>
-                            <div class="metric-label">{{ t('pages.metrics.currentRtt') }}</div>
                         </div>
                     </div>
 
@@ -605,6 +613,13 @@ const rttDisplayValue = computed(() => {
     if (rttValue === undefined || rttValue === null) return '0'
     if (rttValue === -1) return t('pages.metrics.timeout')
     return rttValue.toString()
+})
+
+// Get RTT loss display value
+const rttLossDisplayValue = computed(() => {
+    const lossValue = getLatestMetrics.value?.rtt?.loss
+    if (lossValue === undefined || lossValue === null) return '0.0'
+    return (lossValue * 100).toFixed(1) // Convert to percentage and format to 1 decimal place
 })
 
 // Get session info from sessionMetrics.data
@@ -2344,7 +2359,7 @@ const bgpColumns = computed(() => [
 
     .table-container {
         border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         margin: 0 -16px;
         padding: 0 16px;
         background: #fff;
