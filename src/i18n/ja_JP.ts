@@ -305,7 +305,7 @@ export default {
       currentRates: '現在の TX/RX レート',
       txTotal: '総 TX',
       rxTotal: '総 RX',
-      bgpPeerName: 'ピア名',
+      bgpPeerName: 'ピア名（クリックして Looking Glass を開く）',
       bgpState: '状態',
       sessionStatus: 'セッションステータス',
       detailedMetrics: '詳細メトリック',

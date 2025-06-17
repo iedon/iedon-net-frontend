@@ -305,7 +305,7 @@ export default {
       currentRates: 'Taux TX/RX actuels',
       txTotal: 'TX total',
       rxTotal: 'RX total',
-      bgpPeerName: 'Nom du pair',
+      bgpPeerName: 'Nom du pair (Cliquez pour ouvrir le Looking Glass)',
       bgpState: 'État',
       sessionStatus: 'Statut de la session',
       detailedMetrics: 'Métriques détaillées',

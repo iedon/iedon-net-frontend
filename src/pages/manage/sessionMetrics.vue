@@ -184,14 +184,14 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.total?.[0] || 0)
-                                    }}</div>
+                                        }}</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.txTotal') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.total?.[1] || 0)
-                                    }}</div>
+                                        }}</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.rxTotal') }}</div>
                                 </div>
                             </div>
@@ -209,14 +209,14 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.current?.[0] || 0)
-                                    }}/s</div>
+                                        }}/s</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.txCurrent') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.current?.[1] || 0)
-                                    }}/s</div>
+                                        }}/s</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.rxCurrent') }}</div>
                                 </div>
                             </div>
@@ -376,8 +376,8 @@
                         <a-tab-pane key="bgp-details" :tab="t('pages.metrics.bgpDetails')">
                             <div class="table-container">
                                 <a-table v-if="hasAnyBgpData" :dataSource="sessionMetrics!.bgp" :columns="bgpColumns"
-                                    :pagination="false" size="middle" :bordered="false"
-                                    :scroll="{ x: 'max-content' }" />
+                                    :pagination="false" size="middle" :bordered="false" :scroll="{ x: 'max-content' }"
+                                    :rowClassName="() => 'clickable'" :customRow="openLookingGlassPage" />
                                 <!-- Empty State -->
                                 <div v-else class="empty-state">
                                     <div class="empty-icon">🔗</div>
@@ -446,7 +446,6 @@ import { message } from 'ant-design-vue'
 import {
     ArrowLeftOutlined,
     ReloadOutlined,
-    LineChartOutlined,
     DashboardOutlined,
     ApiOutlined,
     PieChartOutlined,
@@ -473,8 +472,9 @@ import VChart from 'vue-echarts'
 
 // Application imports
 import { loggedIn, formatDate, formatRelativeTime, themeName, isAdmin, formatBytes, registerPageTitle } from '../../common/helper'
-import { makeRequest, SessionMetric, RouterMetadata, RoutersResponse, CurrentSessionMetadata, GetCurrentSessionResponse, RoutingPolicy, SessionStatus } from '../../common/packetHandler'
+import { makeRequest, SessionMetric, RouterMetadata, RoutersResponse, CurrentSessionMetadata, GetCurrentSessionResponse, RoutingPolicy, SessionStatus, BGPMetric } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
+import config from '../../config'
 
 // Markdown imports
 //@ts-ignore
@@ -515,7 +515,7 @@ const route = useRoute()
 // =============================================================================
 // REACTIVE STATE
 // =============================================================================
-const loading = ref(false)
+const loading = ref(true)
 const sessionId = route.params.sessionId as string
 const routerId = route.params.routerId as string
 const windowWidth = ref(window.innerWidth)
@@ -591,20 +591,6 @@ const getLatestMetrics = computed(() => {
         interface: sessionMetrics.value.interface || null,
         rtt: sessionMetrics.value.rtt || null
     }
-})
-
-// Get BGP info from all BGP sessions
-const bgpInfo = computed(() => {
-    if (!sessionMetrics.value?.bgp || sessionMetrics.value.bgp.length === 0) return 'Unknown'
-
-    const infoArray = sessionMetrics.value.bgp.map(bgp => {
-        const info = bgp.info || 'Unknown'
-        // Split by space and take the first part to control text size
-        return info.split(' ')[0]
-    })
-
-    // Join multiple BGP info with comma
-    return infoArray.join(', ')
 })
 
 // Get RTT display value with timeout handling
@@ -936,6 +922,14 @@ const getRoutingPolicyName = (policy: RoutingPolicy) => {
         [RoutingPolicy.UPSTREAM]: t('pages.peering.routingPolicyTypes.UPSTREAM')
     }
     return policyNames[policy] || 'Unknown'
+}
+
+const openLookingGlassPage = (record: BGPMetric, _: number) => {
+    return {
+        onClick: (_: MouseEvent) => {
+            if (record && record.name) window.open(`${(config.lgUrl as Record<string, string>)[routerId]}${encodeURIComponent(record.name)}`, '_blank')?.focus();
+        }
+    }
 }
 
 // =============================================================================
@@ -2349,6 +2343,10 @@ const bgpColumns = computed(() => [
 .table-container .ant-table-cell {
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+:deep(tr.clickable) {
+    cursor: pointer !important;
 }
 
 /* Mobile table styling */

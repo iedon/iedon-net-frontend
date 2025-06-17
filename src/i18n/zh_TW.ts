@@ -305,7 +305,7 @@ export default {
       currentRates: '目前傳送/接收速率',
       txTotal: '總傳送量',
       rxTotal: '總接收量',
-      bgpPeerName: '對等方名稱',
+      bgpPeerName: '對等體名稱（點按開啟 Looking Glass）',
       bgpState: '狀態',
       sessionStatus: '工作階段狀態',
       detailedMetrics: '詳細指標',

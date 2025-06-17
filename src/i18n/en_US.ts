@@ -315,7 +315,7 @@ export default {
       rxTotal: 'RX Total',
 
       // BGP Details
-      bgpPeerName: 'Peer Name',
+      bgpPeerName: 'Peer Name (Click to open Looking Glass)',
       bgpState: 'State',
       // General
       sessionStatus: 'Session Status',
