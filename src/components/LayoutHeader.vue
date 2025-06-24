@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { UserOutlined, HomeOutlined, LoginOutlined, GlobalOutlined, LogoutOutlined, BookOutlined, StarFilled } from '@ant-design/icons-vue'
@@ -7,9 +7,14 @@ import { locale, setLocale, SupportedLocales, getLocaleName, getLocaleCodeAlias 
 import { loggedIn, themeName } from '../common/helper'
 import { makeRequest, PostMetadaResponse, PostMetadata } from '../common/packetHandler'
 import config from "../config"
+import logoDark from '../assets/logo_dark.svg'
+import logoLight from '../assets/logo.svg'
+
+import { message } from 'ant-design-vue'
+
 //@ts-ignore
 import md5 from 'md5'
-import { message } from 'ant-design-vue'
+
 
 const t = useI18n().t
 
@@ -146,6 +151,10 @@ email.value = localStorage.getItem('email') || ''
 if (email.value.length !== 0) email.value = getGravatar(email.value)
 if (asn.value && person.value && localStorage.getItem('token')) loggedIn.value = true
 
+const logoSrc = computed(() => {
+    return themeName.value === 'dark' ? logoDark : logoLight
+})
+
 // Fetch posts on component mount
 onMounted(() => {
     fetchPosts()
@@ -174,7 +183,7 @@ const login = () => {
 
 <template>
     <a-layout-header id="header" :class="themeName">
-        <img class="logo" src="../assets/logo.svg" @click="goHome" alt="Logo" />
+        <img class="logo" :src="logoSrc" @click="goHome" alt="Logo" />
         <a-menu :class="`menu ${themeName}`" @select="onSelect" :theme="themeName" mode="horizontal" v-model:selectedKeys="selectedKeys">
             <a-menu-item key="home" @click="goHome">
                 <template #icon>
