@@ -14,8 +14,19 @@ const props = defineProps<{
         linkType: string,
         bgpExtensions: ("mp-bgp" | "extended-nexthop")[],
         routingPolicy: number
-    }
+    },
+    isEditMode?: boolean,
+    existingSession?: any,
+    reuseExistingConfig?: boolean
 }>()
+
+const emit = defineEmits<{
+    'update:reuseExistingConfig': [value: boolean]
+}>()
+
+const updateReuseConfig = (value: boolean) => {
+    emit('update:reuseExistingConfig', value)
+}
 
 const t = useI18n().t
 
@@ -65,7 +76,6 @@ const routingPolicyOptions = getRoutingPolicyOptions()
                 <a-checkbox v-for="extension in props.router.extensions" :key="`extension_${extension}`" :value="extension">{{ t(`pages.peering['${extension}']`) }}</a-checkbox>
             </a-checkbox-group>
         </a-form-item>
-
         <a-form-item :label="t('pages.peering.routingPolicy')">
             <a-radio-group v-model:value="props.preferenceForm.routingPolicy">
                 <a-space direction="vertical" style="width: 100%">
@@ -77,6 +87,12 @@ const routingPolicyOptions = getRoutingPolicyOptions()
                     </a-radio>
                 </a-space>
             </a-radio-group>
+        </a-form-item>
+        <!-- Reuse existing config option for edit mode -->
+        <a-form-item v-if="props.isEditMode && props.existingSession?.type === props.preferenceForm.linkType" :wrapper-col="{ offset: 8, span: 16 }">
+            <a-checkbox :checked="props.reuseExistingConfig" @change="(e: Event) => updateReuseConfig((e.target as HTMLInputElement)?.checked)">
+                {{ t('pages.peering.reuseExistingConfig') }}
+            </a-checkbox>
         </a-form-item>
 
         <br />
