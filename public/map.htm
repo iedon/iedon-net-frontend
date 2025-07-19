@@ -7,6 +7,7 @@
         <title>IEDON-NET NODE MAP</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
         <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+        <script src="https://cdn.jsdelivr.net/npm/leaflet-curve@1.0.0/leaflet.curve.min.js"></script>
         <style>
             html, body {
                 height: 100%;
@@ -17,6 +18,50 @@
                 width: 100%;
                 max-width: 100%;
                 max-height: 100%;
+            }
+            
+            /* Enhanced connection line styling */
+            .connection-line {
+                transition: all 0.3s ease;
+            }
+            
+            .connection-line:hover {
+                filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+                cursor: pointer;
+            }
+            
+            /* Custom tooltip styling */
+            .connection-tooltip {
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 12px;
+                font-size: 12px;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                backdrop-filter: blur(10px);
+            }
+            
+            .connection-tooltip::before {
+                border-top-color: rgba(0, 0, 0, 0.8) !important;
+            }
+            
+            /* Enhanced marker styling */
+            .leaflet-marker-icon {
+                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+                transition: all 0.3s ease;
+            }
+            
+            .leaflet-marker-icon:hover {
+                filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+                transform: scale(1.1);
+            }
+            
+            /* Popup styling */
+            .leaflet-popup-content-wrapper {
+                border-radius: 8px;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.3);
             }
         </style>      
     </head>
@@ -74,6 +119,16 @@
                     nodeId: 119,
                     coordinates: [ 103.989441, 1.359167 ]
                 },
+                'UK-LON': {
+                    name: '🇬🇧 <b>London, United Kingdom</b><br/><small>172.23.91.122, fd42:4242:2189:122::1</small>',
+                    nodeId: 122,
+                    coordinates: [ -0.118092, 51.509865 ]
+                },
+                'US-NYC': {
+                    name: '🇺🇸 <b>Buffalo, NY, US / Near Toronto, CA</b><br/><small>172.23.91.124, fd42:4242:2189:124::1</small>',
+                    nodeId: 124,
+                    coordinates: [ -78.878738, 42.880230 ]
+                },
             };
             const node_conns = {
                 'CN-NTG': [ 'US-LAX', 'US-SJC', 'DE-FRA', 'JP-TYO', 'JP-KOT', 'HK-HKG', 'SG-SIN', 'CN-CZX', 'CN-SHA' ],
@@ -81,6 +136,8 @@
                 'JP-TYO': [ 'US-LAX', 'US-SJC', 'DE-FRA', 'JP-KOT', 'HK-HKG', 'SG-SIN' ],
                 'US-LAX': [ 'US-SJC', 'DE-FRA', 'HK-HKG', 'SG-SIN' ],
                 'US-SJC': [ 'DE-FRA', 'HK-HKG', 'SG-SIN' ],
+                'US-NYC': [ 'US-LAX', 'US-SJC', 'JP-TYO', 'SG-SIN', 'HK-HKG', 'UK-LON', 'DE-FRA' ],
+                'UK-LON': [ 'US-LAX', 'US-SJC', 'JP-TYO', 'SG-SIN', 'HK-HKG', 'DE-FRA' ],
                 'DE-FRA': [ 'HK-HKG', 'SG-SIN' ],
                 'JP-KOT': [ 'HK-HKG', 'SG-SIN' ],
                 'CN-SHA': [ 'HK-HKG' ]
@@ -99,33 +156,26 @@
                     }
                 });
             });
-            Object.keys(node_conns).forEach(key => {
-                node_conns[key].forEach(peer => {
-                    data.push({
-                        type: 'Feature',
-                        geometry: {
-                            type: 'LineString',
-                            coordinates: [ nodes[key].coordinates, nodes[peer].coordinates ]
-                        }
-                    });
-                })
-            });
 
             const map = L.map('map', {
                 worldCopyJump: true,
                 scrollWheelZoom: false,
                 doubleClickZoom: false
-            }).setView([35, 20], 2);
+            }).setView([35, 30], 2);
+            
             const customIcon = L.icon({
                 iconUrl: './map/icon-pin.png',
                 iconSize:     [24, 24],
                 iconAnchor:   [13, 22],
                 popupAnchor:  [0, -20]
             });
+            
             const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
+
+            // Add node markers
             L.geoJSON(data, {
                 onEachFeature: function(features, layer) {
                     if (features.properties && features.properties.name) {
@@ -134,8 +184,119 @@
                 },
                 pointToLayer: function(feature, latlng) {
                     return L.marker(latlng, { icon: customIcon });
+                },
+                filter: function(feature) {
+                    return feature.geometry.type === 'Point';
                 }
             }).addTo(map);
+
+            // Add SVG definitions for gradients
+            const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svgElement.innerHTML = `
+                <defs>
+                    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#4ecdc4;stop-opacity:0.8" />
+                    </linearGradient>
+                    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#45b7d1;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#f39c12;stop-opacity:0.8" />
+                    </linearGradient>
+                    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#9b59b6;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#2ecc71;stop-opacity:0.8" />
+                    </linearGradient>
+                    <linearGradient id="gradient4" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#e74c3c;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#3498db;stop-opacity:0.8" />
+                    </linearGradient>
+                    <linearGradient id="gradient5" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#f1c40f;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#e67e22;stop-opacity:0.8" />
+                    </linearGradient>
+                </defs>
+            `;
+            map.getPane('overlayPane').appendChild(svgElement);
+
+            // Color schemes for different connection types
+            const connectionColors = [
+                { color: 'url(#gradient1)', weight: 3, dashArray: '8, 12' },
+                { color: 'url(#gradient2)', weight: 2.5, dashArray: '10, 8' },
+                { color: 'url(#gradient3)', weight: 3.5, dashArray: '6, 14' },
+                { color: 'url(#gradient4)', weight: 2, dashArray: '12, 6' },
+                { color: 'url(#gradient5)', weight: 3, dashArray: '5, 15' }
+            ];
+
+            // Track connections to avoid duplicates
+            const drawnConnections = new Set();
+
+            // Add curved connections with enhanced visuals
+            Object.keys(node_conns).forEach((key, keyIndex) => {
+                node_conns[key].forEach((peer, peerIndex) => {
+                    // Create unique connection identifier to avoid drawing the same line twice
+                    const connectionId = [key, peer].sort().join('-');
+                    if (drawnConnections.has(connectionId)) {
+                        return;
+                    }
+                    drawnConnections.add(connectionId);
+
+                    const startCoords = nodes[key].coordinates;
+                    const endCoords = nodes[peer].coordinates;
+                    
+                    // Calculate midpoint and offset for curve
+                    const midLat = (startCoords[1] + endCoords[1]) / 2;
+                    const midLng = (startCoords[0] + endCoords[0]) / 2;
+                    
+                    // Add some curvature - offset the midpoint perpendicular to the line
+                    const distance = Math.sqrt(Math.pow(endCoords[0] - startCoords[0], 2) + Math.pow(endCoords[1] - startCoords[1], 2));
+                    const curvature = distance * 0.15; // slightly reduced curve intensity for better visibility
+                    
+                    // Calculate perpendicular offset
+                    const perpLat = -(endCoords[0] - startCoords[0]) / distance * curvature;
+                    const perpLng = (endCoords[1] - startCoords[1]) / distance * curvature;
+                    
+                    const controlPoint = [midLng + perpLng, midLat + perpLat];
+                    
+                    // Select color scheme based on connection characteristics
+                    const colorIndex = (keyIndex + peerIndex) % connectionColors.length;
+                    const style = connectionColors[colorIndex];
+                    
+                    // Create curved line using quadratic bezier with enhanced styling
+                    const curve = L.curve([
+                        'M', [startCoords[1], startCoords[0]],
+                        'Q', [controlPoint[1], controlPoint[0]],
+                        [endCoords[1], endCoords[0]]
+                    ], {
+                        ...style,
+                        opacity: 0.9,
+                        fill: false,
+                        className: 'connection-line',
+                        interactive: true
+                    }).addTo(map);
+
+                    // Add hover effects
+                    curve.on('mouseover', function() {
+                        this.setStyle({
+                            weight: style.weight + 2,
+                            opacity: 1
+                        });
+                    });
+                    
+                    curve.on('mouseout', function() {
+                        this.setStyle({
+                            weight: style.weight,
+                            opacity: 0.9
+                        });
+                    });
+
+                    // Add tooltip showing connection info
+                    curve.bindTooltip(`Connection: ${nodes[key].name.replace(/<[^>]*>/g, '').split(',')[0]} ↔ ${nodes[peer].name.replace(/<[^>]*>/g, '').split(',')[0]}`, {
+                        permanent: false,
+                        direction: 'top',
+                        className: 'connection-tooltip'
+                    });
+                });
+            });
         </script>
     </body>
 </html>
