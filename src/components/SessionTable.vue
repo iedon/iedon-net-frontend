@@ -355,7 +355,7 @@ const getStatusSortValue = (session: Session) => {
                             placement="bottomRight" :title="t('pages.manage.session.areYouSure')"
                             @confirm="handleApprove(record)">
                             <a-tooltip :title="t('pages.manage.session.approve')">
-                                <a-button type="primary" size="small" @click="stopPropagation">
+                                <a-button size="small" @click="stopPropagation">
                                     <check-circle-outlined />
                                 </a-button>
                             </a-tooltip>

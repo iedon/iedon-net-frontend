@@ -390,10 +390,6 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
                 <!-- Metrics Section (if available) -->
                 <div v-if="r.metric" class="metrics-section">
                     <a-divider class="metrics-divider" />
-                    <div class="metrics-title">
-                        <desktop-outlined class="metrics-title-icon" />
-                        <span>{{ t('pages.nodes.systemMetrics') }}</span>
-                    </div>
                     <div class="metrics-grid">
                         <div class="metric-item">
                             <clock-circle-outlined class="metric-icon" />
@@ -461,10 +457,11 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 <style scoped>
 .nodes-page {
     width: 100%;
-    margin: 0;
+    margin: 0 auto;
     padding: 16px 24px;
     min-height: 100vh;
     background-color: #f9f9f9;
+    max-width: 1440px;
 }
 
 .dark .nodes-page {
@@ -866,7 +863,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 }
 
 .metrics-divider {
-    margin: 12px 0 8px 0;
+    margin: 12px auto;
 }
 
 .metrics-title {

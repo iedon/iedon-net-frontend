@@ -8,7 +8,7 @@ import {
   ReloadOutlined,
   GlobalOutlined,
 } from "@ant-design/icons-vue";
-import { loggedIn, sessionMgmtSearchText } from "../../common/helper";
+import { isAdmin, loggedIn, sessionMgmtSearchText } from "../../common/helper";
 import {
   makeRequest,
   RouterMetadata,
@@ -110,7 +110,7 @@ const handleViewMetrics = (session: Session, event: MouseEvent) => {
   event.stopPropagation();
   if (
     session.status === SessionStatus.QUEUED_FOR_DELETE ||
-    session.status === SessionStatus.PENDING_APPROVAL
+    (session.status === SessionStatus.PENDING_APPROVAL && !isAdmin.value)
   ) {
     message.error(t(`pages.manage.session.statusCode['${session.status}']`));
     return;

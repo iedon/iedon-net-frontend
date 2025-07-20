@@ -1,32 +1,54 @@
 <!DOCTYPE html>
-<html>
-
-<head>
+<html lang="en">
+  <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="renderer" content="webkit" />
     <meta name="force-rendering" content="webkit" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-    <title>iEdon PeerAPI Frontend</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no"
+    />
+    <title>iEdon Networks (iEdon-Net)</title>
+    <meta
+      name="description"
+      content="iEdon Networks (iEdon-Net), Since 2017. Part of the DN42 Network since March 2019."
+    />
+    <meta
+      name="keywords"
+      content="DN42,iEdon,4242422189,iEdon-Net,AutoPeer,Peer,NEONETWORK,ICVPN,CHAOSVPN,BGP,automatic peering,peering connection,ASN,peer node,realtime,BGP,network,routing,BIRD,FRR,FRRouting"
+    />
+    <meta property="og:title" content="iEdon Networks (iEdon-Net)" />
+    <meta property="og:site_name" content="iEdon-Net" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:description"
+      content="iEdon Networks (iEdon-Net), Since 2017. Part of the DN42 Network since March 2019."
+    />
+    <meta property="og:url" content="https://iedon.net" />
     <link rel="icon" href="/favicon.ico" />
-</head>
+  </head>
 
-<body>
+  <body>
     <noscript>
-        <h1>You need modern browsers to continue</h1>
-        <h2>Your browser must support JavaScript and ES6</h2>
+      <h1>You need modern browsers to continue</h1>
+      <h2>Your browser must support JavaScript and ES6</h2>
     </noscript>
     <script nomodule>
-        alert('You need modern browsers to continue.\nYour browser must support JavaScript and ES6.')
+      alert(
+        "You need modern browsers to continue.\nYour browser must support JavaScript and ES6."
+      );
     </script>
     <script type="text/javascript">
-        if (window.location.hostname !== 'iedon.net') {
-            window.location.href = "https://iedon.net"
-        }
-        if (!window.localStorage) alert('Your browser must support window.localStorage and which must be enabled before accessing this site.')
+      if (window.location.hostname !== "iedon.net") {
+        window.location.href = "https://iedon.net";
+      }
+      if (!window.localStorage)
+        alert(
+          "Your browser must support window.localStorage and which must be enabled before accessing this site."
+        );
     </script>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
-</body>
-
+  </body>
 </html>

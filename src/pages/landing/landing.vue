@@ -23,6 +23,9 @@
                             <a-button size="large" @click="scrollToMap" class="btn-secondary">
                                 {{ t('pages.landing.viewGlobalMap') }}
                             </a-button>
+                            <a-button size="large" @click="openMapDn42" class="btn-secondary">
+                                {{ t("pages.manage.session.showMyConnectivityInMap") }}
+                            </a-button>
                         </div>
                     </div>
                     <div class="hero-logo">
@@ -113,6 +116,7 @@ import {
 } from '@ant-design/icons-vue'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
 import { registerPageTitle, siteConfig } from '../../common/helper'
+import config from '../../config'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -149,6 +153,10 @@ const scrollToMap = () => {
     if (element) {
         element.scrollIntoView({ behavior: 'smooth' })
     }
+}
+
+const openMapDn42 = () => {
+    window.open(`${config.mapDn42Url}/#${siteConfig.value.netAsn}`, '_blank')?.focus();
 }
 
 // Lifecycle

@@ -1,4 +1,10 @@
 export default {
+  meta: {
+    description: 'iEdon Networks (iEdon-Net), Since 2017. Part of the DN42 Network since March 2019.',
+    keywords: 'DN42,iEdon,4242422189,iEdon-Net,AutoPeer,Peer,NEONETWORK,ICVPN,CHAOSVPN,BGP,automatic peering,peering connection,ASN,peer node,realtime,BGP,network,routing,BIRD,FRR,FRRouting',
+    ogTitle: 'iEdon Networks (iEdon-Net)',
+    ogSiteName: 'iEdon-Net'
+  },
   header: {
     home: 'Home',
     nodes: 'Peering',
@@ -88,8 +94,6 @@ export default {
       maintenanceMode: 'Maintenance Mode',
       // Connection types
       connectionTypes: 'Connection Types',
-      // System metrics
-      systemMetrics: 'System Metrics',
       uptime: 'Uptime',
       loadAvg: 'Load Avg',
       txRx: 'TX / RX',
@@ -122,7 +126,7 @@ export default {
         DOWNSTREAM: 'Downstream',
         DOWNSTREAM_DESC: 'Send all valid routes. Receive yours and your "downstream"(AS Path <= 2) routes.',
         UPSTREAM: 'Upstream (Admin)',
-        UPSTREAM_DESC: 'Receive all valid routes, send ours and direct downstream routes to remote (Admin).'
+        UPSTREAM_DESC: 'Receive all valid routes, send ours and direct downstream routes to remote.'
       },
       v4v6force: '💡 Add the “v4.” or “v6.” prefix to our endpoint to force IPv4 or IPv6 usage, if supported.',
       openvpn: 'OpenVPN',
@@ -261,8 +265,11 @@ export default {
       clickToCopy: 'Click to copy',
       refresh: 'Refresh',
       sessionId: 'Session ID',
+      interaceType: 'Interface Type',
+      interfaceName: 'Interface Name',
       bgpExtensions: 'BGP Extensions',
       routingPolicy: 'Routing Policy',
+      mtu: 'MTU',
       sessionInfo: 'Session Info',
       lastUpdated: 'Last Updated',
       loadingMetrics: 'Loading metrics...',
@@ -272,16 +279,29 @@ export default {
       fetchError: 'Failed to fetch metrics data',
       invalidSession: 'Invalid session parameters',
       noData: 'No data available',
+      notAvailable: 'N/A',
+      loading: 'Loading...',
+      none: 'None',
+      unknown: 'Unknown',
+      
+      // Header Cards
+      sessionDetails: 'Session Details',
+      nextUpdate: 'Next Update',
+      networkInfo: 'Network Information',
+      ipv4Address: 'IPv4 Address',
+      ipv6Address: 'IPv6 Address',
+      ipv6LinkLocal: 'IPv6 Link Local',
+      
       // BGP Metrics
       bgpMetrics: 'BGP Metrics',
       received: 'Imported',
       advertised: 'Exported',
       bgpDetails: 'BGP Details',
       bgpSession: 'BGP Session',
-      routesReceivedIPv4: 'Routes Imported (IPv4)',
-      routesAdvertisedIPv4: 'Routes Exported (IPv4)',
-      routesReceivedIPv6: 'Routes Imported (IPv6)',
-      routesAdvertisedIPv6: 'Routes Exported (IPv6)',
+      routesReceivedIPv4: 'IPv4 Imported',
+      routesAdvertisedIPv4: 'IPv4 Exported',
+      routesReceivedIPv6: 'IPv6 Imported',
+      routesAdvertisedIPv6: 'IPv6 Exported',
       // Interface Metrics
       interfaceMetrics: 'Interface Metrics',
       interfaceDetails: 'Interface Details',
@@ -291,14 +311,16 @@ export default {
       txCurrent: 'TX Current',
       rxCurrent: 'RX Current',
       bgpStatus: {
+        Close: 'Stopped',
         Established: 'Established',
-        Idle: 'Idle',
+        Idle: 'Idle/Interface IP Wrong',
         Active: 'Failed to connect',
         Connect: 'Connecting',
         Open: 'Negotiating',
         OpenSent: 'Negotiating',
         OpenConfirm: 'Confirming',
-        Unknown: 'Unknown'
+        Unknown: 'Unknown',
+        No: 'No Data',
       },
       // Network Metrics
       networkMetrics: 'Network Metrics',
@@ -321,6 +343,7 @@ export default {
       // BGP Details
       bgpPeerName: 'Peer Name (Click to open Looking Glass)',
       bgpState: 'State',
+      bgpSince: 'Since',
       // General
       sessionStatus: 'Session Status',
       detailedMetrics: 'Detailed Metrics',

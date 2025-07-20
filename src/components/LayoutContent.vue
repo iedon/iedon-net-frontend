@@ -26,6 +26,20 @@ import { themeName } from '../common/helper'
     margin: 0 auto;
 }
 
+#content:deep(.page:has(.landing-page)),
+#content:deep(.page:has(.nodes-page)),
+#content:deep(.page:has(#manage-page)) {
+    max-width: 100% !important;
+}
+
+#content:deep(.page:has(.nodes-page)) {
+    background-color: #f9f9f9 !important;
+}
+
+#content:deep(.page:has(.nodes-page).dark) {
+    background: #0f0f0f !important;
+}
+
 #content:deep(.page).light {
     background-color: #fff;
 }

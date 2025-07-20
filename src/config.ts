@@ -9,6 +9,7 @@ import pkg from '../package.json'
 
 export default {
     root: '/',
+    version: pkg.version,
     package: `${pkg.name}/${pkg.version}`,
     apiPrefix: 'https://api.iedon.com/dn42/peerapi',
     pingIntervalMs: 180000,
@@ -39,4 +40,5 @@ export default {
       'a331daff-40bd-478c-ac0d-a7b14bbcbaae': 'https://lg.iedon.net/detail/us-nyc/',
     },
     mapDn42Url: 'https://map.iedon.net',
+    metricPageRefreshInterval: 300000, // 5 minutes
 }

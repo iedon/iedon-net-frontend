@@ -14,9 +14,81 @@ import { resolveAcceptLanguage } from 'resolve-accept-language'
 const vueI18n = useI18n()
 const t = vueI18n.t
 
+// Function to update meta tags based on current locale
+const updateMetaTags = () => {
+    try {
+        const description = t('meta.description')
+        const keywords = t('meta.keywords')
+        const ogTitle = t('meta.ogTitle')
+        const ogSiteName = t('meta.ogSiteName')
+
+        const html = document.querySelector('html')
+        html?.setAttribute('lang', locale.value.replace('_', '-'))
+
+        // Update meta description
+        let metaDesc = document.querySelector('meta[name="description"]')
+        if (metaDesc) {
+            metaDesc.setAttribute('content', description)
+        } else {
+            metaDesc = document.createElement('meta')
+            metaDesc.setAttribute('name', 'description')
+            metaDesc.setAttribute('content', description)
+            document.head.appendChild(metaDesc)
+        }
+
+        // Update meta keywords
+        let metaKeywords = document.querySelector('meta[name="keywords"]')
+        if (metaKeywords) {
+            metaKeywords.setAttribute('content', keywords)
+        } else {
+            metaKeywords = document.createElement('meta')
+            metaKeywords.setAttribute('name', 'keywords')
+            metaKeywords.setAttribute('content', keywords)
+            document.head.appendChild(metaKeywords)
+        }
+
+        // Update og:title
+        let ogTitleMeta = document.querySelector('meta[property="og:title"]')
+        if (ogTitleMeta) {
+            ogTitleMeta.setAttribute('content', ogTitle)
+        } else {
+            ogTitleMeta = document.createElement('meta')
+            ogTitleMeta.setAttribute('property', 'og:title')
+            ogTitleMeta.setAttribute('content', ogTitle)
+            document.head.appendChild(ogTitleMeta)
+        }
+
+        // Update og:description
+        let ogDescMeta = document.querySelector('meta[property="og:description"]')
+        if (ogDescMeta) {
+            ogDescMeta.setAttribute('content', description)
+        } else {
+            ogDescMeta = document.createElement('meta')
+            ogDescMeta.setAttribute('property', 'og:description')
+            ogDescMeta.setAttribute('content', description)
+            document.head.appendChild(ogDescMeta)
+        }
+
+        // Update og:site_name
+        let ogSiteNameMeta = document.querySelector('meta[property="og:site_name"]')
+        if (ogSiteNameMeta) {
+            ogSiteNameMeta.setAttribute('content', ogSiteName)
+        } else {
+            ogSiteNameMeta = document.createElement('meta')
+            ogSiteNameMeta.setAttribute('property', 'og:site_name')
+            ogSiteNameMeta.setAttribute('content', ogSiteName)
+            document.head.appendChild(ogSiteNameMeta)
+        }
+    } catch (error) {
+        console.error('Failed to update meta tags:', error)
+    }
+}
+
 const stopWatchLocale = watch((): SupportedLocale => locale.value, async (newLocale: SupportedLocale) => {
     vueI18n.locale.value = newLocale
     antdLocale.value = await setLocale(newLocale)
+    // Update meta tags when locale changes
+    updateMetaTags()
 })
 
 let stopHeartBeat: (() => void) | null = null
@@ -47,6 +119,7 @@ onMounted(async () => {
             antdLocale.value = await setLocale('en_US')
         }
     }
+    updateMetaTags()
     stopHeartBeat = useHeartBeat(t)
 })
 

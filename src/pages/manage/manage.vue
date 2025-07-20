@@ -50,7 +50,7 @@ const backToTop = () => {
 </script>
 
 <template>
-    <section id="wrapper">
+    <section id="manage-page">
         <a-layout-sider :class="`sider ${themeName}`" width="200" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" v-show="!collapsed">
             <a-menu class="menu" mode="inline" v-model:selectedKeys="selectedKeys">
                 <template v-if="!isAdmin">
@@ -133,9 +133,10 @@ const backToTop = () => {
 </template>
 
 <style scoped>
-#wrapper {
+#manage-page {
     width: 100%;
     display: flex;
+    padding: 0 1%;
 }
 .sider {
     padding-top: 110px;

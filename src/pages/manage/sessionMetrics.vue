@@ -78,49 +78,151 @@
                                 {{ t(`pages.manage.session.statusCode['${sessionMetadata.status}']`) }}
                             </a-tag>
                         </h1>
-                        <div class="session-metadata">
-                            <div class="session-row">
-                                <div class="session-item">
-                                    <span class="session-label">{{ t('pages.metrics.sessionId') }}</span>
-                                    <span class="session-value copyable" @click="copySessionId"
-                                        :title="t('pages.metrics.clickToCopy')">{{ sessionId }}</span>
-                                </div>
-                                <div class="session-item">
-                                    <span class="session-label">{{ t('pages.metrics.bgpExtensions') }}</span>
-                                    <span class="session-value copyable" @click="copyBgpExtensions"
-                                        :title="t('pages.metrics.clickToCopy')">
-                                        {{ sessionMetadata?.extensions ? formatBgpExtensions(sessionMetadata.extensions)
-                                            :
-                                            'Loading...' }}
-                                    </span>
-                                </div>
-                                <div class="session-item">
-                                    <span class="session-label">{{ t('pages.metrics.routingPolicy') }}</span>
-                                    <span class="session-value copyable" @click="copyRoutingPolicy"
-                                        :title="t('pages.metrics.clickToCopy')">
-                                        {{ sessionMetadata?.policy !== undefined ?
-                                            getRoutingPolicyName(sessionMetadata.policy) :
-                                            'Loading...' }}
-                                    </span>
-                                </div>
-                                <div class="session-item">
-                                    <span class="session-label">{{ t('pages.metrics.lastUpdated') }} ({{
-                                        formatRelativeTime(new
-                                            Date(sessionMetrics.timestamp * 1000 || +new
-                                                Date()).toISOString(), t) }})</span>
-                                    <span class="session-value copyable" @click="copyLastUpdated"
-                                        :title="t('pages.metrics.clickToCopy')">
-                                        {{ formatDate(new Date(sessionMetrics.timestamp * 1000 || +new
-                                            Date()).toISOString()) }}</span>
-                                </div>
-                            </div>
+                        <div class="session-subtitle" v-if="routerInfo.description"
+                            v-html="md.render(routerInfo.description)">
                         </div>
                     </div>
                 </div>
 
-                <!-- Session Info Section -->
-                <div ref="cardRef" class="session-info-section" v-if="sessionInfo">
-                    <div class="session-info-content" v-html="sessionInfo.parsed"></div>
+                <!-- Session Details Cards -->
+                <div class="session-details-grid">
+                    <!-- Session Info Card -->
+                    <div class="session-detail-card">
+                        <div class="detail-card-header">
+                            <div class="detail-card-icon session-icon">
+                                <node-index-outlined />
+                            </div>
+                            <div class="detail-card-title">{{ t('pages.metrics.sessionDetails') }}</div>
+                            <span v-if="countdownSeconds > 0" class="next-update-countdown">
+                                <span class="countdown-indicator"></span>
+                                {{ t('pages.metrics.nextUpdate') }}: {{ countdownDisplay }}
+                            </span>
+                        </div>
+                        <div class="detail-card-content">
+                            <div class="detail-item detail-item-full-width">
+                                <span class="detail-label">{{ t('pages.metrics.sessionId') }}</span>
+                                <span class="detail-value copyable" @click="copySessionId"
+                                    :title="t('pages.metrics.clickToCopy')">{{ sessionId }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">{{ t('pages.metrics.interaceType') }}</span>
+                                <span class="detail-value">
+                                    <a-skeleton-input v-if="!sessionMetadata" size="small" :active="true"
+                                        style="height: 20px; width: 100px;" />
+                                    <span v-else>{{ t(`pages.peering.${sessionMetadata.type}`) }}</span>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">{{ t('pages.metrics.interfaceName') }}</span>
+                                <span class="detail-value copyable"
+                                    @click="copyToClipboard(sessionMetadata?.interface || '', 'Interface Name')">
+                                    <a-skeleton-input v-if="!sessionMetadata" size="small" :active="true"
+                                        style="height: 20px; width: 100px;" />
+                                    <span v-else>{{ sessionMetadata.interface || t('pages.metrics.notAvailable')
+                                        }}</span>
+                                </span>
+                            </div>
+                            <div class="detail-item" v-if="sessionMetadata?.mtu || !sessionMetadata">
+                                <span class="detail-label">{{ t('pages.metrics.mtu') }}</span>
+                                <span class="detail-value">
+                                    <a-skeleton-input v-if="!sessionMetadata" size="small" :active="true"
+                                        style="height: 20px; width: 80px;" />
+                                    <span v-else>{{ sessionMetadata.mtu || t('pages.metrics.notAvailable') }}</span>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">{{ t('pages.metrics.routingPolicy') }}</span>
+                                <span class="detail-value">
+                                    <a-skeleton-input v-if="!sessionMetadata" size="small" :active="true"
+                                        style="height: 20px; width: 120px;" />
+                                    <span v-else>{{ getRoutingPolicyName(sessionMetadata.policy) }}</span>
+                                </span>
+                            </div>
+                            <div class="detail-item" v-if="sessionMetadata?.extensions || !sessionMetadata">
+                                <span class="detail-label">{{ t('pages.metrics.bgpExtensions') }}</span>
+                                <a-skeleton-input v-if="!sessionMetadata" size="small" :active="true"
+                                    style="height: 20px; width: 100px;" />
+                                <span v-else class="detail-value">{{ formatBgpExtensions(sessionMetadata.extensions)
+                                }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">{{ t('pages.metrics.lastUpdated') }}</span>
+                                <span class="detail-value"
+                                    :title="sessionMetrics ? formatDate(new Date(sessionMetrics.timestamp * 1000 || +new Date()).toISOString()) : ''">
+                                    {{ sessionMetrics ? formatRelativeTime(new Date(sessionMetrics.timestamp * 1000 ||
+                                        +new
+                                            Date()).toISOString(), t) : t('pages.metrics.loading') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network Info Card -->
+                    <div class="session-detail-card">
+                        <div class="detail-card-header">
+                            <div class="detail-card-icon network-icon">
+                                <global-outlined />
+                            </div>
+                            <div class="detail-card-title">{{ t('pages.metrics.networkInfo') }}</div>
+                        </div>
+                        <div class="detail-card-content">
+                            <div class="detail-item" v-if="routerInfo?.ipv4 || sessionMetadata?.ipv4"
+                                :class="{ 'detail-item-full-width': typeof ipv4Display === 'object' && ipv4Display.isPair }">
+                                <span class="detail-label">{{ t('pages.metrics.ipv4Address') }}</span>
+                                <span class="detail-value ip-pair copyable"
+                                    @click="copyToClipboard(getIpPairString(routerInfo?.ipv4, sessionMetadata?.ipv4), 'IPv4 Pair')"
+                                    :title="t('pages.metrics.clickToCopy')">
+                                    <template v-if="typeof ipv4Display === 'object' && ipv4Display.isPair">
+                                        <span class="ip-server">{{ ipv4Display.server }}</span>
+                                        <api-outlined class="ip-separator" />
+                                        <span class="ip-user">{{ ipv4Display.user }}</span>
+                                    </template>
+                                    <template v-else>
+                                        {{ ipv4Display }}
+                                    </template>
+                                </span>
+                            </div>
+                            <div class="detail-item" v-if="routerInfo?.ipv6 || sessionMetadata?.ipv6"
+                                :class="{ 'detail-item-full-width': typeof ipv6Display === 'object' && ipv6Display.isPair }">
+                                <span class="detail-label">{{ t('pages.metrics.ipv6Address') }}</span>
+                                <span class="detail-value ip-pair copyable"
+                                    @click="copyToClipboard(getIpPairString(routerInfo?.ipv6, sessionMetadata?.ipv6), 'IPv6 Pair')"
+                                    :title="t('pages.metrics.clickToCopy')">
+                                    <template v-if="typeof ipv6Display === 'object' && ipv6Display.isPair">
+                                        <span class="ip-server">{{ ipv6Display.server }}</span>
+                                        <api-outlined class="ip-separator" />
+                                        <span class="ip-user">{{ ipv6Display.user }}</span>
+                                    </template>
+                                    <template v-else>
+                                        {{ ipv6Display }}
+                                    </template>
+                                </span>
+                            </div>
+                            <div class="detail-item" v-if="routerInfo?.ipv6LinkLocal || sessionMetadata?.ipv6LinkLocal"
+                                :class="{ 'detail-item-full-width': typeof ipv6LinkLocalDisplay === 'object' && ipv6LinkLocalDisplay.isPair }">
+                                <span class="detail-label">{{ t('pages.metrics.ipv6LinkLocal') }}</span>
+                                <span class="detail-value ip-pair copyable"
+                                    @click="copyToClipboard(getIpPairString(routerInfo?.ipv6LinkLocal, sessionMetadata?.ipv6LinkLocal), 'IPv6 Link-Local Pair')"
+                                    :title="t('pages.metrics.clickToCopy')">
+                                    <template
+                                        v-if="typeof ipv6LinkLocalDisplay === 'object' && ipv6LinkLocalDisplay.isPair">
+                                        <span class="ip-server">{{ ipv6LinkLocalDisplay.server }}</span>
+                                        <api-outlined class="ip-separator" />
+                                        <span class="ip-user">{{ ipv6LinkLocalDisplay.user }}</span>
+                                    </template>
+                                    <template v-else>
+                                        {{ ipv6LinkLocalDisplay }}
+                                    </template>
+                                </span>
+                            </div>
+
+                            <!-- Session Info Content -->
+                            <div ref="cardRef" v-if="sessionInfo" class="session-info-container">
+                                <div class="session-info-content" v-html="sessionInfo.parsed"></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -453,7 +555,9 @@ import {
     PauseOutlined,
     EditOutlined,
     DeleteOutlined,
-    CaretRightOutlined
+    CaretRightOutlined,
+    GlobalOutlined,
+    NodeIndexOutlined
 } from '@ant-design/icons-vue'
 
 // ECharts imports
@@ -481,6 +585,9 @@ import config from '../../config'
 import markdown_it from 'markdown-it'
 //@ts-ignore
 import mila from 'markdown-it-link-attributes'
+
+// Import external stylesheet
+import './sessionMetrics.css'
 
 // =============================================================================
 // INITIALIZATION
@@ -539,6 +646,10 @@ const bgpIPv6ReceivedChart = ref()
 const bgpIPv6AdvertisedChart = ref()
 const interfaceChart = ref()
 const rttChart = ref()
+
+// Countdown timer refs
+const countdownSeconds = ref(0)
+let countdownInterval: number | null = null
 
 // =============================================================================
 // COMPUTED PROPERTIES
@@ -606,6 +717,18 @@ const rttLossDisplayValue = computed(() => {
     const lossValue = getLatestMetrics.value?.rtt?.loss
     if (lossValue === undefined || lossValue === null) return '0.0'
     return (lossValue * 100).toFixed(1) // Convert to percentage and format to 1 decimal place
+})
+
+// Format countdown timer display
+const countdownDisplay = computed(() => {
+    const totalSeconds = countdownSeconds.value
+    if (totalSeconds <= 0) return '00:00:00'
+
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 })
 
 // Get session info from sessionMetrics.data
@@ -751,9 +874,53 @@ const fetchSessionMetadata = async () => {
 }
 
 // UI action functions
+// Helper functions for IP pair display
+const getIpPairDisplay = (serverIp: string | null | undefined, userIp: string | null | undefined) => {
+    const server = serverIp || ''
+    const user = userIp || ''
+
+    if (!server && !user) {
+        return t('pages.metrics.notAvailable')
+    }
+
+    if (!user) {
+        return server
+    }
+
+    if (!server) {
+        return user
+    }
+
+    return { server, user, isPair: true }
+}
+
+const getIpPairString = (serverIp: string | null | undefined, userIp: string | null | undefined) => {
+    const server = serverIp || ''
+    const user = userIp || ''
+
+    if (!server && !user) {
+        return t('pages.metrics.notAvailable')
+    }
+
+    if (!user) {
+        return server
+    }
+
+    if (!server) {
+        return user
+    }
+
+    return `${server} ↔ ${user}`
+}
+
 const goBack = () => {
     router.back()
 }
+
+// Computed properties for IP displays
+const ipv4Display = computed(() => getIpPairDisplay(routerInfo.value?.ipv4, sessionMetadata.value?.ipv4));
+const ipv6Display = computed(() => getIpPairDisplay(routerInfo.value?.ipv6, sessionMetadata.value?.ipv6));
+const ipv6LinkLocalDisplay = computed(() => getIpPairDisplay(routerInfo.value?.ipv6LinkLocal, sessionMetadata.value?.ipv6LinkLocal));
 
 const copyToClipboard = async (value: string, label: string) => {
     try {
@@ -768,7 +935,7 @@ const copySessionId = () => copyToClipboard(sessionId, 'session ID')
 
 // Function to format BGP extensions array
 const formatBgpExtensions = (extensions: string[]) => {
-    if (!extensions || extensions.length === 0) return 'None'
+    if (!extensions || extensions.length === 0) return t('pages.metrics.none')
     return extensions.map(ext => {
         const translationKey = `pages.peering.${ext}`
         const translated = t(translationKey)
@@ -777,26 +944,65 @@ const formatBgpExtensions = (extensions: string[]) => {
     }).join(', ')
 }
 
-const copyBgpExtensions = () => {
-    const extensions = sessionMetadata.value?.extensions
-    if (extensions) {
-        copyToClipboard(formatBgpExtensions(extensions), 'BGP extensions')
+const refreshData = async () => {
+    try {
+        await fetchSessionMetrics()
+    } catch (error) {
+        console.error(error)
     }
-}
-const copyRoutingPolicy = () => {
-    const policy = sessionMetadata.value?.policy
-    if (policy !== undefined) {
-        copyToClipboard(getRoutingPolicyName(policy), 'routing policy')
-    }
-}
-const copyLastUpdated = () => {
-    const dateStr = formatDate(new Date((sessionMetrics.value?.timestamp || +new Date()) * 1000).toISOString())
-    const relativeStr = formatRelativeTime(new Date((sessionMetrics.value?.timestamp || +new Date()) * 1000).toISOString(), t)
-    copyToClipboard(`${dateStr} ${relativeStr}`, 'last updated')
+    // Restart countdown timer after refreshing data
+    if (canRefreshData()) startCountdownTimer()
 }
 
-const refreshData = async () => {
-    await fetchSessionMetrics()
+const canRefreshData = () => {
+    if (!sessionMetadata.value) return true
+    switch (sessionMetadata.value.status) {
+        case SessionStatus.DISABLED:
+        case SessionStatus.PENDING_APPROVAL:
+        case SessionStatus.QUEUED_FOR_DELETE:
+        case SessionStatus.QUEUED_FOR_SETUP:
+        case SessionStatus.TEARDOWN:
+        case SessionStatus.DELETED:
+            return false
+        default:
+            return true
+    }
+}
+
+// Countdown timer functions
+const startCountdownTimer = () => {
+    if (!canRefreshData() || !sessionMetrics.value?.timestamp) return
+
+    // Calculate seconds until next refresh based on last update time and refresh interval
+    const lastUpdateTime = sessionMetrics.value.timestamp * 1000 // Convert to milliseconds
+    const refreshIntervalMs = config.metricPageRefreshInterval
+    const nextUpdateTime = lastUpdateTime + refreshIntervalMs
+    const now = Date.now()
+
+    // Calculate remaining seconds
+    const remainingMs = Math.max(0, nextUpdateTime - now)
+    countdownSeconds.value = Math.floor(remainingMs / 1000)
+
+    // Clear existing interval if any
+    stopCountdownTimer()
+
+    // Start countdown interval
+    countdownInterval = setInterval(() => {
+        if (countdownSeconds.value > 0) {
+            countdownSeconds.value--
+        } else {
+            // Clear existing interval and fetch new data and then reset countdown
+            stopCountdownTimer()
+            refreshData()
+        }
+    }, 1000)
+}
+
+const stopCountdownTimer = () => {
+    if (countdownInterval) {
+        clearInterval(countdownInterval)
+        countdownInterval = null
+    }
 }
 
 // Session management functions
@@ -921,7 +1127,7 @@ const getRoutingPolicyName = (policy: RoutingPolicy) => {
         [RoutingPolicy.DOWNSTREAM]: t('pages.peering.routingPolicyTypes.DOWNSTREAM'),
         [RoutingPolicy.UPSTREAM]: t('pages.peering.routingPolicyTypes.UPSTREAM')
     }
-    return policyNames[policy] || 'Unknown'
+    return policyNames[policy] || t('pages.metrics.unknown')
 }
 
 const openLookingGlassPage = (record: BGPMetric, _: number) => {
@@ -950,15 +1156,21 @@ onMounted(async () => {
 
     registerPageTitle(`${t('pages.metrics.sessionMetrics')} - ${sessionId}`)
 
-    await fetchSessionMetrics()
-    await fetchRouterInfo()
-    await fetchSessionMetadata()
+    await Promise.allSettled([
+        fetchSessionMetrics(),
+        fetchRouterInfo(),
+        fetchSessionMetadata()
+    ])
+
+    // Start countdown timer for next refresh
+    startCountdownTimer()
 
     // Add window resize listener for chart responsiveness
     window.addEventListener('resize', handleResize)
 })
 
 onUnmounted(() => {
+    stopCountdownTimer()
     cleanupCodeListeners()
     codeBlockWatcher()
     window.removeEventListener('resize', handleResize)
@@ -1587,6 +1799,13 @@ const bgpColumns = computed(() => [
         width: 100
     },
     {
+        title: t('pages.metrics.bgpSince'),
+        dataIndex: 'since',
+        key: 'since',
+        width: 160,
+        ellipsis: true
+    },
+    {
         title: t('pages.metrics.bgpSession'),
         dataIndex: 'info',
         key: 'info',
@@ -1623,1073 +1842,3 @@ const bgpColumns = computed(() => [
     }
 ])
 </script>
-
-<style scoped>
-#metrics {
-    padding: 24px;
-    background: #fff;
-    min-height: 100vh;
-}
-
-.dark #metrics {
-    background: #0f0f0f;
-}
-
-/* Header Actions */
-.header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding: 0 4px;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.back-button {
-    color: #666 !important;
-    font-weight: 500;
-    margin-right: auto;
-}
-
-.back-button:hover {
-    color: #1890ff !important;
-    background: rgba(24, 144, 255, 0.06) !important;
-}
-
-.dark .back-button {
-    color: #999 !important;
-}
-
-.dark .back-button:hover {
-    color: #40a9ff !important;
-    background: rgba(64, 169, 255, 0.1) !important;
-}
-
-/* Session Header */
-.session-header {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #f0f0f0;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-    margin-bottom: 24px;
-}
-
-.dark .session-header {
-    background: #1a1a1a;
-    border-color: #2a2a2a;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.session-header-main {
-    display: flex;
-    align-items: flex-start;
-    padding: 24px;
-    gap: 20px;
-}
-
-.session-header-main:deep(img) {
-    margin: 0 auto;
-}
-
-.session-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.session-title {
-    margin: 0 0 16px 0;
-    font-size: 24px;
-    font-weight: 600;
-    color: #1a1a1a;
-    line-height: 1.3;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.session-status-badge {
-    font-size: 12px !important;
-    margin-left: 8px;
-}
-
-.dark .session-title {
-    color: #ffffff;
-}
-
-.session-metadata {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.session-row {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    align-items: flex-start;
-}
-
-.session-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-    flex: 1;
-    min-width: 140px;
-    width: 100%;
-}
-
-.session-label {
-    color: #8c8c8c;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    line-height: 1.2;
-}
-
-.dark .session-label {
-    color: #999;
-}
-
-.session-value {
-    color: #1a1a1a;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    line-height: 1.4;
-    word-break: break-all;
-    overflow-wrap: break-word;
-    max-width: 100%;
-}
-
-.session-value.copyable {
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 6px 8px;
-    border-radius: 6px;
-    border: 1px solid transparent;
-    margin: -6px -8px;
-    display: inline-block;
-    max-width: calc(100% + 16px);
-    box-sizing: border-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.session-value.copyable:hover {
-    color: #1890ff;
-    word-break: break-all;
-    max-height: none;
-    overflow: visible;
-    z-index: 10;
-    position: relative;
-}
-
-.dark .session-value.copyable:hover {
-    color: #40a9ff;
-}
-
-.dark .session-value {
-    color: #ffffff;
-}
-
-.session-info-section {
-    border-top: 1px solid #f0f0f0;
-    background: #fafafa;
-}
-
-.dark .session-info-section {
-    border-top-color: #2a2a2a;
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.session-info-content {
-    padding: 5px 24px;
-    color: #333;
-    font-size: 14px;
-    line-height: 1.6;
-    user-select: text;
-}
-
-.dark .session-info-content {
-    color: #e6e6e6;
-}
-
-/* Style markdown content in session info */
-
-.session-info-content:deep(p) {
-    margin: 12px auto;
-}
-
-.session-info-content:deep(code) {
-    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-    background-color: #f7fafc;
-    color: #e53e3e;
-    padding: 0.2rem 0.4rem;
-    font-size: 0.85em;
-    border-radius: 4px;
-    border: 1px solid #e2e8f0;
-    font-weight: 500;
-    word-break: break-word;
-}
-
-.dark .session-info-content:deep(code) {
-    background-color: #2d3748;
-    color: #f56565;
-    border-color: #4a5568;
-}
-
-.session-info-content:deep(code:hover) {
-    background-color: #edf2f7;
-}
-
-.dark .session-info-content:deep(code:hover) {
-    background-color: #4a5568;
-}
-
-.dark .session-id,
-.dark .last-updated {
-    color: #aaa;
-}
-
-/* Metrics Overview */
-.metrics-overview {
-    margin: 40px auto;
-}
-
-.metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-.metric-item {
-    display: flex;
-    align-items: center;
-    background: #fff;
-    padding: 24px;
-    border-radius: 12px;
-    border: 1px solid #f0f0f0;
-    transition: all 0.2s ease;
-}
-
-.metric-item:hover {
-    border-color: #d9d9d9;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-/* Special styling for timeout metric items */
-.metric-item:has(.timeout) {
-    border-color: rgba(255, 77, 79, 0.3);
-    background: linear-gradient(135deg, rgba(255, 77, 79, 0.02), rgba(255, 77, 79, 0.05));
-}
-
-.metric-item:has(.timeout):hover {
-    border-color: rgba(255, 77, 79, 0.5);
-    box-shadow: 0 4px 12px rgba(255, 77, 79, 0.15);
-}
-
-/* Clickable metric items */
-.metric-item[style*="cursor: pointer"] {
-    position: relative;
-}
-
-.metric-item[style*="cursor: pointer"]::after {
-    content: '→';
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    font-size: 12px;
-    color: #999;
-    opacity: 0;
-    transition: all 0.3s ease;
-    transform: translateX(-5px);
-}
-
-.metric-item[style*="cursor: pointer"]:hover::after {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.metric-item[style*="cursor: pointer"]:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-}
-
-.metric-item[style*="cursor: pointer"]:active {
-    transform: translateY(-1px);
-    transition: transform 0.1s ease;
-}
-
-.dark .metric-item {
-    background: #1a1a1a;
-    border-color: #2a2a2a;
-}
-
-.dark .metric-item:has(.timeout) {
-    border-color: rgba(255, 119, 117, 0.4);
-    background: linear-gradient(135deg, rgba(255, 119, 117, 0.05), rgba(255, 119, 117, 0.08));
-}
-
-.dark .metric-item:has(.timeout):hover {
-    border-color: rgba(255, 119, 117, 0.6);
-    box-shadow: 0 4px 12px rgba(255, 119, 117, 0.2);
-}
-
-/* Dark mode clickable metric items */
-.dark .metric-item[style*="cursor: pointer"]::after {
-    color: #666;
-}
-
-.dark .metric-item[style*="cursor: pointer"]:hover {
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.1);
-}
-
-.dark .metric-item:hover {
-    border-color: #404040;
-}
-
-.metric-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    margin-right: 16px;
-    flex-shrink: 0;
-}
-
-.metric-icon.bgp-routes {
-    background: linear-gradient(135deg, #1890ff, #40a9ff);
-    color: white;
-}
-
-.metric-value-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    gap: 12px;
-    margin-bottom: 4px;
-}
-
-.metric-value-pair {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 0;
-}
-
-.metric-value-pair .metric-value {
-    font-size: 20px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 2px;
-    line-height: 1.1;
-}
-
-.dark .metric-value-pair .metric-value {
-    color: #ffffff;
-}
-
-.metric-sub-label {
-    font-size: 11px;
-    color: #999;
-    font-weight: 500;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.dark .metric-sub-label {
-    color: #777;
-}
-
-.metric-separator {
-    font-size: 16px;
-    color: #d9d9d9;
-    font-weight: 300;
-}
-
-.dark .metric-separator {
-    color: #595959;
-}
-
-.metric-icon.routes-received {
-    background: linear-gradient(135deg, #52c41a, #73d13d);
-    color: white;
-}
-
-.metric-icon.routes-advertised {
-    background: linear-gradient(135deg, #1890ff, #40a9ff);
-    color: white;
-}
-
-.metric-icon.traffic-total {
-    background: linear-gradient(135deg, #fa8c16, #ffa940);
-    color: white;
-}
-
-.metric-icon.traffic-tx {
-    background: linear-gradient(135deg, #ff4d4f, #ff7875);
-    color: white;
-}
-
-.metric-icon.traffic-rx {
-    background: linear-gradient(135deg, #52c41a, #73d13d);
-    color: white;
-}
-
-.metric-icon.rtt {
-    background: linear-gradient(135deg, #722ed1, #9254de);
-    color: white;
-}
-
-.metric-icon.rtt.timeout {
-    background: linear-gradient(135deg, #ff4d4f, #ff7875);
-    animation: pulse-timeout-slow 2.5s ease-in-out infinite;
-}
-
-.metric-icon.bgp-status {
-    background: linear-gradient(135deg, #ff4d4f, #ff7875);
-    color: white;
-}
-
-.metric-icon.bgp-status.active {
-    background: linear-gradient(135deg, #52c41a, #73d13d);
-}
-
-.metric-icon.bgp-status.timeout {
-    background: linear-gradient(135deg, #ff4d4f, #ff7875);
-    animation: pulse-timeout-slow 2.5s ease-in-out infinite;
-}
-
-@keyframes pulse-timeout-slow {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.8;
-        transform: scale(1.02);
-    }
-}
-
-.metric-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.metric-value {
-    font-size: 24px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 4px;
-    line-height: 1.2;
-}
-
-.dark .metric-value {
-    color: #ffffff;
-}
-
-.metric-value.status {
-    color: #ff4d4f;
-    font-size: 16px;
-}
-
-.metric-value.status.active {
-    color: #52c41a;
-}
-
-.metric-value.status.timeout {
-    color: #ff4d4f;
-    font-weight: 700;
-    animation: pulse-timeout-text 2.5s ease-in-out infinite;
-}
-
-@keyframes pulse-timeout-text {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.6;
-    }
-}
-
-.dark .metric-value.status.timeout {
-    color: #ff7875;
-}
-
-.metric-value.timeout {
-    color: #ff4d4f;
-    font-weight: 700;
-    animation: pulse-timeout 2s ease-in-out infinite;
-}
-
-@keyframes pulse-timeout {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.7;
-    }
-}
-
-.dark .metric-value.timeout {
-    color: #ff7875;
-}
-
-.metric-unit {
-    font-size: 14px;
-    color: #666;
-    margin-left: 2px;
-}
-
-.dark .metric-unit {
-    color: #aaa;
-}
-
-.metric-label {
-    font-size: 14px;
-    color: #666;
-    font-weight: 500;
-}
-
-.dark .metric-label {
-    color: #aaa;
-}
-
-/* Charts Section */
-.charts-section {
-    margin-bottom: 40px;
-}
-
-.chart-group {
-    margin-bottom: 40px;
-}
-
-.section-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin: 0 0 24px 0;
-    padding: 0 4px;
-}
-
-.dark .section-title {
-    color: #ffffff;
-}
-
-.charts-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-}
-
-@media (max-width: 1024px) {
-    .charts-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-}
-
-.chart-container {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #f0f0f0;
-    padding: 24px;
-    transition: all 0.2s ease;
-    overflow: hidden;
-    /* Prevent chart overflow */
-}
-
-.chart-container:hover {
-    border-color: #d9d9d9;
-}
-
-.dark .chart-container {
-    background: #1a1a1a;
-    border-color: #2a2a2a;
-}
-
-.dark .chart-container:hover {
-    border-color: #404040;
-}
-
-.chart-container.full-width {
-    grid-column: 1 / -1;
-}
-
-/* Ensure ECharts take full width */
-.chart-container .echarts {
-    width: 100% !important;
-}
-
-/* Fix chart responsiveness */
-.chart-container>div {
-    width: 100% !important;
-}
-
-.chart-title {
-    margin: 0 0 20px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #1a1a1a;
-    text-align: center;
-}
-
-.dark .chart-title {
-    color: #ffffff;
-}
-
-/* Empty State */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    color: #8c8c8c;
-}
-
-.empty-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-    opacity: 0.6;
-}
-
-.empty-text {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-/* Details Section */
-.details-section {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #f0f0f0;
-    padding: 32px;
-}
-
-.dark .details-section {
-    background: #1a1a1a;
-    border-color: #2a2a2a;
-}
-
-.details-tabs .ant-tabs-tab {
-    padding: 12px 20px !important;
-    margin-right: 8px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.details-tabs .ant-tabs-tab:hover {
-    background: #f5f5f5;
-}
-
-.dark .details-tabs .ant-tabs-tab:hover {
-    background: #2a2a2a;
-}
-
-/* Table responsiveness improvements */
-.table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.table-container .ant-table {
-    min-width: 100%;
-}
-
-.table-container .ant-table-thead>tr>th {
-    white-space: nowrap;
-    font-weight: 600;
-    background: #fafafa;
-    border-bottom: 2px solid #f0f0f0;
-}
-
-.dark .table-container .ant-table-thead>tr>th {
-    background: #2a2a2a;
-    border-bottom-color: #404040;
-    color: #ffffff;
-}
-
-.table-container .ant-table-tbody>tr>td {
-    white-space: nowrap;
-    padding: 12px 16px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.dark .table-container .ant-table-tbody>tr>td {
-    border-bottom-color: #2a2a2a;
-    color: #e6e6e6;
-}
-
-/* Ellipsis handling for long text in tables */
-.table-container .ant-table-cell {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-:deep(tr.clickable) {
-    cursor: pointer !important;
-}
-
-/* Mobile table styling */
-@media (max-width: 768px) {
-    .details-section {
-        padding: 16px;
-    }
-
-    .table-container {
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        margin: 0 -16px;
-        padding: 0 16px;
-        background: #fff;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        /* Smooth scrolling on iOS */
-        scrollbar-width: thin;
-        scrollbar-color: #d9d9d9 transparent;
-    }
-
-    .dark .table-container {
-        background: #1a1a1a;
-    }
-
-    /* Custom scrollbar for webkit browsers */
-    .table-container::-webkit-scrollbar {
-        height: 6px;
-    }
-
-    .table-container::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .table-container::-webkit-scrollbar-thumb {
-        background: #d9d9d9;
-        border-radius: 3px;
-    }
-
-    .dark .table-container::-webkit-scrollbar-thumb {
-        background: #404040;
-    }
-
-    .table-container .ant-table {
-        font-size: 12px;
-        min-width: 600px;
-        /* Ensure minimum width to prevent cramping */
-    }
-
-    .table-container .ant-table-thead>tr>th {
-        padding: 8px 12px;
-        font-size: 11px;
-        position: sticky;
-        top: 0;
-        z-index: 2;
-    }
-
-    .table-container .ant-table-tbody>tr>td {
-        padding: 8px 12px;
-        font-size: 11px;
-    }
-
-    .bgp-peer-card {
-        margin-bottom: 16px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .bgp-peer-card:last-child {
-        margin-bottom: 0;
-    }
-
-    .dark .bgp-peer-card {
-        background: #1a1a1a;
-        border-color: #2a2a2a;
-    }
-
-    .rate-display {
-        display: flex;
-        gap: 16px;
-        align-items: center;
-    }
-
-    .rate-item {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-family: monospace;
-        font-size: 11px;
-        font-weight: 500;
-    }
-
-    /* Highlight scroll indicator */
-    .table-container::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 20px;
-        height: 100%;
-        background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .table-container:hover::after {
-        opacity: 1;
-    }
-
-    .dark .table-container::after {
-        background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
-    }
-}
-
-@media (max-width: 480px) {
-    .table-container .ant-table {
-        font-size: 11px;
-        min-width: 500px;
-        /* Slightly reduce minimum width for very small screens */
-    }
-
-    .table-container .ant-table-thead>tr>th {
-        padding: 6px 8px;
-        font-size: 10px;
-    }
-
-    .table-container .ant-table-tbody>tr>td {
-        padding: 6px 8px;
-        font-size: 10px;
-    }
-
-    .rate-display {
-        flex-direction: column;
-        gap: 8px;
-        align-items: flex-start;
-    }
-
-    .rate-item {
-        font-size: 10px;
-    }
-
-    .bgp-peer-card {
-        margin-bottom: 12px;
-    }
-
-    .bgp-peer-card .ant-card-head {
-        padding: 8px 12px;
-        min-height: auto;
-    }
-
-    .bgp-peer-card .ant-card-head-title {
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .bgp-peer-card .ant-card-body {
-        padding: 8px 12px;
-    }
-}
-
-.table-container {
-    background: #fafafa;
-    border-radius: 8px;
-    padding: 16px;
-}
-
-.dark .table-container {
-    background: #0f0f0f;
-}
-
-.loading-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 80px 20px;
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-}
-
-.dark .loading-container {
-    background: #1a1a1a;
-    border-color: #2a2a2a;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.error-container {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-    padding: 40px 20px;
-}
-
-.dark .error-container {
-    background: #1a1a1a;
-    border-color: #2a2a2a;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    #metrics {
-        padding: 16px;
-    }
-
-    .header-actions {
-        margin-bottom: 16px;
-        padding: 0 2px;
-        gap: 8px;
-    }
-
-    .header-actions .ant-btn {
-        font-size: 13px;
-        height: 36px;
-        padding: 4px 12px;
-    }
-
-    .session-header {
-        border-radius: 8px;
-        margin-bottom: 16px;
-    }
-
-    .session-header-main {
-        flex-direction: column;
-        text-align: center;
-        padding: 20px 16px;
-        gap: 16px;
-    }
-
-    .session-info {
-        width: 100%;
-    }
-
-    .session-title {
-        font-size: 20px;
-        margin-bottom: 12px;
-        text-align: center;
-    }
-
-    .session-row {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .session-item {
-        align-items: center;
-        text-align: center;
-        min-width: 0;
-        flex: none;
-    }
-
-    .session-value {
-        font-size: 12px;
-    }
-
-    .session-info-content {
-        padding: 16px;
-        font-size: 13px;
-    }
-
-    .metrics-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-
-    .charts-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-
-    .chart-container {
-        padding: 16px;
-    }
-
-    .details-section {
-        padding: 16px;
-    }
-
-    .section-title {
-        font-size: 18px;
-        margin-bottom: 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    #metrics {
-        padding: 12px;
-    }
-
-    .header-actions {
-        padding: 0;
-        margin-bottom: 12px;
-    }
-
-    .session-header-main {
-        padding: 16px 12px;
-    }
-
-    .session-title {
-        font-size: 18px;
-    }
-
-    .session-label {
-        font-size: 10px;
-    }
-
-    .session-value {
-        font-size: 11px;
-    }
-
-    .session-row {
-        gap: 8px;
-    }
-}
-
-@media (max-width: 1200px) and (min-width: 769px) {
-    .charts-grid {
-        gap: 20px;
-    }
-
-    .metrics-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .session-row {
-        gap: 20px;
-    }
-
-    .session-item {
-        min-width: 120px;
-    }
-}
-
-@media (min-width: 1201px) {
-    .metrics-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    .session-row {
-        gap: 32px;
-    }
-}
-</style>

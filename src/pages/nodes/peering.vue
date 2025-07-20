@@ -282,7 +282,7 @@ const loadExistingSession = async () => {
 .header {
     font-size: 28px;
     letter-spacing: 0.5px;
-    margin-top: 30px;
+    margin-top: 50px;
     margin-bottom: 10px;
     text-align: center;
     font-weight: normal;
