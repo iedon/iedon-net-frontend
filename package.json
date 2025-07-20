@@ -13,20 +13,21 @@
     "markdown-it": "^14.1.0",
     "markdown-it-link-attributes": "^4.0.1",
     "md5": "^2.3.0",
-    "unplugin-vue-components": "^28.7.0",
+    "resolve-accept-language": "^3.1.11",
+    "unplugin-vue-components": "^28.8.0",
     "vite-plugin-vercel": "^9.0.7",
     "vue": "^3.5.17",
     "vue-echarts": "^7.0.3",
-    "vue-i18n": "^11.1.7",
+    "vue-i18n": "^11.1.10",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@babel/types": "^7.27.6",
+    "@babel/types": "^7.28.1",
     "@types/md5": "^2.3.5",
     "@vitejs/plugin-vue": "^5.2.4",
-    "less": "^4.3.0",
+    "less": "^4.4.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
-    "vue-tsc": "^2.2.10"
+    "vue-tsc": "^3.0.3"
   }
 }

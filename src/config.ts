@@ -37,5 +37,6 @@ export default {
       'ca5196a1-ab8d-430d-a918-b386ad5c1632': 'https://lg.iedon.net/detail/cn-czx/',
       'a916ec9a-d4ce-4b8a-82ce-692a3fc44779': 'https://lg.iedon.net/detail/uk-lon/',
       'a331daff-40bd-478c-ac0d-a7b14bbcbaae': 'https://lg.iedon.net/detail/us-nyc/',
-    }
+    },
+    mapDn42Url: 'https://map.iedon.net',
 }

@@ -47,7 +47,7 @@ export default {
       step2Introduction: 'Wir haben die folgenden Authentifizierungsmethoden für Ihre AS gefunden.\nTippen Sie auf eine Methode unten, um Details anzuzeigen.\nWählen Sie eine aus, um fortzufahren.',
       errorOccurred: 'Entschuldigung, ein Fehler ist aufgetreten.\nBitte versuchen Sie es erneut oder kontaktieren Sie uns bei Bedarf.',
       pleaseWait: 'Bitte warten',
-      step3Introduction: 'Bitte geben Sie den Herausforderungstext ein.\nWenn Sie sich mit einem Passwort anmelden, geben Sie Ihr Website-Passwort ein.\nWenn Sie einen PGP-Schlüssel verwenden, fügen Sie Ihren vollständigen öffentlichen Schlüssel ein, signieren Sie die Herausforderungsnachricht im Clear-Sign-Modus und fügen Sie die signierte Ausgabe und den öffentlichen Schlüssel mit dem passenden Fingerabdruck wieder ein.\nWenn Sie einen SSH-Schlüssel verwenden, verbinden Sie sich zur Validierung mit unserem SSH-Server und fügen Sie den Herausforderungstext wieder ein.\nBeziehen Sie sich bei Bedarf auf den folgenden Befehl.',
+      step3Introduction: "Bitte geben Sie den Challenge-Text ein.\nWenn Sie die E-Mail-Authentifizierung verwenden, überprüfen Sie bitte Ihren Posteingang. Vergessen Sie nicht, auch im Spam- oder Junk-Ordner nachzusehen. Versuchen Sie eine andere Anmeldemethode, wenn Sie die E-Mail nicht erhalten.\nWenn Sie sich mit einem Passwort anmelden, geben Sie Ihr Website-Passwort ein.\nWenn Sie einen PGP-Schlüssel verwenden, fügen Sie Ihren vollständigen öffentlichen Schlüssel ein, signieren Sie die Challenge-Nachricht im Clearsign-Modus und fügen Sie die signierte Ausgabe sowie den öffentlichen Schlüssel mit dem passenden Fingerabdruck ein.\nWenn Sie einen SSH-Schlüssel verwenden, verbinden Sie sich mit unserem SSH-Server zur Verifizierung und fügen Sie den Challenge-Text wieder ein.\nVerwenden Sie bei Bedarf den folgenden Befehl.",
       challengeHint: 'Passwort von, E-Mail von, PGP-Signatur mit oder Verbinden mit',
       challengeText: 'Herausforderungstext',
       challengeTextPlaceholder: 'Website-Passwort, E-Mail-/SSH-Code oder signierte Nachricht im PEM-Format, gepanzert',
@@ -193,6 +193,7 @@ export default {
         info: 'Info',
         viewMetrics: 'Metriken anzeigen',
         newPeeringSession: 'Neue Peering-Sitzung',
+        showMyConnectivityInMap: 'In Map.dn42 anzeigen',
         statusCode: {
           '0': 'Gelöscht',
           '1': 'Deaktiviert',

@@ -3,10 +3,11 @@ import { onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { ApiOutlined, ReloadOutlined } from '@ant-design/icons-vue'
+import { ApiOutlined, ReloadOutlined, GlobalOutlined } from '@ant-design/icons-vue'
 import { loggedIn } from '../../common/helper'
 import { makeRequest, RouterMetadata, RoutersResponse, SessionMetadata, SessionsResponse, SessionStatus } from '../../common/packetHandler'
 import SessionTable from '../../components/SessionTable.vue'
+import { showMyConnectivityInMap } from '../../common/helper'
 
 const t = useI18n().t
 const router = useRouter()
@@ -114,6 +115,12 @@ const redirectToNodes = () => {
                 <api-outlined />
             </template>
             {{ t('pages.manage.session.newPeeringSession') }}
+        </a-button>
+        <a-button @click="showMyConnectivityInMap">
+            <template #icon>
+                <global-outlined />
+            </template>
+            {{ t('pages.manage.session.showMyConnectivityInMap') }}
         </a-button>
         <a-button @click="fetchSessions" :loading="loading" class="refresh-button">
             <template #icon>

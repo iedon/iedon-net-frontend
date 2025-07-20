@@ -47,7 +47,7 @@ export default {
       step2Introduction: '我們為您的 AS 找到了以下認證方法。\n點擊下面的方法以查看詳細資訊。\n選擇一種以繼續。',
       errorOccurred: '抱歉，發生了錯誤。\n請重試或在需要時與我們聯繫。',
       pleaseWait: '請稍候',
-      step3Introduction: '請輸入挑戰文本。\n如果使用密碼登入，請輸入您的網站密碼。\n如果使用 PGP 金鑰，請貼上您的完整公鑰，以清晰簽署模式簽署挑戰訊息，然後將簽署的輸出和具有匹配指紋的公鑰貼上回來。\n如果使用 SSH 金鑰，請連接到我們的 SSH 伺服器進行驗證，然後將挑戰文本貼上回來。\n如果需要，請參閱下面的命令。',
+      step3Introduction: "請輸入挑戰文字。\n如果您使用電子郵件驗證，請先檢查您的收件匣，也請確認垃圾郵件資料夾。若未收到郵件，請嘗試其他登入方式。\n若您使用密碼登入，請輸入您的網站密碼。\n若您使用 PGP 金鑰，請貼上完整的公鑰，將挑戰訊息以明文簽名模式進行簽名，並貼上簽名結果與相對應指紋的公鑰。\n若您使用 SSH 金鑰，請連線至我們的 SSH 伺服器進行驗證，並貼上挑戰文字。\n如有需要，請參考下方指令。",
       challengeHint: '密碼、電子郵件、PGP 簽署或連接至',
       challengeText: '挑戰文本',
       challengeTextPlaceholder: '網站密碼、電子郵件/SSH 代碼或 PEM 格式 (armored) 的簽署訊息',
@@ -193,6 +193,7 @@ export default {
         info: '資訊',
         viewMetrics: '查看指標',
         newPeeringSession: '新對等會話',
+        showMyConnectivityInMap: '在 Map.dn42 中顯示',
         statusCode: {
           '0': '已刪除',
           '1': '已停用',

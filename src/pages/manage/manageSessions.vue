@@ -3,10 +3,11 @@ import { onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { ReloadOutlined } from '@ant-design/icons-vue'
+import { ReloadOutlined, ApiOutlined, GlobalOutlined } from '@ant-design/icons-vue'
 import { loggedIn } from '../../common/helper'
 import { makeRequest, RouterMetadata, RoutersResponse, SessionMetadata, SessionsResponse, SessionStatus } from '../../common/packetHandler'
 import SessionTable from '../../components/SessionTable.vue'
+import { showMyConnectivityInMap } from '../../common/helper'
 
 const t = useI18n().t
 const router = useRouter()
@@ -103,10 +104,26 @@ const handleEdit = (session: Session) => {
         path: `/nodes/${session.router}/edit/${session.uuid}`
     })
 }
+
+const redirectToNodes = () => {
+    router.push({ path: '/nodes' })
+}
 </script>
 
 <template>
     <div class="header-controls">
+        <a-button @click="redirectToNodes">
+            <template #icon>
+                <api-outlined />
+            </template>
+            {{ t('pages.manage.session.newPeeringSession') }}
+        </a-button>
+        <a-button @click="showMyConnectivityInMap">
+            <template #icon>
+                <global-outlined />
+            </template>
+            {{ t('pages.manage.session.showMyConnectivityInMap') }}
+        </a-button>
         <a-button @click="fetchSessions" :loading="loading" class="refresh-button">
             <template #icon>
                 <reload-outlined />

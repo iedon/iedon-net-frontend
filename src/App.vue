@@ -9,6 +9,7 @@ import LayoutContent from './components/LayoutContent.vue'
 import LayoutFooter from './components/LayoutFooter.vue'
 import { useHeartBeat, applyTheme, themeName } from './common/helper'
 import { BulbFilled, BulbOutlined } from '@ant-design/icons-vue'
+import { resolveAcceptLanguage } from 'resolve-accept-language'
 
 const vueI18n = useI18n()
 const t = vueI18n.t
@@ -38,8 +39,13 @@ onMounted(async () => {
     if (currentLocale && SupportedLocales.some(supported => currentLocale === supported)) {
         antdLocale.value = await setLocale(currentLocale as SupportedLocale)
     } else {
-        const browserPreferredLocale = (navigator.languages.find(lang => SupportedLocales.some(supported => lang.replaceAll('-', '_') === supported)) || 'en_US').replaceAll('-', '_')
-        antdLocale.value = await setLocale(browserPreferredLocale as SupportedLocale)
+        try {
+        const locale = resolveAcceptLanguage(navigator.languages.join(';'), SupportedLocales.map(l => l.replace('_', '-')), 'en-US', { returnMatchType: false });
+        antdLocale.value = await setLocale(locale.replace('-', '_') as SupportedLocale)
+        } catch (error) {
+            console.warn('Failed to resolve locale from navigator.languages, defaulting to en-US', error)
+            antdLocale.value = await setLocale('en_US')
+        }
     }
     stopHeartBeat = useHeartBeat(t)
 })

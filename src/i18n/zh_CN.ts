@@ -47,7 +47,7 @@ export default {
       step2Introduction: '我们为您的 AS 找到了以下身份验证方法。\n点击下面的方法以查看详细信息。\n选择一种以继续。',
       errorOccurred: '抱歉，发生了错误。\n请重试或在需要时与我们联系。',
       pleaseWait: '请稍候',
-      step3Introduction: '请输入挑战文本。\n如果使用密码登录，请输入您的站点密码。\n如果使用 PGP 密钥，请粘贴您的完整公钥，以清晰签名模式签署挑战消息，然后将签名的输出和具有匹配指纹的公钥粘贴回来。\n如果使用 SSH 密钥，请连接到我们的 SSH 服务器进行验证，然后将挑战文本粘贴回来。\n如果需要，请参阅下面的命令。',
+      step3Introduction: "请输入挑战文本。\n如果您使用邮箱认证，请检查您的收件箱。同时别忘了查看垃圾邮件文件夹。如果未收到邮件，请尝试其他登录方式。\n如果使用密码登录，请输入您的网站密码。\n如果使用 PGP 密钥，请粘贴完整的公钥，将挑战消息以明文签名模式签名，然后粘贴签名结果和对应指纹的公钥。\n如果使用 SSH 密钥，请连接我们的 SSH 服务器进行验证，并粘贴挑战文本。\n如有需要，请参考下方命令。",
       challengeHint: '密码、电子邮件、PGP 签名或连接到',
       challengeText: '挑战文本',
       challengeTextPlaceholder: '站点密码、电子邮件/SSH 代码或 PEM 格式(armored) 的签名消息',
@@ -193,6 +193,7 @@ export default {
         info: '信息',
         viewMetrics: '查看指标',
         newPeeringSession: '新对等会话',
+        showMyConnectivityInMap: '在 Map.dn42 中显示',
         statusCode: {
           '0': '已删除',
           '1': '已禁用',

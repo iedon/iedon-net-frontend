@@ -131,6 +131,10 @@ export const formatBytes = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
+export const showMyConnectivityInMap = () => {
+    window.open(`${config.mapDn42Url}/${localStorage.getItem('asn') ? `${localStorage.getItem('asn')}` : ''}`, '_blank')?.focus();
+}
+
 export const isAdmin = computed(() => siteConfig.value.netAsn === localStorage.getItem('asn'))
 
 export const themeName = ref('light')

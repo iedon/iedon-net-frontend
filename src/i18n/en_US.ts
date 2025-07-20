@@ -47,7 +47,7 @@ export default {
       step2Introduction: 'We found the following authentication methods for your AS.\nTap a method below to view details.\nChoose one to proceed.',
       errorOccurred: 'Sorry, an error occurred.\nPlease try again or contact us if needed.',
       pleaseWait: 'Please wait',
-      step3Introduction: 'Please enter the challenge text.\nIf you’re signing in with a password, enter your site password.\nIf using a PGP key, paste your full public key, sign the challenge message in clear sign mode, and paste back the signed output and public key with the matching fingerprint.\nIf using an SSH key, connect to our SSH server for validation and paste back the challenge text.\nRefer to the command below if needed.',
+      step3Introduction: 'Please enter the challenge text.\nIf you’re using email authentication, please check your inbox. Don’t forget to check your spam or junk folder as well. Try using another login method if you don’t receive the email.\nIf signing in with a password, enter your site password.\nIf using a PGP key, paste your full public key, sign the challenge message in clear sign mode, and paste back the signed output and public key with the matching fingerprint.\nIf using an SSH key, connect to our SSH server for validation and paste back the challenge text.\nRefer to the command below if needed.',
       challengeHint: 'Password of, E-mail from, PGP sign with, or Connect to',
       challengeText: 'Challenge text',
       challengeTextPlaceholder: 'Site password, email / ssh code, or signed message in PEM format, armored',
@@ -193,6 +193,7 @@ export default {
         info: 'Info',
         viewMetrics: 'View Metrics',
         newPeeringSession: 'New Peering Session',
+        showMyConnectivityInMap: 'Show In Map.dn42',
         statusCode: {
           '0': 'Deleted',
           '1': 'Disabled',

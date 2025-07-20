@@ -47,7 +47,7 @@ export default {
       step2Introduction: 'Nous avons trouvé les méthodes d\'authentification suivantes pour votre AS.\nAppuyez sur une méthode ci-dessous pour voir les détails.\nChoisissez-en une pour continuer.',
       errorOccurred: 'Désolé, une erreur est survenue.\nVeuillez réessayer ou nous contacter si nécessaire.',
       pleaseWait: 'Veuillez patienter',
-      step3Introduction: 'Veuillez saisir le texte du défi.\nSi vous vous connectez avec un mot de passe, saisissez le mot de passe de votre site.\nSi vous utilisez une clé PGP, collez votre clé publique complète, signez le message de défi en mode "clear sign", puis collez le résultat signé et la clé publique avec l\'empreinte correspondante.\nSi vous utilisez une clé SSH, connectez-vous à notre serveur SSH pour validation et collez le texte du défi.\nRéférez-vous à la commande ci-dessous si nécessaire.',
+      step3Introduction: "Veuillez entrer le texte de challenge.\nSi vous utilisez l’authentification par e-mail, vérifiez votre boîte de réception. N'oubliez pas de vérifier également votre dossier spam ou courrier indésirable. Essayez une autre méthode de connexion si vous ne recevez pas l’e-mail.\nSi vous vous connectez avec un mot de passe, entrez votre mot de passe du site.\nSi vous utilisez une clé PGP, collez votre clé publique complète, signez le message de challenge en mode 'clearsign', puis collez le message signé ainsi que la clé publique correspondante.\nSi vous utilisez une clé SSH, connectez-vous à notre serveur SSH pour validation et collez ensuite le texte de challenge.\nRéférez-vous à la commande ci-dessous si nécessaire.",
       challengeHint: 'Mot de passe de, E-mail de, Signer avec PGP, ou se connecter à',
       challengeText: 'Texte du défi',
       challengeTextPlaceholder: 'Mot de passe du site, code e-mail/ssh, ou message signé au format PEM, blindé',
@@ -193,6 +193,7 @@ export default {
         info: 'Info',
         viewMetrics: 'Voir les métriques',
         newPeeringSession: 'Nouvelle session de peering',
+        showMyConnectivityInMap: 'Afficher sur Map.dn42',
         statusCode: {
           '0': 'Supprimé',
           '1': 'Désactivé',
