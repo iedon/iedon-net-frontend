@@ -40,8 +40,8 @@ onMounted(async () => {
         antdLocale.value = await setLocale(currentLocale as SupportedLocale)
     } else {
         try {
-        const locale = resolveAcceptLanguage(navigator.languages.join(';'), SupportedLocales.map(l => l.replace('_', '-')), 'en-US', { returnMatchType: false });
-        antdLocale.value = await setLocale(locale.replace('-', '_') as SupportedLocale)
+            const locale = resolveAcceptLanguage(navigator.language, SupportedLocales.map(l => l.replace('_', '-')), 'en-US', { returnMatchType: false });
+            antdLocale.value = await setLocale(locale.replace('-', '_') as SupportedLocale)
         } catch (error) {
             console.warn('Failed to resolve locale from navigator.languages, defaulting to en-US', error)
             antdLocale.value = await setLocale('en_US')
