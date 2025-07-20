@@ -132,8 +132,10 @@ export const formatBytes = (bytes: number) => {
 }
 
 export const showMyConnectivityInMap = () => {
-    window.open(`${config.mapDn42Url}/${localStorage.getItem('asn') ? `${localStorage.getItem('asn')}` : ''}`, '_blank')?.focus();
+    window.open(`${config.mapDn42Url}/${localStorage.getItem('asn') ? `#${localStorage.getItem('asn')}` : ''}`, '_blank')?.focus();
 }
+
+export const sessionMgmtSearchText = ref('')
 
 export const isAdmin = computed(() => siteConfig.value.netAsn === localStorage.getItem('asn'))
 
