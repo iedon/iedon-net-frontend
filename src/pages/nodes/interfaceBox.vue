@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { Modal } from 'ant-design-vue'
 import { SendOutlined } from '@ant-design/icons-vue'
-import { IPV4_REGEX, IPV6_REGEX } from '../../common/helper'
+import { IPV4_REGEX, IPV6_REGEX, openNotification } from '../../common/helper'
 import { RouterInfoResponse, RouterMetadata } from '../../common/packetHandler'
 import PeerInfoCard from './peerInfoCard.vue'
 import { onUnmounted, watchEffect } from 'vue'
@@ -11,7 +11,7 @@ const props = defineProps<{
     router: RouterMetadata,
     nextStep: Function,
     prevStep: Function,
-    routerInfo: RouterInfoResponse | null,    preferenceForm: {
+    routerInfo: RouterInfoResponse | null, preferenceForm: {
         linkType: string,
         bgpExtensions: ("mp-bgp" | "extended-nexthop")[],
         routingPolicy: number
@@ -58,7 +58,7 @@ const checkAndContinue = () => {
         })
         return
     }
-    
+
     if (props.preferenceForm.linkType !== 'direct' &&
         props.preferenceForm.linkType !== 'gre' &&
         props.preferenceForm.linkType !== 'ip6gre' &&
@@ -70,7 +70,7 @@ const checkAndContinue = () => {
         })
         return
     }
-    
+
     if (!props.interfaceForm.mtu || props.interfaceForm.mtu < 1280 || props.interfaceForm.mtu > 9999) {
         Modal.error({
             centered: true,
@@ -112,6 +112,14 @@ const checkAndContinue = () => {
             throw new Error('Invalid IP')
         }
 
+        if (props.interfaceForm.ipv6LinkLocal !== '' &&
+            props.interfaceForm.ipv6LinkLocal.toLowerCase().indexOf('fe80::') === -1
+            && props.interfaceForm.ipv6LinkLocal.toLowerCase().indexOf('fe80:0000:0000:0000:') === -1
+        ) {
+            openNotification("topLeft", "error", t('notification.error'), `${props.interfaceForm.ipv6LinkLocal} ❌ \r\nfe80:: ... ✅ \r\nfe80:0000:0000:0000: ... ✅`, 15)
+            throw new Error('Invalid IPv6 Link Local')
+        }
+
         if (props.interfaceForm.endpoint.trim() !== '') {
             if (props.interfaceForm.endpoint.indexOf(':') === -1 &&
                 props.preferenceForm.linkType !== 'gre' &&
@@ -122,11 +130,11 @@ const checkAndContinue = () => {
             if (props.preferenceForm.linkType === 'gre' ||
                 props.preferenceForm.linkType === 'ip6gre' ||
                 props.preferenceForm.linkType === 'direct') {
-                    if (props.preferenceForm.linkType === 'gre') {
-                        if (!IPV4_REGEX.test(props.interfaceForm.endpoint)) throw new Error('Invalid endpoint for GRE')
-                    } else if (props.preferenceForm.linkType === 'ip6gre') {
-                        if (!IPV6_REGEX.test(props.interfaceForm.endpoint)) throw new Error('Invalid endpoint for IP6GRE')
-                    }
+                if (props.preferenceForm.linkType === 'gre') {
+                    if (!IPV4_REGEX.test(props.interfaceForm.endpoint)) throw new Error('Invalid endpoint for GRE')
+                } else if (props.preferenceForm.linkType === 'ip6gre') {
+                    if (!IPV6_REGEX.test(props.interfaceForm.endpoint)) throw new Error('Invalid endpoint for IP6GRE')
+                }
             } else {
                 const url = new URL(`https://${props.interfaceForm.endpoint}`)
                 props.interfaceForm.endpoint = url.host
@@ -185,16 +193,15 @@ const checkAndContinue = () => {
             <a-textarea auto-size v-model:value="props.interfaceForm.endpoint"
                 :placeholder="`${t('pages.peering.tunnelEndpointHint')}`" />
         </a-form-item>
-        <a-form-item v-if="props.preferenceForm.linkType !== 'direct' && props.preferenceForm.linkType !== 'gre' && props.preferenceForm.linkType !== 'ip6gre'" name="credential" :label="t('pages.peering.credential')">
+        <a-form-item
+            v-if="props.preferenceForm.linkType !== 'direct' && props.preferenceForm.linkType !== 'gre' && props.preferenceForm.linkType !== 'ip6gre'"
+            name="credential" :label="t('pages.peering.credential')">
             <a-textarea auto-size v-model:value="props.interfaceForm.credential"
                 :placeholder="`${t('pages.peering.tunnelCredentialHint')}`" />
         </a-form-item>
 
         <a-form-item name="mtu" :label="t('pages.peering.mtu')">
-            <a-input-number 
-                v-model:value="props.interfaceForm.mtu" 
-                :min="1280" 
-                :max="9999"
+            <a-input-number v-model:value="props.interfaceForm.mtu" :min="1280" :max="9999"
                 :placeholder="`${t('pages.signIn.pleaseInput')} MTU`" />
         </a-form-item>
 
