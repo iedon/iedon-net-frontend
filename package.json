@@ -1,6 +1,6 @@
 {
   "name": "iedon-net",
-  "version": "2.1.11",
+  "version": "2.1.12",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -8,26 +8,26 @@
   },
   "dependencies": {
     "ant-design-vue": "^4.2.6",
-    "echarts": "^5.6.0",
+    "echarts": "^6.0.0",
     "iso-3166": "^4.3.0",
     "markdown-it": "^14.1.0",
     "markdown-it-link-attributes": "^4.0.1",
     "md5": "^2.3.0",
-    "resolve-accept-language": "^3.1.11",
+    "resolve-accept-language": "^3.1.12",
     "unplugin-vue-components": "^28.8.0",
     "vite-plugin-vercel": "^9.0.7",
-    "vue": "^3.5.17",
+    "vue": "^3.5.18",
     "vue-echarts": "^7.0.3",
-    "vue-i18n": "^11.1.10",
+    "vue-i18n": "^11.1.11",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@babel/types": "^7.28.1",
+    "@babel/types": "^7.28.2",
     "@types/md5": "^2.3.5",
     "@vitejs/plugin-vue": "^5.2.4",
     "less": "^4.4.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
-    "vue-tsc": "^3.0.3"
+    "vue-tsc": "^3.0.4"
   }
 }
