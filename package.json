@@ -6,7 +6,6 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build"
   },
-  "packageManager": "bun@1.2.20",
   "dependencies": {
     "ant-design-vue": "^4.2.6",
     "echarts": "^6.0.0",
@@ -25,10 +24,10 @@
   "devDependencies": {
     "@babel/types": "^7.28.2",
     "@types/md5": "^2.3.5",
-    "@vitejs/plugin-vue": "^5.2.4",
+    "@vitejs/plugin-vue": "^6.0.1",
     "less": "^4.4.0",
     "typescript": "^5.9.2",
-    "vite": "^6.3.5",
+    "vite": "^7.1.1",
     "vue-tsc": "^3.0.5"
   }
 }
