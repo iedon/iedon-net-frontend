@@ -53,7 +53,17 @@ const pageRoutes: RouteRecordRaw[] = [
 
 const routerHistory = createWebHistory()
 
-export default createRouter({
+const router = createRouter({
   history: routerHistory,
   routes: pageRoutes,
+  scrollBehavior(to, from, savedPosition) {
+    // Smooth scroll behavior for SPA navigation
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0, behavior: 'smooth' }
+    }
+  }
 })
+
+export default router

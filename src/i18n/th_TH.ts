@@ -92,7 +92,7 @@ export default {
       routerOffline: 'เราเตอร์ออฟไลน์',
       routerOfflineDescription: 'เราเตอร์นี้ดูเหมือนจะออฟไลน์ (ไม่ได้อัปเดตเกิน 15 นาที) โปรดลองใหม่ภายหลังหรือ ติดต่อผู้ดูแลระบบ',
       maintenanceMode: 'โหมดบำรุงรักษา',
-      connectionTypes: 'ประเภทการเชื่อมต่อ',
+      systemMetrics: 'เมตริกซ์ระบบ',
       uptime: 'เวลาทำงาน',
       loadAvg: 'ค่าเฉลี่ยโหลด',
       txRx: 'TX / RX',
@@ -103,6 +103,26 @@ export default {
       totalRouters: 'จำนวนเราเตอร์ทั้งหมด',
       totalSessions: 'เซสชันที่กำหนดค่าแล้ว',
       availableForAuto: 'Peering ทันที',
+      // Empty states
+      noRoutersMatch: 'ไม่มีเราเตอร์ที่ตรงกับการค้นหาของคุณ',
+      noRoutersAvailable: 'ไม่มีเราเตอร์ที่พร้อมใช้งาน',
+      // Regions
+      regions: {
+        'Europe': 'ยุโรป',
+        'North America': 'อเมริกาเหนือ',
+        'South America': 'อเมริกาใต้',
+        'Africa': 'แอฟริกา',
+        'Asia-S': 'เอเชียใต้',
+        'Asia-SE': 'เอเชียตะวันออกเฉียงใต้',
+        'Asia-E': 'เอเชียตะวันออก',
+        'Pacific&Oceania': 'แปซิฟิกและโอเชียเนีย',
+        'Antarctica': 'แอนตาร์กติกา',
+        'Asia-N': 'เอเชียเหนือ',
+        'Asia-W': 'เอเชียตะวันตก',
+        'Central Asia': 'เอเชียกลาง',
+        'Other Region': 'ภูมิภาคอื่น',
+        'All': 'ทั้งหมด'
+      }
     },
     peering: {
       couldNotGetData: 'ไม่สามารถดึงข้อมูลโหนดได้',
@@ -269,7 +289,9 @@ export default {
       routingPolicy: 'นโยบายการกำหนดเส้นทาง',
       mtu: 'MTU',
       sessionInfo: 'ข้อมูลเซสชัน',
-      lastUpdated: 'อัปเดตล่าสุด',
+      lastUpdated: 'เมตริกอัปเดตเมื่อ',
+      createdAt: 'สร้างเมื่อ',
+      updatedAt: 'อัปเดตเมื่อ',
       loadingMetrics: 'กำลังโหลดเมตริก…',
       noMetricsFound: 'ไม่พบเมตริก',
       noMetricsFoundDesc: 'ไม่พบข้อมูลเมตริกสำหรับเซสชันนี้',

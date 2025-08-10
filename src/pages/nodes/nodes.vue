@@ -3,10 +3,10 @@ import { computed, onMounted, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
-import { 
-    ApiOutlined, 
-    CopyOutlined, 
-    GlobalOutlined, 
+import {
+    ApiOutlined,
+    CopyOutlined,
+    GlobalOutlined,
     CloudServerOutlined,
     UsergroupAddOutlined,
     ClockCircleOutlined,
@@ -19,12 +19,11 @@ import {
     ThunderboltOutlined,
     DesktopOutlined,
     TwitterOutlined,
-    CloudOutlined
+    DownOutlined
 } from '@ant-design/icons-vue'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
 import { loggedIn, formatBytes, siteConfig, registerPageTitle } from '../../common/helper'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
-import { Empty } from 'ant-design-vue'
 
 //@ts-ignore
 import markdown_it from 'markdown-it'
@@ -43,6 +42,88 @@ md.use(mila, {
 
 const loading = ref(false)
 const routers: Ref<RouterMetadata[]> = ref([])
+const expandedMetrics = ref<Set<string>>(new Set())
+const searchKeywords = ref('')
+const selectedRegion = ref<string>('all')
+
+// Region mapping configuration - optimized for performance
+const REGION_MAPPING = new Map([
+    // Europe
+    ['AD', 'Europe'], ['AL', 'Europe'], ['AT', 'Europe'], ['BA', 'Europe'], ['BE', 'Europe'], ['BG', 'Europe'],
+    ['BY', 'Europe'], ['CH', 'Europe'], ['CZ', 'Europe'], ['DE', 'Europe'], ['DK', 'Europe'], ['EE', 'Europe'],
+    ['ES', 'Europe'], ['FI', 'Europe'], ['FR', 'Europe'], ['GB', 'Europe'], ['GR', 'Europe'], ['HR', 'Europe'],
+    ['HU', 'Europe'], ['IE', 'Europe'], ['IS', 'Europe'], ['IT', 'Europe'], ['LI', 'Europe'], ['LT', 'Europe'],
+    ['LU', 'Europe'], ['LV', 'Europe'], ['MC', 'Europe'], ['MD', 'Europe'], ['ME', 'Europe'], ['MK', 'Europe'],
+    ['MT', 'Europe'], ['NL', 'Europe'], ['NO', 'Europe'], ['PL', 'Europe'], ['PT', 'Europe'], ['RO', 'Europe'],
+    ['RS', 'Europe'], ['SE', 'Europe'], ['SI', 'Europe'], ['SK', 'Europe'], ['SM', 'Europe'], ['UA', 'Europe'],
+    ['VA', 'Europe'], ['XK', 'Europe'],
+
+    // North America
+    ['US', 'North America'], ['CA', 'North America'], ['MX', 'North America'], ['GT', 'North America'],
+    ['BZ', 'North America'], ['SV', 'North America'], ['HN', 'North America'], ['NI', 'North America'],
+    ['CR', 'North America'], ['PA', 'North America'],
+
+    // South America
+    ['AR', 'South America'], ['BO', 'South America'], ['BR', 'South America'], ['CL', 'South America'],
+    ['CO', 'South America'], ['EC', 'South America'], ['FK', 'South America'], ['GF', 'South America'],
+    ['GY', 'South America'], ['PE', 'South America'], ['PY', 'South America'], ['SR', 'South America'],
+    ['UY', 'South America'], ['VE', 'South America'],
+
+    // Africa
+    ['DZ', 'Africa'], ['AO', 'Africa'], ['BW', 'Africa'], ['BI', 'Africa'], ['CM', 'Africa'], ['CV', 'Africa'],
+    ['CF', 'Africa'], ['TD', 'Africa'], ['KM', 'Africa'], ['YT', 'Africa'], ['CG', 'Africa'], ['CD', 'Africa'],
+    ['BJ', 'Africa'], ['GQ', 'Africa'], ['ET', 'Africa'], ['ER', 'Africa'], ['DJ', 'Africa'], ['GA', 'Africa'],
+    ['GM', 'Africa'], ['GH', 'Africa'], ['GN', 'Africa'], ['CI', 'Africa'], ['KE', 'Africa'], ['LS', 'Africa'],
+    ['LR', 'Africa'], ['LY', 'Africa'], ['MG', 'Africa'], ['MW', 'Africa'], ['ML', 'Africa'], ['MR', 'Africa'],
+    ['MU', 'Africa'], ['MA', 'Africa'], ['MZ', 'Africa'], ['NA', 'Africa'], ['NE', 'Africa'], ['NG', 'Africa'],
+    ['GW', 'Africa'], ['RE', 'Africa'], ['RW', 'Africa'], ['SH', 'Africa'], ['ST', 'Africa'], ['SN', 'Africa'],
+    ['SC', 'Africa'], ['SL', 'Africa'], ['SO', 'Africa'], ['ZA', 'Africa'], ['ZW', 'Africa'], ['SS', 'Africa'],
+    ['SD', 'Africa'], ['SZ', 'Africa'], ['TG', 'Africa'], ['TN', 'Africa'], ['UG', 'Africa'], ['EH', 'Africa'],
+    ['ZM', 'Africa'], ['TZ', 'Africa'], ['BF', 'Africa'], ['EG', 'Africa'],
+
+    // Asia-S (South Asia)
+    ['IN', 'Asia-S'], ['PK', 'Asia-S'], ['BD', 'Asia-S'], ['LK', 'Asia-S'], ['NP', 'Asia-S'], ['BT', 'Asia-S'],
+    ['MV', 'Asia-S'],
+
+    // Asia-SE (Southeast Asia)
+    ['TH', 'Asia-SE'], ['SG', 'Asia-SE'], ['PH', 'Asia-SE'], ['ID', 'Asia-SE'], ['MY', 'Asia-SE'],
+    ['VN', 'Asia-SE'], ['KH', 'Asia-SE'], ['LA', 'Asia-SE'], ['MM', 'Asia-SE'], ['BN', 'Asia-SE'],
+    ['TL', 'Asia-SE'],
+
+    // Asia-E (East Asia)
+    ['JP', 'Asia-E'], ['CN', 'Asia-E'], ['KR', 'Asia-E'], ['TW', 'Asia-E'], ['HK', 'Asia-E'], ['MO', 'Asia-E'],
+    ['KP', 'Asia-E'], ['MN', 'Asia-E'],
+
+    // Pacific & Oceania
+    ['AU', 'Pacific&Oceania'], ['NZ', 'Pacific&Oceania'], ['FJ', 'Pacific&Oceania'], ['PG', 'Pacific&Oceania'],
+    ['NC', 'Pacific&Oceania'], ['SB', 'Pacific&Oceania'], ['VU', 'Pacific&Oceania'], ['WS', 'Pacific&Oceania'],
+    ['KI', 'Pacific&Oceania'], ['NR', 'Pacific&Oceania'], ['PW', 'Pacific&Oceania'], ['FM', 'Pacific&Oceania'],
+    ['MH', 'Pacific&Oceania'], ['TO', 'Pacific&Oceania'], ['TV', 'Pacific&Oceania'], ['CK', 'Pacific&Oceania'],
+    ['NU', 'Pacific&Oceania'], ['TK', 'Pacific&Oceania'], ['WF', 'Pacific&Oceania'], ['AS', 'Pacific&Oceania'],
+    ['GU', 'Pacific&Oceania'], ['MP', 'Pacific&Oceania'], ['UM', 'Pacific&Oceania'], ['PF', 'Pacific&Oceania'],
+
+    // Antarctica
+    ['AQ', 'Antarctica'],
+
+    // Asia-N (North Asia)
+    ['RU', 'Asia-N'],
+
+    // Asia-W (West Asia)
+    ['IR', 'Asia-W'], ['TR', 'Asia-W'], ['AE', 'Asia-W'], ['SA', 'Asia-W'], ['IQ', 'Asia-W'], ['SY', 'Asia-W'],
+    ['LB', 'Asia-W'], ['JO', 'Asia-W'], ['IL', 'Asia-W'], ['PS', 'Asia-W'], ['KW', 'Asia-W'], ['QA', 'Asia-W'],
+    ['BH', 'Asia-W'], ['OM', 'Asia-W'], ['YE', 'Asia-W'], ['GE', 'Asia-W'], ['AM', 'Asia-W'], ['AZ', 'Asia-W'],
+    ['CY', 'Asia-W'],
+
+    // Central Asia
+    ['AF', 'Central Asia'], ['UZ', 'Central Asia'], ['KZ', 'Central Asia'], ['KG', 'Central Asia'],
+    ['TJ', 'Central Asia'], ['TM', 'Central Asia']
+])
+
+// Get router region - optimized for performance
+const getRouterRegion = (router: RouterMetadata): string => {
+    if (!router.location) return 'Other Region'
+    return REGION_MAPPING.get(router.location.toUpperCase()) || 'Other Region'
+}
 
 const fetchRouters = async () => {
     try {
@@ -142,43 +223,70 @@ const redirectToPeering = (r: RouterMetadata) => {
     router.push({ path: `/nodes/${r.uuid}` })
 }
 
-const searchKeywords = ref('')
+// Computed properties for filtering
+const regionCounts = computed(() => {
+    const counts: Record<string, number> = {}
+    routers.value.forEach(router => {
+        const region = getRouterRegion(router)
+        counts[region] = (counts[region] || 0) + 1
+    })
+    return counts
+})
+
+const availableRegions = computed(() => {
+    const regions = Object.keys(regionCounts.value)
+        .filter(region => region !== 'Unknown')
+        .sort()
+    return regions
+})
+
 const filteredRouters = computed(() => {
-    if (searchKeywords.value.length === 0) return routers.value
-    return routers.value.filter(
-        (router: RouterMetadata) =>
-            (router.name !== undefined && router.name !== null && router.name.toLocaleLowerCase().indexOf(searchKeywords.value.toLocaleLowerCase()) !== -1) ||
-            (router.ipv4 !== undefined && router.ipv4 !== null && router.ipv4.indexOf(searchKeywords.value) !== -1) ||
-            (router.ipv6 !== undefined && router.ipv6 !== null && router.ipv6.toLocaleLowerCase().indexOf(searchKeywords.value.toLocaleLowerCase()) !== -1) ||
-            (router.ipv6LinkLocal !== undefined && router.ipv6LinkLocal !== null && router.ipv6LinkLocal.toLocaleLowerCase().indexOf(searchKeywords.value.toLocaleLowerCase()) !== -1)
-    )
+    let filtered = routers.value
+
+    // Filter by region
+    if (selectedRegion.value !== 'all') {
+        filtered = filtered.filter(router => getRouterRegion(router) === selectedRegion.value)
+    }
+
+    // Filter by search keywords
+    if (searchKeywords.value.length > 0) {
+        const keywords = searchKeywords.value.toLowerCase()
+        filtered = filtered.filter(router =>
+            (router.name?.toLowerCase().includes(keywords)) ||
+            (router.ipv4?.includes(searchKeywords.value)) ||
+            (router.ipv6?.toLowerCase().includes(keywords)) ||
+            (router.ipv6LinkLocal?.toLowerCase().includes(keywords))
+        )
+    }
+
+    return filtered
 })
 
 // Helper functions for better formatting
 const getStatusInfo = (r: RouterMetadata) => {
     if (!r.openPeering) {
-        return { 
-            status: t('pages.nodes.statusClosed'), 
+        return {
+            status: t('pages.nodes.statusClosed'),
             color: 'default',
             icon: StopOutlined
         }
     }
     if (r.sessionCount >= r.sessionCapacity) {
-        return { 
-            status: t('pages.nodes.statusFull'), 
+        return {
+            status: t('pages.nodes.statusFull'),
             color: 'warning',
             icon: ExclamationCircleOutlined
         }
     }
     if (r.autoPeering) {
-        return { 
-            status: t('pages.nodes.statusOpen'), 
+        return {
+            status: t('pages.nodes.statusOpen'),
             color: 'success',
             icon: CheckCircleOutlined
         }
     }
-    return { 
-        status: t('pages.nodes.statusOpenManuallyReview'), 
+    return {
+        status: t('pages.nodes.statusOpenManuallyReview'),
         color: 'processing',
         icon: HourglassOutlined
     }
@@ -230,7 +338,7 @@ const getConnectionIcon = (linkType: string) => {
 const getConnectionBadgeClass = (linkType: string) => {
     const classMap: { [key: string]: string } = {
         'wireguard': 'wireguard',
-        'openvpn': 'openvpn', 
+        'openvpn': 'openvpn',
         'ipsec': 'ipsec',
         'gre': 'gre',
         'ip6gre': 'gre',
@@ -240,11 +348,32 @@ const getConnectionBadgeClass = (linkType: string) => {
 }
 
 // Statistics computed properties
-const totalRouters = computed(() => routers.value.length)
-const totalSessions = computed(() => routers.value.reduce((sum, r) => sum + r.sessionCount, 0))
-const availableForAuto = computed(() => routers.value.filter(r => r.openPeering && r.autoPeering && r.sessionCount < r.sessionCapacity).length)
+const totalRouters = computed(() => filteredRouters.value.length)
+const totalSessions = computed(() => filteredRouters.value.reduce((sum, r) => sum + r.sessionCount, 0))
+const availableForAuto = computed(() => filteredRouters.value.filter(r => r.openPeering && r.autoPeering && r.sessionCount < r.sessionCapacity).length)
 
-const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
+// Toggle metrics visibility
+const toggleMetrics = (routerId: string, event: Event) => {
+    event.stopPropagation() // Prevent card click
+    if (expandedMetrics.value.has(routerId)) {
+        expandedMetrics.value.delete(routerId)
+    } else {
+        expandedMetrics.value.add(routerId)
+    }
+}
+
+const isMetricsExpanded = (routerId: string) => {
+    return expandedMetrics.value.has(routerId)
+}
+
+// Region filter helpers
+const setRegionFilter = (region: string) => {
+    selectedRegion.value = region
+    // Clear search when changing region for better UX
+    if (region !== 'all' && searchKeywords.value) {
+        searchKeywords.value = ''
+    }
+}
 </script>
 
 <template>
@@ -258,6 +387,27 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
                 {{ t('pages.nodes.nodes') }}
             </h1>
             <p class="page-subtitle">{{ t('pages.nodes.subTitle') }}</p>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <a-input-search v-model:value="searchKeywords" :placeholder="t('pages.nodes.search')" class="search-input"
+                size="large" enter-button :disabled="loading" />
+        </div>
+
+        <!-- Region Filter Section -->
+        <div v-if="!loading && routers.length > 0" class="region-filter-section">
+            <div class="region-filters">
+                <a-button :type="selectedRegion === 'all' ? 'primary' : 'default'" size="small"
+                    @click="setRegionFilter('all')" class="region-filter-btn">
+                    {{ t('pages.nodes.regions.All') }} ({{ routers.length }})
+                </a-button>
+                <a-button v-for="region in availableRegions" :key="region"
+                    :type="selectedRegion === region ? 'primary' : 'default'" size="small"
+                    @click="setRegionFilter(region)" class="region-filter-btn">
+                    {{ t(`pages.nodes.regions.${region}`) }} ({{ regionCounts[region] }})
+                </a-button>
+            </div>
         </div>
 
         <!-- Statistics Section -->
@@ -293,37 +443,76 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
             </div>
         </div>
 
-        <!-- Search Section -->
-        <div class="search-section">
-            <a-input-search 
-                v-model:value="searchKeywords"
-                :placeholder="t('pages.nodes.search')" 
-                class="search-input"
-                size="large"
-                enter-button
-            />
-        </div>
+        <!-- Loading State with Skeletons -->
+        <div v-if="loading">
+            <!-- Statistics Section Skeleton -->
+            <div class="statistics-section">
+                <div class="stats-grid">
+                    <div v-for="i in 3" :key="i" class="stat-card">
+                        <a-skeleton-avatar :active="true" size="large" shape="square" />
+                        <div class="stat-content">
+                            <a-skeleton-input :active="true" size="small"
+                                style="width: 60px; height: 28px; margin-bottom: 8px;" />
+                            <a-skeleton-input :active="true" size="small" style="width: 120px; height: 16px;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Loading State -->
-        <div v-if="loading" class="loading-container">
-            <a-spin size="large" />
+            <!-- Routers Grid Skeleton -->
+            <div class="routers-grid">
+                <div v-for="i in 6" :key="i" class="router-card skeleton-card">
+                    <!-- Card Header Skeleton -->
+                    <div class="card-header">
+                        <div class="router-info">
+                            <a-skeleton-avatar :active="true" size="large" shape="circle" />
+                            <div class="router-title">
+                                <a-skeleton-input :active="true" size="default"
+                                    style="width: 200px; height: 24px; margin-bottom: 8px;" />
+                                <a-skeleton-input :active="true" size="small" style="width: 120px; height: 16px;" />
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <a-skeleton-button :active="true" size="small" shape="circle" />
+                            <a-skeleton-button :active="true" size="small" shape="circle" />
+                        </div>
+                    </div>
+
+                    <!-- Capacity Section Skeleton -->
+                    <div class="capacity-section">
+                        <div class="capacity-info">
+                            <a-skeleton-avatar :active="true" size="small" shape="square" />
+                            <a-skeleton-input :active="true" size="small" style="width: 80px; height: 16px;" />
+                        </div>
+                        <a-skeleton-input :active="true" size="small"
+                            style="width: 100%; height: 8px; border-radius: 4px;" />
+                    </div>
+
+                    <!-- Connection Section Skeleton -->
+                    <div class="connection-section">
+                        <div class="connection-badges">
+                            <a-skeleton-button v-for="j in 3" :key="j" :active="true" size="small"
+                                style="width: 80px; margin-right: 8px;" />
+                        </div>
+                    </div>
+
+                    <!-- Metrics Section Skeleton -->
+                    <div class="metrics-section">
+                        <a-skeleton-button :active="true" size="small"
+                            style="width: 120px; height: 32px; border-radius: 8px;" />
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Routers Grid -->
         <div v-else-if="filteredRouters.length > 0" class="routers-grid">
-            <div 
-                v-for="r in filteredRouters" 
-                :key="r.uuid" 
-                class="router-card"
-                @click="redirectToPeering(r)"
-            >
-                <!-- Card Header -->                <div class="card-header">
+            <div v-for="r in filteredRouters" :key="r.uuid" class="router-card" @click="redirectToPeering(r)">
+                <!-- Card Header -->
+                <div class="card-header">
                     <div class="router-info">
-                        <router-location-avatar 
-                            :router="r" 
-                            :color="isRouterOffline(r) || isMaintenanceMode() ? 'red' : ''" 
-                            class="router-avatar" 
-                        />
+                        <router-location-avatar :router="r"
+                            :color="isRouterOffline(r) || isMaintenanceMode() ? 'red' : ''" class="router-avatar" />
                         <div class="router-title">
                             <h3 class="router-name">{{ r.name }}</h3>
                             <div class="status-indicator" :class="getStatusInfo(r).color">
@@ -334,20 +523,12 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
                     </div>
                     <div class="card-actions">
                         <a-tooltip title="Copy Router Info">
-                            <a-button 
-                                type="text" 
-                                size="small"
-                                @click.stop="copyRouterDescription(r)"
-                            >
+                            <a-button type="text" size="small" @click.stop="copyRouterDescription(r)">
                                 <copy-outlined />
                             </a-button>
                         </a-tooltip>
                         <a-tooltip title="Connect">
-                            <a-button 
-                                type="text" 
-                                size="small"
-                                @click.stop="redirectToPeering(r)"
-                            >
+                            <a-button type="text" size="small" @click.stop="redirectToPeering(r)">
                                 <api-outlined />
                             </a-button>
                         </a-tooltip>
@@ -362,25 +543,15 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
                             {{ r.sessionCount }} / {{ r.sessionCapacity }}
                         </span>
                     </div>
-                    <a-progress 
-                        :percent="Math.round((r.sessionCount / r.sessionCapacity) * 100)" 
-                        :show-info="false"
-                        size="small"
-                        :stroke-color="r.sessionCount >= r.sessionCapacity ? '#ff4d4f' : '#52c41a'"
-                    />
-                </div>                <!-- Connection Options -->
+                    <a-progress :percent="Math.round((r.sessionCount / r.sessionCapacity) * 100)" :show-info="false"
+                        size="small" :stroke-color="r.sessionCount >= r.sessionCapacity ? '#ff4d4f' : '#52c41a'" />
+                </div>
+                
+                <!-- Connection Options -->
                 <div v-if="r.linkTypes && r.linkTypes.length > 0" class="connection-section">
-                    <div class="connection-title">
-                        <cloud-outlined class="connection-title-icon" />
-                        <span>{{ t('pages.nodes.connectionTypes') }}</span>
-                    </div>
                     <div class="connection-badges">
-                        <div 
-                            v-for="linkType in r.linkTypes" 
-                            :key="linkType"
-                            class="connection-badge"
-                            :class="getConnectionBadgeClass(linkType)"
-                        >
+                        <div v-for="linkType in r.linkTypes" :key="linkType" class="connection-badge"
+                            :class="getConnectionBadgeClass(linkType)">
                             <component :is="getConnectionIcon(linkType)" class="connection-badge-icon" />
                             <span class="connection-badge-text">{{ getConnectionTypeLabel(linkType) }}</span>
                         </div>
@@ -389,48 +560,59 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 
                 <!-- Metrics Section (if available) -->
                 <div v-if="r.metric" class="metrics-section">
-                    <a-divider class="metrics-divider" />
-                    <div class="metrics-grid">
-                        <div class="metric-item">
-                            <clock-circle-outlined class="metric-icon" />
-                            <div class="metric-content">
-                                <span class="metric-label">{{ t('pages.nodes.uptime') }}</span>
-                                <span class="metric-value">{{ formatUptime(r.metric.uptime) }}</span>
+                    <!-- Metrics Toggle Button -->
+                    <div class="metrics-toggle" @click="toggleMetrics(r.uuid, $event)">
+                        <span class="metrics-toggle-text">
+                            {{ t('pages.nodes.systemMetrics') }}
+                        </span>
+                        <down-outlined class="metrics-toggle-icon" :class="{ 'expanded': isMetricsExpanded(r.uuid) }" />
+                    </div>
+
+                    <!-- Collapsible Metrics Content -->
+                    <div v-show="isMetricsExpanded(r.uuid)" class="metrics-content">
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <clock-circle-outlined class="metric-icon" />
+                                <div class="metric-content">
+                                    <span class="metric-label">{{ t('pages.nodes.uptime') }}</span>
+                                    <span class="metric-value">{{ formatUptime(r.metric.uptime) }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="metric-item">
-                            <thunderbolt-outlined class="metric-icon" />
-                            <div class="metric-content">
-                                <span class="metric-label">{{ t('pages.nodes.loadAvg') }}</span>
-                                <span class="metric-value">{{ r.metric.loadAvg?.split(' ')[0] || 'N/A' }}</span>
+                            <div class="metric-item">
+                                <thunderbolt-outlined class="metric-icon" />
+                                <div class="metric-content">
+                                    <span class="metric-label">{{ t('pages.nodes.loadAvg') }}</span>
+                                    <span class="metric-value">{{ r.metric.loadAvg?.split(' ')[0] || 'N/A' }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="metric-item">
-                            <wifi-outlined class="metric-icon" />
-                            <div class="metric-content">
-                                <span class="metric-label">{{ t('pages.nodes.txRx') }}</span>
-                                <span class="metric-value">{{ formatBytes(r.metric.tx) }} / {{ formatBytes(r.metric.rx) }}</span>
+                            <div class="metric-item">
+                                <wifi-outlined class="metric-icon" />
+                                <div class="metric-content">
+                                    <span class="metric-label">{{ t('pages.nodes.txRx') }}</span>
+                                    <span class="metric-value">{{ formatBytes(r.metric.tx) }} / {{
+                                        formatBytes(r.metric.rx) }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="metric-item">
-                            <global-outlined class="metric-icon" />
-                            <div class="metric-content">
-                                <span class="metric-label">{{ t('pages.nodes.tcpUdp') }}</span>
-                                <span class="metric-value">{{ r.metric.tcp || 0 }} / {{ r.metric.udp || 0 }}</span>
+                            <div class="metric-item">
+                                <global-outlined class="metric-icon" />
+                                <div class="metric-content">
+                                    <span class="metric-label">{{ t('pages.nodes.tcpUdp') }}</span>
+                                    <span class="metric-value">{{ r.metric.tcp || 0 }} / {{ r.metric.udp || 0 }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div v-if="r.metric.rs" class="metric-item">
-                            <twitter-outlined class="metric-icon" />
-                            <div class="metric-content">
-                                <span class="metric-label">{{ t('pages.nodes.router') }}</span>
-                                <span class="metric-value">{{ getRouterInfo(r.metric.rs) }}</span>
+                            <div v-if="r.metric.rs" class="metric-item">
+                                <twitter-outlined class="metric-icon" />
+                                <div class="metric-content">
+                                    <span class="metric-label">{{ t('pages.nodes.router') }}</span>
+                                    <span class="metric-value">{{ getRouterInfo(r.metric.rs) }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div v-if="r.metric.version" class="metric-item">
-                            <desktop-outlined class="metric-icon" />
-                            <div class="metric-content">
-                                <span class="metric-label">{{ t('pages.nodes.agent') }}</span>
-                                <span class="metric-value">{{ getAgentVersion(r.metric.version) }}</span>
+                            <div v-if="r.metric.version" class="metric-item">
+                                <desktop-outlined class="metric-icon" />
+                                <div class="metric-content">
+                                    <span class="metric-label">{{ t('pages.nodes.agent') }}</span>
+                                    <span class="metric-value">{{ getAgentVersion(r.metric.version) }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -446,10 +628,8 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 
         <!-- Empty State -->
         <div v-else class="empty-state">
-            <a-empty 
-                :image="simpleImage" 
-                :description="searchKeywords ? 'No routers match your search' : 'No routers available'"
-            />
+            <a-empty
+                :description="searchKeywords ? t('pages.nodes.noRoutersMatch') : t('pages.nodes.noRoutersAvailable')" />
         </div>
     </div>
 </template>
@@ -471,9 +651,8 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 /* Header Section */
 .page-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin: 20px auto;
     padding: 20px 0;
-    margin-top: 20px;
 }
 
 .page-title {
@@ -516,7 +695,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
     max-width: 1000px;
-    margin: 0px auto 8px auto;
+    margin: 0px auto 50px auto;
 }
 
 .stat-card {
@@ -604,7 +783,7 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 .search-section {
     display: flex;
     justify-content: center;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
 }
 
 .search-input {
@@ -612,12 +791,76 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     width: 100%;
 }
 
-/* Loading State */
-.loading-container {
+/* Region Filter Section */
+.region-filter-section {
     display: flex;
     justify-content: center;
+    margin-bottom: 32px;
+}
+
+.region-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
     align-items: center;
-    min-height: 200px;
+    max-width: 900px;
+    width: 100%;
+}
+
+.region-filter-btn {
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    height: 32px;
+    padding: 0 12px;
+    transition: all 0.2s ease;
+    border: 1px solid #d9d9d9;
+    background: #fff;
+    color: #666;
+}
+
+.dark .region-filter-btn {
+    background: #1a1a1a;
+    border-color: #2a2a2a;
+    color: #aaa;
+}
+
+.region-filter-btn:hover {
+    border-color: #40a9ff;
+    color: #40a9ff;
+}
+
+.region-filter-btn.ant-btn-primary {
+    background: #1890ff !important;
+    border-color: #1890ff !important;
+    color: #fff !important;
+}
+
+.dark .region-filter-btn.ant-btn-primary {
+    background: #1890ff !important;
+    border-color: #1890ff !important;
+}
+
+.region-filter-btn.ant-btn-primary:hover {
+    background: #40a9ff !important;
+    border-color: #40a9ff !important;
+    color: #fff !important;
+}
+
+/* Skeleton Card Styles */
+.skeleton-card {
+    pointer-events: none;
+    cursor: default;
+}
+
+.skeleton-card:hover {
+    transform: none;
+    border-color: #eee;
+}
+
+.dark .skeleton-card:hover {
+    border-color: #2a2a2a;
 }
 
 /* Routers Grid */
@@ -769,25 +1012,6 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     margin-bottom: 20px;
 }
 
-.connection-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-    font-weight: 600;
-    color: #1a1a1a;
-    font-size: 14px;
-}
-
-.dark .connection-title {
-    color: #ffffff;
-}
-
-.connection-title-icon {
-    color: #1890ff;
-    font-size: 16px;
-}
-
 .connection-badges {
     display: flex;
     flex-wrap: wrap;
@@ -862,8 +1086,74 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     margin-bottom: 16px;
 }
 
-.metrics-divider {
-    margin: 12px auto;
+.metrics-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.dark .metrics-toggle {
+    background: rgba(64, 169, 255, 0.08);
+    border-color: rgba(64, 169, 255, 0.2);
+}
+
+.metrics-toggle:hover {
+    background: rgba(24, 144, 255, 0.08);
+    border-color: rgba(24, 144, 255, 0.25);
+}
+
+.dark .metrics-toggle:hover {
+    background: rgba(64, 169, 255, 0.12);
+    border-color: rgba(64, 169, 255, 0.3);
+}
+
+.metrics-toggle-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+}
+
+.dark .metrics-toggle-text {
+    color: #aaa;
+}
+
+.metrics-toggle-icon {
+    font-size: 12px;
+    color: #666;
+    transition: transform 0.2s ease;
+}
+
+.dark .metrics-toggle-icon {
+    color: #aaa;
+}
+
+.metrics-toggle-icon.expanded {
+    transform: rotate(180deg);
+}
+
+.metrics-content {
+    animation: slideDown 0.2s ease-out;
+    overflow: hidden;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        max-height: 500px;
+        transform: translateY(0);
+    }
 }
 
 .metrics-title {
@@ -1009,34 +1299,49 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     .nodes-page {
         padding: 12px 16px;
     }
-    
+
     .page-title {
         font-size: 28px;
     }
-    
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
-    
+
+    .region-filter-section {
+        margin-bottom: 24px;
+    }
+
+    .region-filters {
+        gap: 6px;
+        padding: 0 8px;
+    }
+
+    .region-filter-btn {
+        font-size: 11px;
+        height: 28px;
+        padding: 0 8px;
+    }
+
     .routers-grid {
         grid-template-columns: 1fr;
         gap: 16px;
     }
-    
+
     .router-card {
         padding: 16px;
     }
-    
+
     .card-header {
         flex-direction: column;
         gap: 12px;
     }
-    
+
     .card-actions {
         align-self: flex-end;
     }
-    
+
     .connection-badges {
         justify-content: center;
     }
@@ -1046,39 +1351,51 @@ const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
     .nodes-page {
         padding: 8px 12px;
     }
-    
+
     .stats-grid {
         grid-template-columns: 1fr;
         gap: 10px;
     }
-    
+
+    .region-filters {
+        gap: 4px;
+        padding: 0 4px;
+    }
+
+    .region-filter-btn {
+        font-size: 10px;
+        height: 24px;
+        padding: 0 6px;
+        border-radius: 12px;
+    }
+
     .router-info {
         flex-direction: column;
         gap: 8px;
     }
-    
+
     .router-title {
         text-align: center;
     }
-    
+
     .metrics-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .routers-grid {
         grid-template-columns: 1fr;
         gap: 12px;
     }
-    
+
     .router-card {
         padding: 14px;
     }
-    
+
     .connection-badges {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .connection-badge {
         justify-content: center;
     }

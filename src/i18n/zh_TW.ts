@@ -92,7 +92,7 @@ export default {
       routerOffline: '路由器離線',
       routerOfflineDescription: '此路由器似乎已離線（超過 15 分鐘未更新）。請稍後再試或聯絡管理員。',
       maintenanceMode: '維護模式',
-      connectionTypes: '連線類型',
+      systemMetrics: '系統指標',
       uptime: '在線時長',
       loadAvg: '負載均值',
       txRx: '收發流量',
@@ -103,6 +103,26 @@ export default {
       totalRouters: '路由器總數',
       totalSessions: '已設定會話',
       availableForAuto: '即時互聯',
+      // Empty states
+      noRoutersMatch: '沒有路由器符合您的搜尋',
+      noRoutersAvailable: '暫無可用路由器',
+      // Regions
+      regions: {
+        'Europe': '歐洲',
+        'North America': '北美洲',
+        'South America': '南美洲',
+        'Africa': '非洲',
+        'Asia-S': '南亞',
+        'Asia-SE': '東南亞',
+        'Asia-E': '東亞',
+        'Pacific&Oceania': '太平洋與大洋洲',
+        'Antarctica': '南極洲',
+        'Asia-N': '北亞',
+        'Asia-W': '西亞',
+        'Central Asia': '中亞',
+        'Other Region': '其他地區',
+        'All': '全部'
+      }
     },
     peering: {
       couldNotGetData: '無法取得節點資料。',
@@ -269,7 +289,9 @@ export default {
       routingPolicy: '路由策略',
       mtu: 'MTU',
       sessionInfo: '會話資訊',
-      lastUpdated: '最後更新',
+      lastUpdated: '指標更新時間',
+      createdAt: '建立時間',
+      updatedAt: '更新時間',
       loadingMetrics: '正在載入指標…',
       noMetricsFound: '未找到指標',
       noMetricsFoundDesc: '無法找到此會話的指標資料。',

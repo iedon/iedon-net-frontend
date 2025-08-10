@@ -166,10 +166,18 @@ html,
     width: 100%;
     height: 100%;
     user-select: none;
-    scroll-behavior: smooth;
 }
 
 body {
     margin: 0;
+}
+
+/* Improved scroll behavior for SPA transitions */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 </style>

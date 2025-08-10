@@ -85,7 +85,7 @@
                 </div>
 
                 <!-- Session Details Cards -->
-                <div class="session-details-grid">
+                <div class="session-details-grid" v-if="sessionMetadata">
                     <!-- Session Info Card -->
                     <div class="session-detail-card">
                         <div class="detail-card-header">
@@ -107,51 +107,57 @@
                             <div class="detail-item">
                                 <span class="detail-label">{{ t('pages.metrics.interaceType') }}</span>
                                 <span class="detail-value">
-                                    <a-skeleton-input v-if="!sessionMetadata" size="small" :active="true"
-                                        style="height: 20px; width: 100px;" />
-                                    <span v-else>{{ t(`pages.peering.${sessionMetadata.type}`) }}</span>
+                                    <span>{{ t(`pages.peering.${sessionMetadata.type}`) }}</span>
                                 </span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">{{ t('pages.metrics.interfaceName') }}</span>
                                 <span class="detail-value copyable"
                                     @click="copyToClipboard(sessionMetadata?.interface || '', 'Interface Name')">
-                                    <a-skeleton-input v-if="!sessionMetadata" size="small" :active="true"
-                                        style="height: 20px; width: 100px;" />
-                                    <span v-else>{{ sessionMetadata.interface || t('pages.metrics.notAvailable')
+                                    <span>{{ sessionMetadata.interface || t('pages.metrics.notAvailable')
                                         }}</span>
                                 </span>
                             </div>
                             <div class="detail-item" v-if="sessionMetadata?.mtu || !sessionMetadata">
                                 <span class="detail-label">{{ t('pages.metrics.mtu') }}</span>
                                 <span class="detail-value">
-                                    <a-skeleton-input v-if="!sessionMetadata" size="small" :active="true"
-                                        style="height: 20px; width: 80px;" />
-                                    <span v-else>{{ sessionMetadata.mtu || t('pages.metrics.notAvailable') }}</span>
+                                    <span>{{ sessionMetadata.mtu || t('pages.metrics.notAvailable') }}</span>
                                 </span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">{{ t('pages.metrics.routingPolicy') }}</span>
                                 <span class="detail-value">
-                                    <a-skeleton-input v-if="!sessionMetadata" size="small" :active="true"
-                                        style="height: 20px; width: 120px;" />
-                                    <span v-else>{{ getRoutingPolicyName(sessionMetadata.policy) }}</span>
+                                    <span>{{ getRoutingPolicyName(sessionMetadata.policy) }}</span>
                                 </span>
                             </div>
                             <div class="detail-item" v-if="sessionMetadata?.extensions || !sessionMetadata">
                                 <span class="detail-label">{{ t('pages.metrics.bgpExtensions') }}</span>
-                                <a-skeleton-input v-if="!sessionMetadata" size="small" :active="true"
-                                    style="height: 20px; width: 100px;" />
-                                <span v-else class="detail-value">{{ formatBgpExtensions(sessionMetadata.extensions)
+                                <span class="detail-value">{{ formatBgpExtensions(sessionMetadata?.extensions || [])
                                 }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">{{ t('pages.metrics.createdAt') }}</span>
+                                <span class="detail-value"
+                                    :title="sessionMetadata ? formatDate(sessionMetadata.createdAt) : ''">
+                                    <span>{{ sessionMetadata ? formatRelativeTime(sessionMetadata.createdAt, t) :
+                                        t('pages.metrics.loading') }}</span>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">{{ t('pages.metrics.updatedAt') }}</span>
+                                <span class="detail-value"
+                                    :title="sessionMetadata ? formatDate(sessionMetadata.updatedAt) : ''">
+                                    <span>{{ sessionMetadata ? formatRelativeTime(sessionMetadata.updatedAt, t) :
+                                        t('pages.metrics.loading') }}</span>
+                                </span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">{{ t('pages.metrics.lastUpdated') }}</span>
                                 <span class="detail-value"
                                     :title="sessionMetrics ? formatDate(new Date(sessionMetrics.timestamp * 1000 || +new Date()).toISOString()) : ''">
                                     {{ sessionMetrics ? formatRelativeTime(new Date(sessionMetrics.timestamp * 1000 ||
-                                        +new
-                                            Date()).toISOString(), t) : t('pages.metrics.loading') }}
+                                    +new
+                                    Date()).toISOString(), t) : t('pages.metrics.loading') }}
                                 </span>
                             </div>
                         </div>
@@ -231,7 +237,7 @@
                 <div class="metrics-grid">
                     <!-- BGP IPv4 Routes Metric -->
                     <div class="metric-item bgp-routes-ipv4" @click="scrollToBgpCharts" style="cursor: pointer;"
-                        :title="t('pages.metrics.clickToViewChart')">
+                        :title="t('pages.metrics.clickToViewChart') ">
                         <div class="metric-icon bgp-routes">
                             <span>IPv4</span>
                         </div>
@@ -354,7 +360,7 @@
                     <div v-if="sessionMetrics?.bgp && sessionMetrics.bgp.length > 0"
                         v-for="(bgpSession, index) in sessionMetrics.bgp" :key="index" class="metric-item"
                         @click="scrollToBgpDetails" style="cursor: pointer;"
-                        :title="t('pages.metrics.clickToViewDetails')">
+                        :title="t('pages.metrics.clickToViewDetails') ">
                         <div class="metric-icon bgp-status" :class="{
                             active: bgpSession.info?.includes('Established'),
                             timeout: bgpSession.info && !bgpSession.info.includes('Established') && bgpSession.info !== 'Unknown'
@@ -371,11 +377,11 @@
                             <div class="metric-label">{{
                                 bgpSession.name?.toLowerCase().includes('v4') ? `${t('pages.metrics.bgpSession')}
                                 (IPv4)` :
-                                    bgpSession.name?.toLowerCase().includes('v6') ? `${t('pages.metrics.bgpSession')}
+                                bgpSession.name?.toLowerCase().includes('v6') ? `${t('pages.metrics.bgpSession')}
                                 (IPv6)` :
-                                        bgpSession.name ? `${t('pages.metrics.bgpSession')} (MP-BGP)` :
-                                            t('pages.metrics.bgpSession')
-                            }}</div>
+                                bgpSession.name ? `${t('pages.metrics.bgpSession')} (MP-BGP)` :
+                                t('pages.metrics.bgpSession')
+                                }}</div>
                         </div>
                     </div>
                 </div>
@@ -492,8 +498,9 @@
             </div>
         </a-layout-content>
 
-        <!-- Loading State -->
+        <!-- Loading State with Skeletons -->
         <a-layout-content v-else-if="loading" id="metrics">
+            <!-- Header Actions Skeleton -->
             <div class="header-actions">
                 <a-button @click="goBack" type="text" size="large" class="back-button">
                     <template #icon>
@@ -501,20 +508,117 @@
                     </template>
                     {{ t('pages.metrics.back') }}
                 </a-button>
-                <a-button disabled type="primary" size="large">
-                    <template #icon>
-                        <reload-outlined />
-                    </template>
-                    {{ t('pages.metrics.refresh') }}
-                </a-button>
+                <a-skeleton-button :active="true" size="large" style="width: 120px; margin-left: auto;" />
             </div>
-            <div class="loading-container">
-                <a-spin size="large" :tip="t('pages.metrics.loadingMetrics')" />
+
+            <!-- Session Header Skeleton -->
+            <div class="session-header">
+                <div class="session-header-main">
+                    <a-skeleton-avatar :active="true" size="large" shape="circle" />
+                    <div class="session-info" style="margin-left: 16px; flex: 1;">
+                        <a-skeleton-input :active="true" size="large"
+                            style="width: 300px; height: 32px; margin-bottom: 8px;" />
+                        <a-skeleton :active="true" :paragraph="{ rows: 1, width: '60%' }" :title="false" />
+                    </div>
+                </div>
+
+                <!-- Session Details Cards Skeleton -->
+                <div class="session-details-grid">
+                    <!-- Session Info Card Skeleton -->
+                    <div class="session-detail-card">
+                        <div class="detail-card-header">
+                            <a-skeleton-avatar :active="true" size="small" shape="circle" />
+                            <a-skeleton-input :active="true" size="default" style="width: 150px; margin-left: 12px;" />
+                        </div>
+                        <div class="detail-card-content">
+                            <a-skeleton :active="true"
+                                :paragraph="{ rows: 6, width: ['100%', '80%', '90%', '70%', '85%', '60%'] }"
+                                :title="false" />
+                        </div>
+                    </div>
+
+                    <!-- Network Info Card Skeleton -->
+                    <div class="session-detail-card">
+                        <div class="detail-card-header">
+                            <a-skeleton-avatar :active="true" size="small" shape="circle" />
+                            <a-skeleton-input :active="true" size="default" style="width: 120px; margin-left: 12px;" />
+                        </div>
+                        <div class="detail-card-content">
+                            <a-skeleton :active="true" :paragraph="{ rows: 4, width: ['90%', '100%', '80%', '70%'] }"
+                                :title="false" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Overview Skeleton -->
+            <div class="metrics-overview">
+                <div class="metrics-grid">
+                    <!-- Create 6 metric card skeletons -->
+                    <div v-for="i in 6" :key="i" class="metric-item">
+                        <a-skeleton-avatar :active="true" size="large" shape="square" />
+                        <div class="metric-content" style="margin-left: 16px; flex: 1;">
+                            <a-skeleton :active="true" :paragraph="{ rows: 2, width: ['60%', '80%'] }" :title="false" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section Skeleton -->
+            <div class="charts-section">
+                <!-- BGP Metrics Charts Skeleton -->
+                <div class="chart-group">
+                    <a-skeleton-input :active="true" size="large"
+                        style="width: 200px; height: 32px; margin-bottom: 24px;" />
+                    <div class="charts-grid">
+                        <div v-for="i in 4" :key="i" class="chart-container">
+                            <a-skeleton-input :active="true" size="default"
+                                style="width: 180px; height: 24px; margin-bottom: 16px;" />
+                            <a-skeleton :active="true" :paragraph="{ rows: 8, width: '100%' }" :title="false" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interface Metrics Chart Skeleton -->
+                <div class="chart-group">
+                    <a-skeleton-input :active="true" size="large"
+                        style="width: 180px; height: 32px; margin-bottom: 24px;" />
+                    <div class="chart-container full-width">
+                        <a-skeleton :active="true" :paragraph="{ rows: 10, width: '100%' }" :title="false" />
+                    </div>
+                </div>
+
+                <!-- RTT Metrics Chart Skeleton -->
+                <div class="chart-group">
+                    <a-skeleton-input :active="true" size="large"
+                        style="width: 160px; height: 32px; margin-bottom: 24px;" />
+                    <div class="chart-container full-width">
+                        <a-skeleton :active="true" :paragraph="{ rows: 10, width: '100%' }" :title="false" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Section Skeleton -->
+            <div class="details-section">
+                <a-skeleton-input :active="true" size="large"
+                    style="width: 180px; height: 32px; margin-bottom: 24px;" />
+                <div class="details-tabs">
+                    <!-- Tab headers skeleton -->
+                    <div
+                        style="display: flex; gap: 32px; margin-bottom: 24px; border-bottom: 1px solid #f0f0f0; padding-bottom: 12px;">
+                        <a-skeleton-button :active="true" size="default" style="width: 120px;" />
+                        <a-skeleton-button :active="true" size="default" style="width: 100px;" />
+                    </div>
+                    <!-- Tab content skeleton -->
+                    <a-skeleton :active="true"
+                        :paragraph="{ rows: 8, width: ['100%', '90%', '95%', '85%', '100%', '80%', '90%', '75%'] }"
+                        :title="false" />
+                </div>
             </div>
         </a-layout-content>
 
         <!-- Error State -->
-        <a-layout-content v-else id="metrics">
+        <a-layout-content v-else-if="!loading && !sessionMetrics" id="metrics">
             <div class="header-actions">
                 <a-button @click="goBack" type="text" size="large" class="back-button">
                     <template #icon>
@@ -819,8 +923,6 @@ const scrollToInterfaceChart = () => scrollToSection(interfaceChartSection, 'rgb
 // Data fetching functions
 const fetchSessionMetrics = async () => {
     try {
-        loading.value = true
-
         const resp = await makeRequest(t, isAdmin.value ? '/admin' : '/session', {
             action: isAdmin.value ? 'querySession' : 'query',
             session: sessionId,
@@ -836,8 +938,6 @@ const fetchSessionMetrics = async () => {
     } catch (error) {
         console.error(error)
         message.error(t('pages.metrics.fetchError'))
-    } finally {
-        loading.value = false
     }
 }
 
@@ -946,9 +1046,12 @@ const formatBgpExtensions = (extensions: string[]) => {
 
 const refreshData = async () => {
     try {
+        loading.value = true
         await fetchSessionMetrics()
     } catch (error) {
         console.error(error)
+    } finally {
+        loading.value = false
     }
     // Restart countdown timer after refreshing data
     if (canRefreshData()) startCountdownTimer()
@@ -1156,11 +1259,17 @@ onMounted(async () => {
 
     registerPageTitle(`${t('pages.metrics.sessionMetrics')} - ${sessionId}`)
 
-    await Promise.allSettled([
-        fetchSessionMetrics(),
-        fetchRouterInfo(),
-        fetchSessionMetadata()
-    ])
+    // Set loading state and fetch all data
+    loading.value = true
+    try {
+        await Promise.allSettled([
+            fetchSessionMetrics(),
+            fetchRouterInfo(),
+            fetchSessionMetadata()
+        ])
+    } finally {
+        loading.value = false
+    }
 
     // Start countdown timer for next refresh
     startCountdownTimer()

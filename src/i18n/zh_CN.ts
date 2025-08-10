@@ -92,7 +92,7 @@ export default {
       routerOffline: '路由器离线',
       routerOfflineDescription: '该路由器似乎已离线（超过 15 分钟未更新）。请稍后重试或联系管理员。',
       maintenanceMode: '维护模式',
-      connectionTypes: '连接类型',
+      systemMetrics: '系统指标',
       uptime: '在线时长',
       loadAvg: '负载均值',
       txRx: '收发流量',
@@ -103,6 +103,26 @@ export default {
       totalRouters: '路由器总数',
       totalSessions: '已配置会话',
       availableForAuto: '即时互联',
+      // Empty states
+      noRoutersMatch: '没有路由器匹配您的搜索',
+      noRoutersAvailable: '暂无可用路由器',
+      // Regions
+      regions: {
+        'Europe': '欧洲',
+        'North America': '北美洲',
+        'South America': '南美洲',
+        'Africa': '非洲',
+        'Asia-S': '南亚',
+        'Asia-SE': '东南亚',
+        'Asia-E': '东亚',
+        'Pacific&Oceania': '太平洋和大洋洲',
+        'Antarctica': '南极洲',
+        'Asia-N': '北亚',
+        'Asia-W': '西亚',
+        'Central Asia': '中亚',
+        'Other Region': '其他地区',
+        'All': '全部'
+      }
     },
     peering: {
       couldNotGetData: '无法获取节点数据。',
@@ -269,7 +289,9 @@ export default {
       routingPolicy: '路由策略',
       mtu: 'MTU',
       sessionInfo: '会话信息',
-      lastUpdated: '最后更新',
+      lastUpdated: '指标更新时间',
+      createdAt: '创建时间',
+      updatedAt: '更新时间',
       loadingMetrics: '正在加载指标…',
       noMetricsFound: '未找到指标',
       noMetricsFoundDesc: '无法找到此会话的指标数据。',

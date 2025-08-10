@@ -92,8 +92,7 @@ export default {
       routerOffline: 'Router Offline',
       routerOfflineDescription: 'This router appears to be offline (last update more than 15 minutes ago). Please try again later or contact the administrator.',
       maintenanceMode: 'Maintenance Mode',
-      // Connection types
-      connectionTypes: 'Connection Types',
+      systemMetrics: 'System Metrics',
       uptime: 'Uptime',
       loadAvg: 'Load Avg',
       txRx: 'TX / RX',
@@ -105,6 +104,26 @@ export default {
       totalRouters: 'Total Routers',
       totalSessions: 'Sessions Configured',
       availableForAuto: 'Instant Peering',
+      // Empty states
+      noRoutersMatch: 'No routers match your search',
+      noRoutersAvailable: 'No routers available',
+      // Regions
+      regions: {
+        'Europe': 'Europe',
+        'North America': 'North America',
+        'South America': 'South America',
+        'Africa': 'Africa',
+        'Asia-S': 'South Asia',
+        'Asia-SE': 'Southeast Asia',
+        'Asia-E': 'East Asia',
+        'Pacific&Oceania': 'Pacific & Oceania',
+        'Antarctica': 'Antarctica',
+        'Asia-N': 'North Asia',
+        'Asia-W': 'West Asia',
+        'Central Asia': 'Central Asia',
+        'Other Region': 'Other Region',
+        'All': 'All'
+      }
     },
     peering: {
       couldNotGetData: 'Could not retrieve node data.',
@@ -271,7 +290,9 @@ export default {
       routingPolicy: 'Routing Policy',
       mtu: 'MTU',
       sessionInfo: 'Session Info',
-      lastUpdated: 'Last Updated',
+      lastUpdated: 'Metric Updated At',
+      createdAt: 'Created At',
+      updatedAt: 'Updated At',
       loadingMetrics: 'Loading metrics...',
       noMetricsFound: 'No Metrics Found',
       noMetricsFoundDesc: 'Unable to find metrics data for this session.',

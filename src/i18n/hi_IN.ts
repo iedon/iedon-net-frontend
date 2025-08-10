@@ -92,7 +92,7 @@ export default {
       routerOffline: 'राउटर ऑफलाइन',
       routerOfflineDescription: 'यह राउटर ऑफलाइन लगता है (15 मिनट से अधिक समय से अपडेट नहीं)। बाद में पुनः प्रयास करें या व्यवस्थापक से संपर्क करें।',
       maintenanceMode: 'रखरखाव मोड',
-      connectionTypes: 'कनेक्शन प्रकार',
+      systemMetrics: 'सिस्टम मेट्रिक्स',
       uptime: 'अपटाइम',
       loadAvg: 'औसत लोड',
       txRx: 'TX / RX',
@@ -103,6 +103,26 @@ export default {
       totalRouters: 'कुल राउटर',
       totalSessions: 'कॉन्फ़िगर किए गए सत्र',
       availableForAuto: 'तुरंत पीयरिंग',
+      // Empty states
+      noRoutersMatch: 'आपकी खोज से कोई राउटर मेल नहीं खाता',
+      noRoutersAvailable: 'कोई राउटर उपलब्ध नहीं है',
+      // Regions
+      regions: {
+        'Europe': 'यूरोप',
+        'North America': 'उत्तरी अमेरिका',
+        'South America': 'दक्षिण अमेरिका',
+        'Africa': 'अफ्रीका',
+        'Asia-S': 'दक्षिण एशिया',
+        'Asia-SE': 'दक्षिणपूर्व एशिया',
+        'Asia-E': 'पूर्वी एशिया',
+        'Pacific&Oceania': 'प्रशांत और ओशिनिया',
+        'Antarctica': 'अंटार्कटिका',
+        'Asia-N': 'उत्तरी एशिया',
+        'Asia-W': 'पश्चिमी एशिया',
+        'Central Asia': 'मध्य एशिया',
+        'Other Region': 'अन्य क्षेत्र',
+        'All': 'सभी'
+      }
     },
     peering: {
       couldNotGetData: 'नोड डेटा प्राप्त नहीं कर सके।',
@@ -269,7 +289,9 @@ export default {
       routingPolicy: 'रूटिंग नीति',
       mtu: 'MTU',
       sessionInfo: 'सत्र जानकारी',
-      lastUpdated: 'अंतिम अपडेट',
+      lastUpdated: 'मेट्रिक्स अपडेट समय',
+      createdAt: 'बनाया गया',
+      updatedAt: 'अपडेट किया गया',
       loadingMetrics: 'मेट्रिक्स लोड हो रहे हैं…',
       noMetricsFound: 'कोई मेट्रिक्स नहीं मिले',
       noMetricsFoundDesc: 'इस सत्र के लिए कोई मेट्रिक्स डेटा नहीं मिला।',

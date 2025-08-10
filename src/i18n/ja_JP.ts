@@ -92,7 +92,7 @@ export default {
       routerOffline: 'ルーターオフライン',
       routerOfflineDescription: 'このルーターはオフラインのようです（15分以上更新なし）。後ほど再試行するか管理者にご連絡ください。',
       maintenanceMode: 'メンテナンスモード',
-      connectionTypes: '接続タイプ',
+      systemMetrics: 'システムメトリクス',
       uptime: '稼働時間',
       loadAvg: '平均負荷',
       txRx: '送受信',
@@ -103,6 +103,26 @@ export default {
       totalRouters: 'ルーター総数',
       totalSessions: '設定済みセッション',
       availableForAuto: '即時ピアリング',
+      // Empty states
+      noRoutersMatch: '検索に一致するルーターがありません',
+      noRoutersAvailable: '利用可能なルーターがありません',
+      // Regions
+      regions: {
+        'Europe': 'ヨーロッパ',
+        'North America': '北アメリカ',
+        'South America': '南アメリカ',
+        'Africa': 'アフリカ',
+        'Asia-S': '南アジア',
+        'Asia-SE': '東南アジア',
+        'Asia-E': '東アジア',
+        'Pacific&Oceania': '太平洋・オセアニア',
+        'Antarctica': '南極',
+        'Asia-N': '北アジア',
+        'Asia-W': '西アジア',
+        'Central Asia': '中央アジア',
+        'Other Region': 'その他の地域',
+        'All': 'すべて'
+      }
     },
     peering: {
       couldNotGetData: 'ノードデータを取得できませんでした。',
@@ -269,7 +289,9 @@ export default {
       routingPolicy: 'ルーティングポリシー',
       mtu: 'MTU',
       sessionInfo: 'セッション情報',
-      lastUpdated: '最終更新',
+      lastUpdated: 'メトリク更新日時',
+      createdAt: '作成日時',
+      updatedAt: '更新日時',
       loadingMetrics: 'メトリクス読み込み中…',
       noMetricsFound: 'メトリクスが見つかりません',
       noMetricsFoundDesc: 'このセッションのメトリクスデータが見つかりません。',

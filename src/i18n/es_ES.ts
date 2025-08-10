@@ -92,7 +92,7 @@ export default {
       routerOffline: 'Router fuera de línea',
       routerOfflineDescription: 'Este router parece estar fuera de línea (última actualización hace más de 15 minutos). Por favor, intente más tarde o contacte al administrador.',
       maintenanceMode: 'Modo mantenimiento',
-      connectionTypes: 'Tipos de conexión',
+      systemMetrics: 'Métricas del sistema',
       uptime: 'Tiempo activo',
       loadAvg: 'Carga promedio',
       txRx: 'TX / RX',
@@ -103,6 +103,26 @@ export default {
       totalRouters: 'Total de routers',
       totalSessions: 'Sesiones configuradas',
       availableForAuto: 'Peering instantáneo',
+      // Empty states
+      noRoutersMatch: 'Ningún router coincide con su búsqueda',
+      noRoutersAvailable: 'No hay routers disponibles',
+      // Regions
+      regions: {
+        'Europe': 'Europa',
+        'North America': 'Norteamérica',
+        'South America': 'Sudamérica',
+        'Africa': 'África',
+        'Asia-S': 'Asia del Sur',
+        'Asia-SE': 'Sudeste Asiático',
+        'Asia-E': 'Asia Oriental',
+        'Pacific&Oceania': 'Pacífico y Oceanía',
+        'Antarctica': 'Antártida',
+        'Asia-N': 'Asia del Norte',
+        'Asia-W': 'Asia Occidental',
+        'Central Asia': 'Asia Central',
+        'Other Region': 'Otra Región',
+        'All': 'Todo'
+      }
     },
     peering: {
       couldNotGetData: 'No se pudo obtener datos del nodo.',
@@ -269,7 +289,9 @@ export default {
       routingPolicy: 'Política de enrutamiento',
       mtu: 'MTU',
       sessionInfo: 'Información de sesión',
-      lastUpdated: 'Última actualización',
+      lastUpdated: 'Métrica actualizada el',
+      createdAt: 'Creado el',
+      updatedAt: 'Actualizado el',
       loadingMetrics: 'Cargando métricas…',
       noMetricsFound: 'No se encontraron métricas',
       noMetricsFoundDesc: 'No se encontraron datos de métricas para esta sesión.',

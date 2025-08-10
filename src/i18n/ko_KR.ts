@@ -92,7 +92,7 @@ export default {
       routerOffline: '라우터 오프라인',
       routerOfflineDescription: '이 라우터는 오프라인 상태입니다(15분 이상 업데이트 없음). 나중에 다시 시도하거나 관리자에게 문의하세요.',
       maintenanceMode: '점검 모드',
-      connectionTypes: '연결 유형',
+      systemMetrics: '시스템 메트릭',
       uptime: '업타임',
       loadAvg: '평균 부하',
       txRx: 'TX / RX',
@@ -103,6 +103,26 @@ export default {
       totalRouters: '총 라우터',
       totalSessions: '설정된 세션',
       availableForAuto: '즉시 피어링',
+      // Empty states
+      noRoutersMatch: '검색과 일치하는 라우터가 없습니다',
+      noRoutersAvailable: '사용 가능한 라우터가 없습니다',
+      // Regions
+      regions: {
+        'Europe': '유럽',
+        'North America': '북미',
+        'South America': '남미',
+        'Africa': '아프리카',
+        'Asia-S': '남아시아',
+        'Asia-SE': '동남아시아',
+        'Asia-E': '동아시아',
+        'Pacific&Oceania': '태평양 및 오세아니아',
+        'Antarctica': '남극',
+        'Asia-N': '북아시아',
+        'Asia-W': '서아시아',
+        'Central Asia': '중앙아시아',
+        'Other Region': '기타 지역',
+        'All': '전체'
+      }
     },
     peering: {
       couldNotGetData: '노드 데이터를 가져올 수 없습니다.',
@@ -269,7 +289,9 @@ export default {
       routingPolicy: '라우팅 정책',
       mtu: 'MTU',
       sessionInfo: '세션 정보',
-      lastUpdated: '마지막 업데이트',
+      lastUpdated: '메트릭 업데이트 시간',
+      createdAt: '생성일',
+      updatedAt: '수정일',
       loadingMetrics: '메트릭 로딩 중…',
       noMetricsFound: '메트릭을 찾을 수 없음',
       noMetricsFoundDesc: '이 세션의 메트릭 데이터를 찾을 수 없습니다.',

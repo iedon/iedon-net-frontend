@@ -11,6 +11,7 @@ import {
     DeleteOutlined
 } from '@ant-design/icons-vue'
 import { SessionStatus, RouterMetadata, SessionMetadata } from '../common/packetHandler'
+import { formatRelativeTime } from '../common/helper'
 import RouterLocationAvatar from './RouterLocationAvatar.vue'
 
 const t = useI18n().t
@@ -102,6 +103,16 @@ const columns = computed(() => {
             dataIndex: 'ipv6LinkLocal',
             key: 'ipv6LinkLocal',
             sorter: (a: Session, b: Session) => ('' + (a.ipv6LinkLocal || '')).localeCompare((b.ipv6LinkLocal || ''))
+        },
+        {
+            title: t('pages.metrics.createdAt'),
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            sorter: (a: Session, b: Session) => {
+                const aTime = new Date(a.createdAt || 0).getTime()
+                const bTime = new Date(b.createdAt || 0).getTime()
+                return bTime - aTime // Descending order (newest first)
+            }
         },
         {
             title: t('pages.manage.session.status'),
@@ -317,7 +328,17 @@ const getStatusSortValue = (session: Session) => {
             <template v-else-if="column.key === 'ipv6LinkLocal'">
                 <span v-if="record.ipv6LinkLocal" class="small-text">{{ record.ipv6LinkLocal }}</span>
                 <close-outlined v-else />
-            </template> <!-- Action Column -->
+            </template>
+
+            <!-- Created At Column -->
+            <template v-else-if="column.key === 'createdAt'">
+                <span v-if="record.createdAt" class="small-text" :title="new Date(record.createdAt).toLocaleString()">
+                    {{ formatRelativeTime(record.createdAt, t) }}
+                </span>
+                <span v-else class="small-text">{{ t('pages.metrics.notAvailable') }}</span>
+            </template>
+            
+            <!-- Action Column -->
             <template v-else-if="column.key === 'action'">
                 <a-button-group size="small">
                     <!-- View Metrics Button -->

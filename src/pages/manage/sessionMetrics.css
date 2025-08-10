@@ -1155,23 +1155,6 @@ tr.clickable {
     background: #0f0f0f;
 }
 
-.loading-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 80px 20px;
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-}
-
-.dark .loading-container {
-    background: #1a1a1a;
-    border-color: #2a2a2a;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
 .error-container {
     background: #fff;
     border-radius: 12px;

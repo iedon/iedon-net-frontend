@@ -138,6 +138,8 @@ export type CurrentSessionMetadata = {
   } | '';
   mtu: number;
   policy: RoutingPolicy;
+  createdAt: string;
+  updatedAt: string;
 };
 
 interface ResponsePacket {
@@ -384,6 +386,8 @@ export type SessionMetadata = {
     info: string;
     type: 'mpbgp' | 'ipv4' | 'ipv6' | ''; // 'mpbgp' for multiprotocol BGP, 'ipv4' for IPv4, 'ipv6' for IPv6, '' if not applicable
   }[];
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type SiteConfigDataResponse = {

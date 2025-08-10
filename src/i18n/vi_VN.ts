@@ -92,7 +92,7 @@ export default {
       routerOffline: 'Router ngoại tuyến',
       routerOfflineDescription: 'Router này ngoại tuyến (cập nhật hơn 15 phút trước). Vui lòng thử lại sau hoặc liên hệ quản trị viên.',
       maintenanceMode: 'Chế độ bảo trì',
-      connectionTypes: 'Loại kết nối',
+      systemMetrics: 'Số liệu hệ thống',
       uptime: 'Thời gian hoạt động',
       loadAvg: 'Tải trung bình',
       txRx: 'TX / RX',
@@ -103,6 +103,26 @@ export default {
       totalRouters: 'Tổng số router',
       totalSessions: 'Phiên đã cấu hình',
       availableForAuto: 'Peering tức thì',
+      // Empty states
+      noRoutersMatch: 'Không có router nào khớp với tìm kiếm của bạn',
+      noRoutersAvailable: 'Không có router nào khả dụng',
+      // Regions
+      regions: {
+        'Europe': 'Châu Âu',
+        'North America': 'Bắc Mỹ',
+        'South America': 'Nam Mỹ',
+        'Africa': 'Châu Phi',
+        'Asia-S': 'Nam Á',
+        'Asia-SE': 'Đông Nam Á',
+        'Asia-E': 'Đông Á',
+        'Pacific&Oceania': 'Thái Bình Dương và Châu Đại Dương',
+        'Antarctica': 'Nam Cực',
+        'Asia-N': 'Bắc Á',
+        'Asia-W': 'Tây Á',
+        'Central Asia': 'Trung Á',
+        'Other Region': 'Khu vực khác',
+        'All': 'Tất cả'
+      }
     },
     peering: {
       couldNotGetData: 'Không thể lấy dữ liệu nút.',
@@ -269,7 +289,9 @@ export default {
       routingPolicy: 'Chính sách định tuyến',
       mtu: 'MTU',
       sessionInfo: 'Thông tin phiên',
-      lastUpdated: 'Cập nhật lần cuối',
+      lastUpdated: 'Chỉ số cập nhật lúc',
+      createdAt: 'Được tạo lúc',
+      updatedAt: 'Được cập nhật lúc',
       loadingMetrics: 'Đang tải chỉ số…',
       noMetricsFound: 'Không tìm thấy chỉ số',
       noMetricsFoundDesc: 'Không tìm thấy dữ liệu chỉ số cho phiên này.',

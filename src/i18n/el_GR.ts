@@ -92,7 +92,7 @@ export default {
       routerOffline: 'Router εκτός σύνδεσης',
       routerOfflineDescription: 'Ο router φαίνεται εκτός σύνδεσης (τελευταία ενημέρωση πριν 15 λεπτά). Δοκιμάστε αργότερα ή επικοινωνήστε με τον διαχειριστή.',
       maintenanceMode: 'Λειτουργία συντήρησης',
-      connectionTypes: 'Τύποι σύνδεσης',
+      systemMetrics: 'Μετρήσεις συστήματος',
       uptime: 'Χρόνος λειτουργίας',
       loadAvg: 'Μέσος όρος φόρτου',
       txRx: 'TX / RX',
@@ -103,6 +103,26 @@ export default {
       totalRouters: 'Σύνολο routers',
       totalSessions: 'Διαμορφωμένες συνεδρίες',
       availableForAuto: 'Άμεσο Peering',
+      // Empty states
+      noRoutersMatch: 'Κανένας δρομολογητής δεν ταιριάζει στην αναζήτησή σας',
+      noRoutersAvailable: 'Δεν υπάρχουν διαθέσιμοι δρομολογητές',
+      // Regions
+      regions: {
+        'Europe': 'Ευρώπη',
+        'North America': 'Βόρεια Αμερική',
+        'South America': 'Νότια Αμερική',
+        'Africa': 'Αφρική',
+        'Asia-S': 'Νότια Ασία',
+        'Asia-SE': 'Νοτιοανατολική Ασία',
+        'Asia-E': 'Ανατολική Ασία',
+        'Pacific&Oceania': 'Ειρηνικός και Ωκεανία',
+        'Antarctica': 'Ανταρκτική',
+        'Asia-N': 'Βόρεια Ασία',
+        'Asia-W': 'Δυτική Ασία',
+        'Central Asia': 'Κεντρική Ασία',
+        'Other Region': 'Άλλη Περιοχή',
+        'All': 'Όλα'
+      }
     },
     peering: {
       couldNotGetData: 'Αδυναμία ανάκτησης δεδομένων κόμβου.',
@@ -269,7 +289,9 @@ export default {
       routingPolicy: 'Πολιτική δρομολόγησης',
       mtu: 'MTU',
       sessionInfo: 'Πληροφορίες συνεδρίας',
-      lastUpdated: 'Τελευταία ενημέρωση',
+      lastUpdated: 'Μετρήσεις ενημερώθηκαν στις',
+      createdAt: 'Δημιουργήθηκε στις',
+      updatedAt: 'Ενημερώθηκε στις',
       loadingMetrics: 'Φόρτωση μετρήσεων…',
       noMetricsFound: 'Δεν βρέθηκαν μετρήσεις',
       noMetricsFoundDesc: 'Δεν βρέθηκαν δεδομένα μετρήσεων για αυτή τη συνεδρία.',
