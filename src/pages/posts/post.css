@@ -278,6 +278,7 @@
 /* Dark mode for pre code */
 .dark #post pre code {
     color: #e1e4e8;
+    background: transparent;
 }
 
 #post strong, #post b {
