@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build"
   },
+  "packageManager": "bun@1.2.20",
   "dependencies": {
     "ant-design-vue": "^4.2.6",
     "echarts": "^6.0.0",
