@@ -115,7 +115,7 @@
                                 <span class="detail-value copyable"
                                     @click="copyToClipboard(sessionMetadata?.interface || '', 'Interface Name')">
                                     <span>{{ sessionMetadata.interface || t('pages.metrics.notAvailable')
-                                        }}</span>
+                                    }}</span>
                                 </span>
                             </div>
                             <div class="detail-item" v-if="sessionMetadata?.mtu || !sessionMetadata">
@@ -133,7 +133,7 @@
                             <div class="detail-item" v-if="sessionMetadata?.extensions || !sessionMetadata">
                                 <span class="detail-label">{{ t('pages.metrics.bgpExtensions') }}</span>
                                 <span class="detail-value">{{ formatBgpExtensions(sessionMetadata?.extensions || [])
-                                }}</span>
+                                    }}</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">{{ t('pages.metrics.createdAt') }}</span>
@@ -156,8 +156,8 @@
                                 <span class="detail-value"
                                     :title="sessionMetrics ? formatDate(new Date(sessionMetrics.timestamp * 1000 || +new Date()).toISOString()) : ''">
                                     {{ sessionMetrics ? formatRelativeTime(new Date(sessionMetrics.timestamp * 1000 ||
-                                    +new
-                                    Date()).toISOString(), t) : t('pages.metrics.loading') }}
+                                        +new
+                                            Date()).toISOString(), t) : t('pages.metrics.loading') }}
                                 </span>
                             </div>
                         </div>
@@ -237,7 +237,7 @@
                 <div class="metrics-grid">
                     <!-- BGP IPv4 Routes Metric -->
                     <div class="metric-item bgp-routes-ipv4" @click="scrollToBgpCharts" style="cursor: pointer;"
-                        :title="t('pages.metrics.clickToViewChart') ">
+                        :title="t('pages.metrics.clickToViewChart')">
                         <div class="metric-icon bgp-routes">
                             <span>IPv4</span>
                         </div>
@@ -292,14 +292,14 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.total?.[0] || 0)
-                                        }}</div>
+                                    }}</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.txTotal') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.total?.[1] || 0)
-                                        }}</div>
+                                    }}</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.rxTotal') }}</div>
                                 </div>
                             </div>
@@ -317,14 +317,14 @@
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.current?.[0] || 0)
-                                        }}/s</div>
+                                    }}/s</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.txCurrent') }}</div>
                                 </div>
                                 <div class="metric-separator">|</div>
                                 <div class="metric-value-pair">
                                     <div class="metric-value">{{
                                         formatBytes(getLatestMetrics.interface?.traffic?.current?.[1] || 0)
-                                        }}/s</div>
+                                    }}/s</div>
                                     <div class="metric-sub-label">{{ t('pages.metrics.rxCurrent') }}</div>
                                 </div>
                             </div>
@@ -360,7 +360,7 @@
                     <div v-if="sessionMetrics?.bgp && sessionMetrics.bgp.length > 0"
                         v-for="(bgpSession, index) in sessionMetrics.bgp" :key="index" class="metric-item"
                         @click="scrollToBgpDetails" style="cursor: pointer;"
-                        :title="t('pages.metrics.clickToViewDetails') ">
+                        :title="t('pages.metrics.clickToViewDetails')">
                         <div class="metric-icon bgp-status" :class="{
                             active: bgpSession.info?.includes('Established'),
                             timeout: bgpSession.info && !bgpSession.info.includes('Established') && bgpSession.info !== 'Unknown'
@@ -377,11 +377,11 @@
                             <div class="metric-label">{{
                                 bgpSession.name?.toLowerCase().includes('v4') ? `${t('pages.metrics.bgpSession')}
                                 (IPv4)` :
-                                bgpSession.name?.toLowerCase().includes('v6') ? `${t('pages.metrics.bgpSession')}
+                                    bgpSession.name?.toLowerCase().includes('v6') ? `${t('pages.metrics.bgpSession')}
                                 (IPv6)` :
-                                bgpSession.name ? `${t('pages.metrics.bgpSession')} (MP-BGP)` :
-                                t('pages.metrics.bgpSession')
-                                }}</div>
+                                        bgpSession.name ? `${t('pages.metrics.bgpSession')} (MP-BGP)` :
+                                            t('pages.metrics.bgpSession')
+                            }}</div>
                         </div>
                     </div>
                 </div>
@@ -1047,7 +1047,11 @@ const formatBgpExtensions = (extensions: string[]) => {
 const refreshData = async () => {
     try {
         loading.value = true
-        await fetchSessionMetrics()
+        await Promise.allSettled([
+            fetchSessionMetrics(),
+            fetchRouterInfo(),
+            fetchSessionMetadata()
+        ])
     } catch (error) {
         console.error(error)
     } finally {
