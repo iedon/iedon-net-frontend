@@ -150,17 +150,30 @@ watch(() => router.currentRoute.value.params.id, async (newPostId) => {
 
 <template>
     <div class="posts-page">
-        <div class="content">
-            <h1 class="header">
-                {{ loadingPost ? loadingPost.title : (currentPost?.title || '') }}
-            </h1>
-            <a-divider orientation="right">
-                {{ loadingPost ? formatDate(loadingPost.updatedAt) : (currentPost ? formatDate(currentPost.updatedAt) : '') }}
-            </a-divider>
-            <a-skeleton active :loading="loadingPost !== null">
-                <article id="post" v-if="currentPost" v-html="md.render(currentPost.content)"></article>
-            </a-skeleton>
-        </div>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">
+                            {{ loadingPost ? loadingPost.title : (currentPost?.title || '') }}
+                        </h1>
+                        <p class="hero-subtitle">
+                            {{ loadingPost ? formatDate(loadingPost.updatedAt) : (currentPost ? formatDate(currentPost.updatedAt) : '') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Section -->
+        <section class="content-section">
+            <div class="content-container">
+                <a-skeleton active :loading="loadingPost !== null">
+                    <article id="post" v-if="currentPost" v-html="md.render(currentPost.content)"></article>
+                </a-skeleton>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -168,43 +181,75 @@ watch(() => router.currentRoute.value.params.id, async (newPostId) => {
 .posts-page {
     width: 100%;
     min-height: 100vh;
-    background: #f5f5f5;
-    padding: 20px;
 }
 
-.dark .posts-page {
-    background: #0f0f0f;
+/* Hero Section */
+.hero-section {
+    padding: 4rem 0 3rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    position: relative;
+    overflow: hidden;
 }
 
-.content {
-    background-color: #fff;
-    padding: 40px;
-    user-select: text;
-    border-radius: 8px;
+.dark .hero-section {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
 }
 
-.dark .content {
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.hero-content {
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.2;
+    color: #1a1a1a;
+    word-wrap: break-word;
+}
+
+.dark .hero-title {
+    color: #ffffff;
+}
+
+.hero-subtitle {
+    font-size: 1rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.dark .hero-subtitle {
+    color: #aaa;
+}
+
+/* Content Section */
+.content-section {
+    background: #fff;
+}
+
+.dark .content-section {
     background: #1a1a1a;
 }
 
-.header {
-    font-size: 32px;
-    letter-spacing: 0.5px;
-    text-align: center;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #1a1a1a;
-    margin-top: 0px;
-}
-
-.dark .header {
-    color: #e2e8f0;
+.content-container {
+    max-width: 1280px;
+    margin: 0 auto;
 }
 
 #post {
     line-height: 1.8;
     font-size: 16px;
     color: #333;
+    padding: 2rem;
+    user-select: text;
 }
 
 .dark #post {
@@ -213,31 +258,46 @@ watch(() => router.currentRoute.value.params.id, async (newPostId) => {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .posts-page {
-        padding: 12px;
+    .hero-section {
+        padding: 2rem 0;
     }
     
-    .content {
-        padding: 24px 20px;
+    .hero-container,
+    .content-container {
+        padding: 0 1rem;
+    }
+    
+    .hero-title {
+        font-size: 1.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    #post {
+        padding: 2rem 1.5rem;
         border-radius: 8px;
-    }
-    
-    .header {
-        font-size: 24px;
+        margin: 0;
     }
 }
 
 @media (max-width: 480px) {
-    .posts-page {
-        padding: 8px;
+    .hero-container,
+    .content-container {
+        padding: 0 0.5rem;
     }
     
-    .content {
-        padding: 20px 16px;
+    .hero-title {
+        font-size: 2rem;
     }
     
-    .header {
-        font-size: 24px;
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    #post {
+        padding: 1.5rem 1rem;
     }
 }
 </style>

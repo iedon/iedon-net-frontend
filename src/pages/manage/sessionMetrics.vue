@@ -664,19 +664,8 @@ import {
     NodeIndexOutlined
 } from '@ant-design/icons-vue'
 
-// ECharts imports
-import { use } from 'echarts/core'
-import { CanvasRenderer } from 'echarts/renderers'
-import { LineChart, BarChart, PieChart } from 'echarts/charts'
-import {
-    TitleComponent,
-    TooltipComponent,
-    LegendComponent,
-    GridComponent,
-    DataZoomComponent,
-    ToolboxComponent
-} from 'echarts/components'
-import VChart from 'vue-echarts'
+// Dynamic ECharts imports for better performance
+import { VChart } from '../../components/EChartsLoader'
 
 // Application imports
 import { loggedIn, formatDate, formatRelativeTime, themeName, isAdmin, formatBytes, registerPageTitle } from '../../common/helper'
@@ -702,19 +691,7 @@ md.use(mila, { attrs: { target: "_blank" } })
 const cardRef = ref<HTMLElement>()
 const codeClickHandlers = new Map<HTMLElement, () => void>()
 
-// Register ECharts components
-use([
-    CanvasRenderer,
-    LineChart,
-    BarChart,
-    PieChart,
-    TitleComponent,
-    TooltipComponent,
-    LegendComponent,
-    GridComponent,
-    DataZoomComponent,
-    ToolboxComponent
-])
+// ECharts components are now loaded dynamically via EChartsLoader
 
 // =============================================================================
 // COMPOSABLES
@@ -1391,7 +1368,7 @@ const bgpIPv4ReceivedOption = computed(() => {
             trigger: 'axis',
             axisPointer: { type: 'cross' }
         },
-        grid: { left: '5%', right: '5%', bottom: '10%', top: '5%', containLabel: true },
+        grid: { left: '5%', right: '5%', bottom: '10%', top: '5%' },
         toolbox: {
             feature: {
                 saveAsImage: {},
@@ -1463,7 +1440,7 @@ const bgpIPv4AdvertisedOption = computed(() => {
             trigger: 'axis',
             axisPointer: { type: 'cross' }
         },
-        grid: { left: '5%', right: '5%', bottom: '10%', top: '5%', containLabel: true },
+        grid: { left: '5%', right: '5%', bottom: '10%', top: '5%' },
         toolbox: {
             feature: {
                 saveAsImage: {},
@@ -1535,7 +1512,7 @@ const bgpIPv6ReceivedOption = computed(() => {
             trigger: 'axis',
             axisPointer: { type: 'cross' }
         },
-        grid: { left: '5%', right: '5%', bottom: '10%', top: '5%', containLabel: true },
+        grid: { left: '5%', right: '5%', bottom: '10%', top: '5%' },
         toolbox: {
             feature: {
                 saveAsImage: {},
@@ -1606,7 +1583,7 @@ const bgpIPv6AdvertisedOption = computed(() => {
             trigger: 'axis',
             axisPointer: { type: 'cross' }
         },
-        grid: { left: '5%', right: '5%', bottom: '10%', top: '5%', containLabel: true },
+        grid: { left: '5%', right: '5%', bottom: '10%', top: '5%' },
         toolbox: {
             feature: {
                 saveAsImage: {},
@@ -1683,7 +1660,7 @@ const interfaceMetricsOption = computed(() => {
             data: ['TX', 'RX'], // TX first in legend
             textStyle: { color: isDark.value ? '#ffffff' : '#333333' }
         },
-        grid: { left: '5%', right: '5%', bottom: '10%', top: '15%', containLabel: true },
+        grid: { left: '5%', right: '5%', bottom: '10%', top: '15%' },
         toolbox: {
             feature: {
                 saveAsImage: {},
@@ -1790,7 +1767,7 @@ const rttMetricsOption = computed(() => {
             data: [t('pages.metrics.rtt')],
             textStyle: { color: isDark.value ? '#ffffff' : '#333333' }
         },
-        grid: { left: '5%', right: '5%', bottom: '10%', top: '15%', containLabel: true },
+        grid: { left: '5%', right: '5%', bottom: '10%', top: '15%' },
         toolbox: {
             feature: {
                 saveAsImage: {},

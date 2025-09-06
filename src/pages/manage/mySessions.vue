@@ -179,6 +179,7 @@ const redirectToNodes = () => {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .refresh-button {
@@ -188,5 +189,36 @@ const redirectToNodes = () => {
 .searchBox {
   max-width: 500px;
   min-width: 150px;
+}
+
+@media (max-width: 768px) {
+  .buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  
+  .buttons > a-button {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 120px;
+  }
+  
+  .refresh-button {
+    margin-right: 0;
+  }
+  
+  .searchBox {
+    flex: 1 1 100%;
+    max-width: 100%;
+    min-width: auto;
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .buttons {
+    margin: 10px;
+  }
 }
 </style>

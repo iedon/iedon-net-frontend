@@ -51,7 +51,7 @@ const backToTop = () => {
 
 <template>
     <section id="manage-page">
-        <a-layout-sider :class="`sider ${themeName}`" width="200" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="40" v-show="!collapsed">
+        <a-layout-sider :class="`sider ${themeName} ${collapsed ? 'collapsed' : 'expanded'}`" width="200" collapsible v-model:collapsed="collapsed" :trigger="null" breakpoint="lg" :collapsedWidth="0">
             <a-menu class="menu" mode="inline" v-model:selectedKeys="selectedKeys">
                 <template v-if="!isAdmin">
                     <a-menu-item key="mySessions" @click="backToTop()">
@@ -138,26 +138,38 @@ const backToTop = () => {
     display: flex;
     padding: 0 1%;
 }
+
 .sider {
     padding-top: 110px;
     background-color: #fff;
     min-height: 500px;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
 }
+
+.sider.collapsed {
+    transform: translateX(-100%);
+}
+
 .sider.light {
     background-color: #fff !important;
 }
+
 .sider.dark {
     background-color: #141414 !important;
 }
+
 .menu {
     height: 100%;
     border-right: none;
 }
+
 .content {
     padding: 0 30px;
     min-height: 800px;
     overflow: hidden;
 }
+
 .content .header {
     font-size: 28px;
     letter-spacing: 0.5px;

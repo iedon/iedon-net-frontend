@@ -107,20 +107,41 @@ onMounted(async () => {
         applyTheme()
         console.warn(error)
     }
-    const currentLocale = localStorage.getItem('locale')
-    if (currentLocale && SupportedLocales.some(supported => currentLocale === supported)) {
-        antdLocale.value = await setLocale(currentLocale as SupportedLocale)
+
+    let targetLocale: SupportedLocale = 'en_US'
+    const cachedLocale = localStorage.getItem('locale')
+    
+    if (cachedLocale && SupportedLocales.some(supported => cachedLocale === supported)) {
+        targetLocale = cachedLocale as SupportedLocale
     } else {
         try {
-            const locale = resolveAcceptLanguage(navigator.language, SupportedLocales.map(l => l.replace('_', '-')), 'en-US', { returnMatchType: false });
-            antdLocale.value = await setLocale(locale.replace('-', '_') as SupportedLocale)
+            const browserLocale = resolveAcceptLanguage(
+                navigator.language, 
+                SupportedLocales.map(l => l.replace('_', '-')), 
+                'en-US', 
+                { returnMatchType: false }
+            )
+            targetLocale = browserLocale.replace('-', '_') as SupportedLocale
         } catch (error) {
             console.warn('Failed to resolve locale from navigator.languages, defaulting to en-US', error)
-            antdLocale.value = await setLocale('en_US')
         }
     }
+    
+    // Load locale asynchronously to avoid blocking
+    antdLocale.value = await setLocale(targetLocale)
     updateMetaTags()
+    
+    // Start heartbeat after everything is loaded
     stopHeartBeat = useHeartBeat(t)
+    
+    // Remove initial loading screen
+    setTimeout(() => {
+        const loadingEl = document.getElementById('initial-loading')
+        if (loadingEl) {
+            loadingEl.classList.add('fade-out')
+            setTimeout(() => loadingEl.remove(), 500)
+        }
+    }, 100)
 })
 
 onUnmounted(() => {

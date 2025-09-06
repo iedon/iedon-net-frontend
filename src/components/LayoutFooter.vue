@@ -19,8 +19,8 @@ const currentYear = new Date().getFullYear()
 <template>
     <a-layout-footer id="footer" :class="themeName">
       <div class="md" v-if="siteConfig.footerText" v-html="md.render(siteConfig.footerText)"></div>
-      <p>V{{ config.version }}</p>
-      <p>&copy; {{currentYear}}&nbsp;&nbsp;<a href="https://dn42.dev" target="_blank" title="DN42 Wiki">DN42 Participant</a>&nbsp;&nbsp;{{siteConfig.netName}}({{siteConfig.netAsn}})</p>
+      <p class="mono">iEdon PeerAPI Suite (Frontend V{{ config.version }})</p>
+      <p class="mono">&copy; {{currentYear}}&nbsp;&nbsp;<a href="https://dn42.dev" target="_blank" title="DN42 Wiki">DN42 Participant</a>&nbsp;&nbsp;{{siteConfig.netName}}({{siteConfig.netAsn}})</p>
     </a-layout-footer>
 </template>
 
@@ -38,6 +38,11 @@ const currentYear = new Date().getFullYear()
 #footer.dark {
   background-color: #111;
   color: #87929c;
+}
+#footer .mono {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: .75rem;
+  margin: .25rem 0 0 0;
 }
 #footer a {
   font-weight: 600;

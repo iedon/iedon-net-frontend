@@ -40,6 +40,7 @@ watch(() => route.path, (to, from) => {
 
 #content:deep(.page:has(.landing-page)),
 #content:deep(.page:has(.nodes-page)),
+#content:deep(.page:has(.posts-page)),
 #content:deep(.page:has(#manage-page)) {
     max-width: 100% !important;
 }
