@@ -1,10 +1,13 @@
 {
   "name": "iedon-net",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build"
+    "build": "vue-tsc --noEmit && vite build && npm run sitemap",
+    "sitemap": "npm run generate-sitemap && npm run validate-sitemap",
+    "generate-sitemap": "node scripts/generate-sitemap.js",
+    "validate-sitemap": "node scripts/validate-sitemap.js"
   },
   "dependencies": {
     "ant-design-vue": "^4.2.6",

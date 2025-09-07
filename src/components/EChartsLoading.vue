@@ -15,7 +15,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   height: '300px',
-  message: 'Loading Charts...'
+  message: 'Loading...'
 })
 </script>
 

@@ -1656,9 +1656,6 @@ const interfaceMetricsOption = computed(() => {
                 })
                 return tooltipText
             }
-        }, legend: {
-            data: ['TX', 'RX'], // TX first in legend
-            textStyle: { color: isDark.value ? '#ffffff' : '#333333' }
         },
         grid: { left: '5%', right: '5%', bottom: '10%', top: '15%' },
         toolbox: {
@@ -1762,10 +1759,6 @@ const rttMetricsOption = computed(() => {
                 })
                 return html
             }
-        },
-        legend: {
-            data: [t('pages.metrics.rtt')],
-            textStyle: { color: isDark.value ? '#ffffff' : '#333333' }
         },
         grid: { left: '5%', right: '5%', bottom: '10%', top: '15%' },
         toolbox: {

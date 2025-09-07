@@ -1,0 +1,80 @@
+# Robots.txt for iEdon Networks (iEdon-Net)
+
+User-agent: *
+Allow: /
+
+# Disallow Chinese search engines and spiders
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: Baiduspider-video
+Disallow: /
+
+User-agent: Baiduspider-image
+Disallow: /
+
+User-agent: Baiduspider-news
+Disallow: /
+
+User-agent: Baiduspider-favo
+Disallow: /
+
+User-agent: Baiduspider-cpro
+Disallow: /
+
+User-agent: Baiduspider-ads
+Disallow: /
+
+User-agent: Sogou web spider
+Disallow: /
+
+User-agent: Sogou News Spider
+Disallow: /
+
+User-agent: Sogou Pic Spider
+Disallow: /
+
+User-agent: 360Spider
+Disallow: /
+
+User-agent: HaosouSpider
+Disallow: /
+
+User-agent: 360JK
+Disallow: /
+
+User-agent: YisouSpider
+Disallow: /
+
+User-agent: YodaoBot
+Disallow: /
+
+User-agent: YoudaoBot
+Disallow: /
+
+User-agent: JikeSpider
+Disallow: /
+
+User-agent: EtaoSpider
+Disallow: /
+
+User-agent: TaobaoSpider
+Disallow: /
+
+User-agent: YandexBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: YandexImages
+Disallow: /
+
+User-agent: YandexVideo
+Disallow: /
+
+User-agent: YandexNews
+Disallow: /
+
+# Sitemap location
+Sitemap: https://iedon.net/sitemap.xml
