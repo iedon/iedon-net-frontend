@@ -14,7 +14,7 @@
 
   <!-- Text -->
   <text x="560" y="280" font-family="sans-serif" font-size="360" font-weight="bold"
-        fill="#333" stroke="#eee" stroke-width="8" paint-order="fill"
+        fill="#333" paint-order="fill"
         style="dominant-baseline: middle;">
     iEdon
   </text>

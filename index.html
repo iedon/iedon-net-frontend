@@ -107,21 +107,23 @@
       <h1>You need modern browsers to continue</h1>
       <h2>Your browser must support JavaScript and ES6</h2>
     </noscript>
-    <script nomodule>
+    <script nomodule type="text/javascript">
       alert(
         "You need modern browsers to continue.\nYour browser must support JavaScript and ES6."
       );
     </script>
     
     <script type="text/javascript">
-      if (window.location.hostname !== "iedon.net") {
-        window.location.href = "https://iedon.net";
-        return;
-      }
-      if (!window.localStorage)
-        alert(
-          "Your browser must support window.localStorage and which must be enabled before accessing this site."
-        );
+      (function() {
+        if (window.location.hostname !== "iedon.net") {
+            window.location.href = "https://iedon.net";
+            return;
+        }
+        if (!window.localStorage)
+            alert(
+            "Your browser must support window.localStorage and which must be enabled before accessing this site."
+            );
+      })();
     </script>
 
     <!-- Initial loading screen -->
