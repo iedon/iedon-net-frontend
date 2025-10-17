@@ -185,7 +185,7 @@ export default {
     landing: {
       subTitle: 'iEdon Networks（iEdon-Net）、2017年設立。2019年3月よりDN42ネットワーク参加。',
       startPeering: '即時ピアリング',
-      viewGlobalMap: 'グローバルマップを見る',
+      grafanaOverview: 'Grafana で概要を見る',
       globalNetworkMap: 'グローバルネットワークマップ',
       mapDescription: 'DN42ノードとピアリングセッションのグローバルネットワークを探索。',
       whyChoose: 'なぜ当ネットワークを選ぶ？',
@@ -280,6 +280,7 @@ export default {
     },
     metrics: {
       sessionMetrics: 'セッションメトリクス',
+      viewInGrafana: 'Grafana で表示',
       back: '戻る',
       clickToCopy: 'クリックでコピー',
       refresh: '更新',

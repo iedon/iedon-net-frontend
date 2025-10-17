@@ -186,7 +186,7 @@ export default {
     landing: {
       subTitle: 'iEdon Networks (iEdon-Net), Since 2017. Part of the DN42 Network since March 2019.',
       startPeering: 'Instant Peering',
-      viewGlobalMap: 'View Global Map',
+      grafanaOverview: 'Overview in Grafana',
       globalNetworkMap: 'Global Network Map',
       mapDescription: 'Explore our global network of DN42 nodes and peering sessions.',
       whyChoose: 'Why Choose Our Network?',
@@ -281,6 +281,7 @@ export default {
     },
     metrics: {
       sessionMetrics: 'Session Metrics',
+      viewInGrafana: 'View in Grafana',
       back: 'Back',
       clickToCopy: 'Click to copy',
       refresh: 'Refresh',
@@ -305,7 +306,7 @@ export default {
       loading: 'Loading...',
       none: 'None',
       unknown: 'Unknown',
-      
+
       // Header Cards
       sessionDetails: 'Session Details',
       nextUpdate: 'Next Update',
@@ -313,7 +314,7 @@ export default {
       ipv4Address: 'IPv4 Address',
       ipv6Address: 'IPv6 Address',
       ipv6LinkLocal: 'IPv6 Link Local',
-      
+
       // BGP Metrics
       bgpMetrics: 'BGP Metrics',
       received: 'Imported',

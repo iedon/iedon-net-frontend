@@ -185,7 +185,7 @@ export default {
     landing: {
       subTitle: 'iEdon Networks（iEdon-Net），自 2017 年起。2019 年 3 月加入 DN42 網路。',
       startPeering: '即時互聯',
-      viewGlobalMap: '檢視全球地圖',
+      grafanaOverview: '在 Grafana 檢視總覽',
       globalNetworkMap: '全球網路地圖',
       mapDescription: '探索我們的 DN42 節點與互聯會話全球網路。',
       whyChoose: '為什麼選擇我們的網路？',
@@ -280,6 +280,7 @@ export default {
     },
     metrics: {
       sessionMetrics: '會話指標',
+      viewInGrafana: '在 Grafana 中檢視',
       back: '返回',
       clickToCopy: '點擊複製',
       refresh: '重新整理',

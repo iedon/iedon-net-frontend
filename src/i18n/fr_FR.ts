@@ -185,7 +185,7 @@ export default {
     landing: {
       subTitle: 'iEdon Networks (iEdon-Net), depuis 2017. Membre du réseau DN42 depuis mars 2019.',
       startPeering: 'Peering instantané',
-      viewGlobalMap: 'Voir la carte mondiale',
+      grafanaOverview: 'Vue d’ensemble dans Grafana',
       globalNetworkMap: 'Carte du réseau mondial',
       mapDescription: 'Explorez notre réseau mondial de nœuds DN42 et de sessions de peering.',
       whyChoose: 'Pourquoi choisir notre réseau ?',
@@ -280,6 +280,7 @@ export default {
     },
     metrics: {
       sessionMetrics: 'Métriques de session',
+      viewInGrafana: 'Voir dans Grafana',
       back: 'Retour',
       clickToCopy: 'Cliquer pour copier',
       refresh: 'Rafraîchir',

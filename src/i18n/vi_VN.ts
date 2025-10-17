@@ -185,7 +185,7 @@ export default {
     landing: {
       subTitle: 'iEdon Networks (iEdon-Net), từ 2017. Thành viên mạng DN42 từ tháng 3/2019.',
       startPeering: 'Peering tức thì',
-      viewGlobalMap: 'Xem bản đồ toàn cầu',
+      grafanaOverview: 'Tổng quan trên Grafana',
       globalNetworkMap: 'Bản đồ mạng toàn cầu',
       mapDescription: 'Khám phá mạng lưới DN42 và các phiên peering toàn cầu của chúng tôi.',
       whyChoose: 'Tại sao chọn mạng của chúng tôi?',
@@ -281,6 +281,7 @@ export default {
     metrics: {
       sessionMetrics: 'Chỉ số phiên',
       back: 'Quay lại',
+      viewInGrafana: 'Xem trên Grafana',
       clickToCopy: 'Nhấn để sao chép',
       refresh: 'Làm mới',
       sessionId: 'ID phiên',

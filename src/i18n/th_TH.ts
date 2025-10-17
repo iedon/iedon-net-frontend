@@ -185,7 +185,7 @@ export default {
     landing: {
       subTitle: 'iEdon Networks (iEdon-Net) ตั้งแต่ปี 2017 เป็นส่วนหนึ่งของเครือข่าย DN42 ตั้งแต่มีนาคม 2019',
       startPeering: 'Peering ทันที',
-      viewGlobalMap: 'ดูแผนที่โลก',
+      grafanaOverview: 'ภาพรวมใน Grafana',
       globalNetworkMap: 'แผนที่เครือข่ายโลก',
       mapDescription: 'สำรวจเครือข่ายโหนด DN42 และเซสชัน peering ทั่วโลกของเรา',
       whyChoose: 'ทำไมต้องเลือกเครือข่ายของเรา?',
@@ -280,6 +280,7 @@ export default {
     },
     metrics: {
       sessionMetrics: 'เมตริกเซสชัน',
+      viewInGrafana: 'ดูใน Grafana',
       back: 'กลับ',
       clickToCopy: 'คลิกเพื่อคัดลอก',
       refresh: 'รีเฟรช',

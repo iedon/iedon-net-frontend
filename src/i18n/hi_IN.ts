@@ -185,7 +185,7 @@ export default {
     landing: {
       subTitle: 'iEdon Networks (iEdon-Net), 2017 से। मार्च 2019 से DN42 नेटवर्क का हिस्सा।',
       startPeering: 'तुरंत पीयरिंग',
-      viewGlobalMap: 'वैश्विक मानचित्र देखें',
+      grafanaOverview: 'Grafana में अवलोकन',
       globalNetworkMap: 'वैश्विक नेटवर्क मानचित्र',
       mapDescription: 'हमारे DN42 नोड्स और पीयरिंग सत्रों के वैश्विक नेटवर्क का अन्वेषण करें।',
       whyChoose: 'हमारे नेटवर्क को क्यों चुनें?',
@@ -280,6 +280,7 @@ export default {
     },
     metrics: {
       sessionMetrics: 'सत्र मेट्रिक्स',
+      viewInGrafana: 'Grafana में देखें',
       back: 'वापस जाएँ',
       clickToCopy: 'कॉपी करने के लिए क्लिक करें',
       refresh: 'रिफ्रेश करें',

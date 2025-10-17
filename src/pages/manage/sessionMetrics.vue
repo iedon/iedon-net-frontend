@@ -45,6 +45,16 @@
                             {{ t('pages.manage.session.edit') }}
                         </a-button>
 
+                        <!-- Grafana Button -->
+                        <a-button size="large" @click="openGrafanaForSession"
+                            :disabled="!canOpenGrafana"
+                            v-if="sessionMetadata.status !== SessionStatus.PENDING_APPROVAL && sessionMetadata.status !== SessionStatus.QUEUED_FOR_DELETE && sessionMetadata.status !== SessionStatus.TEARDOWN && sessionMetadata.status !== SessionStatus.QUEUED_FOR_SETUP">
+                            <template #icon>
+                                <global-outlined />
+                            </template>
+                            {{ t('pages.metrics.viewInGrafana') }}
+                        </a-button>
+
                         <!-- Delete Button -->
                         <a-popconfirm placement="bottom" @confirm="handleRemove"
                             :title="t('pages.manage.session.areYouSure')">
@@ -999,6 +1009,52 @@ const ipv4Display = computed(() => getIpPairDisplay(routerInfo.value?.ipv4, sess
 const ipv6Display = computed(() => getIpPairDisplay(routerInfo.value?.ipv6, sessionMetadata.value?.ipv6));
 const ipv6LinkLocalDisplay = computed(() => getIpPairDisplay(routerInfo.value?.ipv6LinkLocal, sessionMetadata.value?.ipv6LinkLocal));
 
+const grafanaPeerNames = computed(() => {
+    const peers: string[] = []
+    const seen = new Set<string>()
+
+    const addPeer = (rawName?: string | null) => {
+        if (!rawName) return
+        const name = rawName.trim()
+        if (!name || seen.has(name)) return
+        seen.add(name)
+        peers.push(name)
+    }
+
+    if (sessionMetrics.value?.bgp && sessionMetrics.value.bgp.length > 0) {
+        const sessions = sessionMetrics.value.bgp
+
+        const mpSessions = sessions.filter(session => session.type === 'mpbgp')
+        if (mpSessions.length > 0) {
+            mpSessions.forEach(session => addPeer(session.name))
+            return peers
+        }
+
+        const fallbackByName = (needle: string) => sessions.filter(session => session.name?.toLowerCase().includes(needle))
+
+        const addSessions = (targets: BGPMetric[]) => targets.forEach(session => addPeer(session.name))
+
+        const ipv4Sessions = sessions.filter(session => session.type === 'ipv4')
+        const ipv6Sessions = sessions.filter(session => session.type === 'ipv6')
+
+        addSessions(ipv4Sessions.length > 0 ? ipv4Sessions : fallbackByName('v4'))
+        addSessions(ipv6Sessions.length > 0 ? ipv6Sessions : fallbackByName('v6'))
+
+        if (peers.length === 0) {
+            addSessions(sessions)
+        }
+
+        return peers
+    }
+
+    const fallbackInterface = sessionMetadata.value?.interface?.trim()
+    if (fallbackInterface) addPeer(fallbackInterface)
+
+    return peers
+})
+
+const canOpenGrafana = computed(() => Boolean(routerInfo.value?.uuid) && grafanaPeerNames.value.length > 0)
+
 const copyToClipboard = async (value: string, label: string) => {
     try {
         await navigator.clipboard.writeText(value)
@@ -1139,6 +1195,25 @@ const handleEdit = () => {
     router.push({
         path: `/nodes/${routerId}/edit/${sessionId}`
     })
+}
+
+const openGrafanaForSession = () => {
+    if (!canOpenGrafana.value || !routerInfo.value?.uuid) return
+
+    try {
+        const url = new URL(config.grafana.urlPrefix)
+        const routerParam = config.grafana.queryStringForLocating.router
+        const sessionParam = config.grafana.queryStringForLocating.session
+
+        url.searchParams.set(routerParam, routerInfo.value.uuid)
+        url.searchParams.delete(sessionParam)
+
+        grafanaPeerNames.value.forEach(peer => url.searchParams.append(sessionParam, peer))
+
+        window.open(url.toString(), '_blank')?.focus()
+    } catch (error) {
+        console.error('Failed to open Grafana dashboard:', error)
+    }
 }
 
 // Get status color for badge

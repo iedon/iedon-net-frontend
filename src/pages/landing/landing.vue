@@ -20,8 +20,8 @@
                                 </template>
                                 {{ t('pages.landing.startPeering') }}
                             </a-button>
-                            <a-button size="large" @click="scrollToMap" class="btn-secondary">
-                                {{ t('pages.landing.viewGlobalMap') }}
+                            <a-button size="large" @click="openGrafana" class="btn-secondary">
+                                {{ t('pages.landing.grafanaOverview') }}
                             </a-button>
                             <a-button size="large" @click="openMapDn42" class="btn-secondary">
                                 {{ t("pages.manage.session.showMyConnectivityInMap") }}
@@ -148,15 +148,12 @@ const startPeering = () => {
     router.push('/nodes')
 }
 
-const scrollToMap = () => {
-    const element = document.getElementById('nodes')
-    if (element) {
-        element.scrollIntoView({ behavior: 'smooth' })
-    }
-}
-
 const openMapDn42 = () => {
     window.open(`${config.mapDn42Url}/#${siteConfig.value.netAsn}`, '_blank')?.focus();
+}
+
+const openGrafana = () => {
+    window.open(`${config.grafana.urlPrefix}`, '_blank')?.focus();
 }
 
 // Lifecycle
