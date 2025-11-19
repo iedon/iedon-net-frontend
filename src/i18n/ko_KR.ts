@@ -281,6 +281,7 @@ export default {
     metrics: {
       sessionMetrics: '세션 메트릭',
       viewInGrafana: 'Grafana에서 보기',
+      lastError: '마지막 오류',
       back: '뒤로',
       clickToCopy: '클릭하여 복사',
       refresh: '새로고침',

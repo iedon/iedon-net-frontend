@@ -281,6 +281,7 @@ export default {
     metrics: {
       sessionMetrics: 'सत्र मेट्रिक्स',
       viewInGrafana: 'Grafana में देखें',
+      lastError: 'अंतिम त्रुटि',
       back: 'वापस जाएँ',
       clickToCopy: 'कॉपी करने के लिए क्लिक करें',
       refresh: 'रिफ्रेश करें',

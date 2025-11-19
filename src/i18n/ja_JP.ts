@@ -281,6 +281,7 @@ export default {
     metrics: {
       sessionMetrics: 'セッションメトリクス',
       viewInGrafana: 'Grafana で表示',
+      lastError: '直近のエラー',
       back: '戻る',
       clickToCopy: 'クリックでコピー',
       refresh: '更新',

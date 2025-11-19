@@ -281,6 +281,7 @@ export default {
     metrics: {
       sessionMetrics: 'เมตริกเซสชัน',
       viewInGrafana: 'ดูใน Grafana',
+      lastError: 'ข้อผิดพลาดล่าสุด',
       back: 'กลับ',
       clickToCopy: 'คลิกเพื่อคัดลอก',
       refresh: 'รีเฟรช',

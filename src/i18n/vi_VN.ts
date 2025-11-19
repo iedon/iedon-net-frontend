@@ -282,6 +282,7 @@ export default {
       sessionMetrics: 'Chỉ số phiên',
       back: 'Quay lại',
       viewInGrafana: 'Xem trên Grafana',
+      lastError: 'Lỗi gần nhất',
       clickToCopy: 'Nhấn để sao chép',
       refresh: 'Làm mới',
       sessionId: 'ID phiên',

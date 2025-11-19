@@ -138,6 +138,7 @@ export type CurrentSessionMetadata = {
   } | '';
   mtu: number;
   policy: RoutingPolicy;
+  lastError: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -377,6 +378,7 @@ export type SessionMetadata = {
   endpoint: string,
   credential: string,
   policy: RoutingPolicy,
+  lastError: string | null,
   data:
   | { info: string; passthrough: string }
   | '',

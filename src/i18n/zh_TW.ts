@@ -281,6 +281,7 @@ export default {
     metrics: {
       sessionMetrics: '會話指標',
       viewInGrafana: '在 Grafana 中檢視',
+      lastError: '最新錯誤',
       back: '返回',
       clickToCopy: '點擊複製',
       refresh: '重新整理',

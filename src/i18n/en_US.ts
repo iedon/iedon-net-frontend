@@ -282,6 +282,7 @@ export default {
     metrics: {
       sessionMetrics: 'Session Metrics',
       viewInGrafana: 'View in Grafana',
+      lastError: 'Last Error',
       back: 'Back',
       clickToCopy: 'Click to copy',
       refresh: 'Refresh',

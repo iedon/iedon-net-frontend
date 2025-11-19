@@ -176,6 +176,10 @@
     letter-spacing: 0.2px;
 }
 
+.detail-card-alert {
+    margin: 12px 16px 0;
+}
+
 .next-update-countdown {
     color: rgba(128, 128, 128, 0.8);
     font-style: italic;

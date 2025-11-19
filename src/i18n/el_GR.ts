@@ -281,6 +281,7 @@ export default {
     metrics: {
       sessionMetrics: 'Μετρήσεις συνεδρίας',
       viewInGrafana: 'Προβολή στο Grafana',
+      lastError: 'Τελευταίο σφάλμα',
       back: 'Επιστροφή',
       clickToCopy: 'Κλικ για αντιγραφή',
       refresh: 'Ανανέωση',

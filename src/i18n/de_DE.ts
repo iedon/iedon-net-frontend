@@ -281,6 +281,7 @@ export default {
     metrics: {
       sessionMetrics: 'Sitzungsmetriken',
       viewInGrafana: 'In Grafana anzeigen',
+      lastError: 'Letzter Fehler',
       back: 'Zurück',
       clickToCopy: 'Klicken zum Kopieren',
       refresh: 'Aktualisieren',

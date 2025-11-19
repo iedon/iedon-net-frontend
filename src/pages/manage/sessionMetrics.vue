@@ -108,6 +108,14 @@
                                 {{ t('pages.metrics.nextUpdate') }}: {{ countdownDisplay }}
                             </span>
                         </div>
+                        <a-alert
+                            v-if="sessionMetadata?.lastError"
+                            type="error"
+                            show-icon
+                            class="detail-card-alert"
+                            :message="t('pages.metrics.lastError')"
+                            :description="sessionMetadata.lastError"
+                        />
                         <div class="detail-card-content">
                             <div class="detail-item detail-item-full-width">
                                 <span class="detail-label">{{ t('pages.metrics.sessionId') }}</span>
