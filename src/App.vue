@@ -7,7 +7,8 @@ import { locale, setLocale, SupportedLocale, SupportedLocales } from './i18n/i18
 import LayoutHeader from './components/LayoutHeader.vue'
 import LayoutContent from './components/LayoutContent.vue'
 import LayoutFooter from './components/LayoutFooter.vue'
-import { useHeartBeat, applyTheme, themeName } from './common/helper'
+import { useHeartBeat, applyTheme, themeName, isValidTheme, THEME_STORAGE_KEY } from './common/helper'
+import type { ThemeName } from './common/helper'
 import { BulbFilled, BulbOutlined } from '@ant-design/icons-vue'
 import { resolveAcceptLanguage } from 'resolve-accept-language'
 
@@ -94,19 +95,20 @@ const stopWatchLocale = watch((): SupportedLocale => locale.value, async (newLoc
 let stopHeartBeat: (() => void) | null = null
 const antdLocale: Ref<Locale | null> = ref(null)
 
-let matchMedia: MediaQueryList | undefined = undefined
-const themeChangeHandler = (event: MediaQueryListEvent) => {
-    applyTheme(event.matches ? "dark" : "light")
-}
 onMounted(async () => {
+    let resolvedTheme: ThemeName = 'light'
     try {
-        matchMedia = window.matchMedia('(prefers-color-scheme: dark)')
-        matchMedia.addEventListener('change', themeChangeHandler)
-        applyTheme(matchMedia.matches ? 'dark' : 'light')
+        const storedTheme = localStorage.getItem(THEME_STORAGE_KEY)
+        if (isValidTheme(storedTheme)) {
+            resolvedTheme = storedTheme
+        } else {
+            const media = window.matchMedia('(prefers-color-scheme: dark)')
+            resolvedTheme = media.matches ? 'dark' : 'light'
+        }
     } catch (error) {
-        applyTheme()
-        console.warn(error)
+        console.warn('Failed to resolve theme preference, defaulting to light', error)
     }
+    applyTheme(resolvedTheme, true)
 
     let targetLocale: SupportedLocale = 'en_US'
     const cachedLocale = localStorage.getItem('locale')
@@ -147,16 +149,12 @@ onMounted(async () => {
 onUnmounted(() => {
     if (stopHeartBeat) stopHeartBeat()
     stopWatchLocale()
-    if (matchMedia !== undefined) {
-        matchMedia.removeEventListener('change', themeChangeHandler)
-        matchMedia = undefined
-    }
 })
 
 const themeTrigger = computed(() => themeName.value === 'light')
 
 const changeTheme = () => {
-    applyTheme(themeTrigger.value ? 'dark' : 'light')
+    applyTheme(themeTrigger.value ? 'dark' : 'light', true)
 }
 </script>
 

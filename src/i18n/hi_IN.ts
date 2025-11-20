@@ -275,7 +275,8 @@ export default {
         description: 'विवरण',
         name: 'नाम',
         addOrEdit: 'नोड जोड़ें या संपादित करें', add: 'नोड जोड़ें',
-        callbackUrl: 'Callback URL'
+        callbackUrl: 'Callback URL',
+        allowedPolicies: 'उपलब्ध रूटिंग नीतियाँ'
       }
     },
     metrics: {

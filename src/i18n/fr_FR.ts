@@ -275,7 +275,8 @@ export default {
         description: 'Description',
         name: 'Nom',
         addOrEdit: 'Ajouter ou modifier un nœud', add: 'Ajouter un nœud',
-        callbackUrl: 'URL de rappel'
+        callbackUrl: 'URL de rappel',
+        allowedPolicies: 'Politiques de routage disponibles'
       }
     },
     metrics: {

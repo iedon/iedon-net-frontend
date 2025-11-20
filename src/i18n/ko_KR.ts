@@ -275,7 +275,8 @@ export default {
         description: '설명',
         name: '이름',
         addOrEdit: '노드 추가/편집', add: '노드 추가',
-        callbackUrl: '콜백 URL'
+        callbackUrl: '콜백 URL',
+        allowedPolicies: '사용 가능한 라우팅 정책'
       }
     },
     metrics: {

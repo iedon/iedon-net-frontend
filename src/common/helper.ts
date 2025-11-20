@@ -139,26 +139,29 @@ export const sessionMgmtSearchText = ref('')
 
 export const isAdmin = computed(() => siteConfig.value.netAsn === localStorage.getItem('asn'))
 
-export const themeName = ref('light')
+const SUPPORTED_THEMES = ['light', 'dark'] as const
+export type ThemeName = typeof SUPPORTED_THEMES[number]
 
-export const applyTheme = (newThemeName?: string) => {
-  themeName.value = newThemeName || 'light'
-  const head = document.getElementsByTagName("head")[0]
-  const getStyle = head.getElementsByTagName('style')
-  if (getStyle.length > 0) {
-    for (let i = 0, l = getStyle.length; i < l; i++) {
-      if (getStyle[i].getAttribute('data-type') === 'theme') {
-        getStyle[i].remove()
-        break
-      }
+export const THEME_STORAGE_KEY = 'theme'
+
+export const isValidTheme = (candidate: unknown): candidate is ThemeName =>
+  typeof candidate === 'string' && SUPPORTED_THEMES.includes(candidate as ThemeName)
+
+export const themeName = ref<ThemeName>('light')
+
+export const applyTheme = (newThemeName?: string, persist = false) => {
+  const targetTheme: ThemeName = isValidTheme(newThemeName) ? newThemeName : 'light'
+  themeName.value = targetTheme
+
+  if (persist && typeof window !== 'undefined') {
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, targetTheme)
+    } catch (error) {
+      console.warn('Failed to persist theme preference', error)
     }
   }
-  const styleDom = document.createElement("style")
-  styleDom.dataset.type = "theme"
-  styleDom.innerHTML = newThemeName === 'dark' ? 'html{background-color:#000000}' : 'html{background-color:#f5f5f5}'
-  head.appendChild(styleDom)
 }
 
-applyTheme()
+applyTheme(undefined, false)
 
 export const VAR_SIZE_LG = 992

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { SendOutlined } from '@ant-design/icons-vue'
@@ -36,23 +37,53 @@ const backToTop = () => {
     window.scrollTo(0, 0)
 }
 
-// Get routing policy options as array for display
-const getRoutingPolicyOptions = () => {
-    const options = []
-    for (let i = 0; i <= 4; i++) {
-        // Hide UPSTREAM (4) option for non-admin users
-        if (i === RoutingPolicy.UPSTREAM && !isAdmin.value) continue
-        
-        options.push({
-            value: i,
-            label: t(`pages.peering.routingPolicyTypes.${RoutingPolicy[i]}`),
-            description: t(`pages.peering.routingPolicyTypes.${RoutingPolicy[i]}_DESC`)
-        })
-    }
-    return options
-}
+const ALL_ROUTING_POLICIES: RoutingPolicy[] = [
+    RoutingPolicy.FULL,
+    RoutingPolicy.TRANSIT,
+    RoutingPolicy.PEER,
+    RoutingPolicy.DOWNSTREAM,
+    RoutingPolicy.UPSTREAM
+]
 
-const routingPolicyOptions = getRoutingPolicyOptions()
+const availablePolicySet = computed(() => {
+    const provided = props.router.allowedPolicies
+    const fallback = new Set(ALL_ROUTING_POLICIES)
+    if (!provided || provided.length === 0) return fallback
+    return new Set(provided)
+})
+
+const routingPolicyOptions = computed(() => {
+    const set = availablePolicySet.value
+    return ALL_ROUTING_POLICIES
+        .filter(policy => !(policy === RoutingPolicy.UPSTREAM && !isAdmin.value))
+        .map(policy => {
+            const key = RoutingPolicy[policy]
+            return {
+                value: policy,
+                label: t(`pages.peering.routingPolicyTypes.${key}`),
+                description: t(`pages.peering.routingPolicyTypes.${key}_DESC`),
+                disabled: !set.has(policy)
+            }
+        })
+})
+
+let routingPolicyWatcherStopHandle: Function | null = null
+onMounted(() => {
+    routingPolicyWatcherStopHandle = watch(routingPolicyOptions, (options) => {
+        const validOption = options.find(option => option.value === props.preferenceForm.routingPolicy && !option.disabled)
+        if (validOption) return
+        const fallbackOption = options.find(option => !option.disabled)
+        if (fallbackOption) {
+            props.preferenceForm.routingPolicy = fallbackOption.value
+        }
+    }, { immediate: true })
+})
+
+onUnmounted(() => {
+    if (routingPolicyWatcherStopHandle) {
+        routingPolicyWatcherStopHandle()
+    }
+})
 </script>
 
 <template>
@@ -60,7 +91,8 @@ const routingPolicyOptions = getRoutingPolicyOptions()
     <br />
     <a-form :model="props.preferenceForm" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" class="peerInfoForm">
         <a-form-item v-if="isAdmin" name="peerAsn" :label="t('pages.peering.asn')">
-            <a-input type="number" v-model:value="props.preferenceForm.asn" addon-before="AS" :placeholder="`${t('pages.signIn.pleaseInput')} ${t('pages.peering.asn')}`"></a-input>
+            <a-input type="number" v-model:value="props.preferenceForm.asn" addon-before="AS"
+                :placeholder="`${t('pages.signIn.pleaseInput')} ${t('pages.peering.asn')}`"></a-input>
         </a-form-item>
 
         <a-form-item :label="t('pages.peering.linkType')">
@@ -73,13 +105,15 @@ const routingPolicyOptions = getRoutingPolicyOptions()
 
         <a-form-item :label="t('pages.peering.bgpExtensions')">
             <a-checkbox-group v-model:value="props.preferenceForm.bgpExtensions">
-                <a-checkbox v-for="extension in props.router.extensions" :key="`extension_${extension}`" :value="extension">{{ t(`pages.peering['${extension}']`) }}</a-checkbox>
+                <a-checkbox v-for="extension in props.router.extensions" :key="`extension_${extension}`"
+                    :value="extension">{{ t(`pages.peering['${extension}']`) }}</a-checkbox>
             </a-checkbox-group>
         </a-form-item>
         <a-form-item :label="t('pages.peering.routingPolicy')">
             <a-radio-group v-model:value="props.preferenceForm.routingPolicy">
                 <a-space direction="vertical" style="width: 100%">
-                    <a-radio v-for="option in routingPolicyOptions" :key="`policy_${option.value}`" :value="option.value">
+                    <a-radio v-for="option in routingPolicyOptions" :key="`policy_${option.value}`"
+                        :value="option.value" :disabled="option.disabled">
                         <div>
                             <div><b>{{ option.label }}</b></div>
                             <div class="policy-description">{{ option.description }}</div>
@@ -89,8 +123,10 @@ const routingPolicyOptions = getRoutingPolicyOptions()
             </a-radio-group>
         </a-form-item>
         <!-- Reuse existing config option for edit mode -->
-        <a-form-item v-if="props.isEditMode && props.existingSession?.type === props.preferenceForm.linkType" :wrapper-col="{ offset: 8, span: 16 }">
-            <a-checkbox :checked="props.reuseExistingConfig" @change="(e: Event) => updateReuseConfig((e.target as HTMLInputElement)?.checked)">
+        <a-form-item v-if="props.isEditMode && props.existingSession?.type === props.preferenceForm.linkType"
+            :wrapper-col="{ offset: 8, span: 16 }">
+            <a-checkbox :checked="props.reuseExistingConfig"
+                @change="(e: Event) => updateReuseConfig((e.target as HTMLInputElement)?.checked)">
                 {{ t('pages.peering.reuseExistingConfig') }}
             </a-checkbox>
         </a-form-item>

@@ -275,7 +275,8 @@ export default {
         description: 'Descrição',
         name: 'Nome',
         addOrEdit: 'Adicionar ou editar nodo', add: 'Adicionar nodo',
-        callbackUrl: 'URL de callback'
+        callbackUrl: 'URL de callback',
+        allowedPolicies: 'Políticas de roteamento disponíveis'
       }
     },
     metrics: {

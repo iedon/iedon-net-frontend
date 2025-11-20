@@ -276,7 +276,8 @@ export default {
         description: 'Description',
         name: 'Name',
         addOrEdit: 'Add or Edit Node', add: 'Add Node',
-        callbackUrl: 'Callback URL'
+        callbackUrl: 'Callback URL',
+        allowedPolicies: 'Available Routing Policies'
       }
     },
     metrics: {

@@ -89,15 +89,15 @@ const getLocaleName = (locale: SupportedLocale) => {
         case 'fr_FR': return 'Français (French)'
         case 'de_DE': return 'Deutsch (German)'
         case 'es_ES': return 'Español (Spanish)'
+        case 'pt_BR': return 'Português (Brasil)'
+        case 'el_GR': return 'Ελληνικά (Greek)'
         case 'ja_JP': return '日本語 (Japanese)'
         case 'zh_TW': return '繁體中文 (Traditional Chinese)'
-        case 'zh_CN': return '简体字华语 (Simplified Chinese)'
+        case 'zh_CN': return '新加坡华语 (Simplified Chinese)'
         case 'ko_KR': return '한국어 (Korean)'
-        case 'pt_BR': return 'Português (Brasil)'
-        case 'th_TH': return 'ไทย (Thai)'
-        case 'el_GR': return 'Ελληνικά (Greek)'
-        case 'hi_IN': return 'हिन्दी (Hindi)'
         case 'vi_VN': return 'Tiếng Việt (Vietnamese)'
+        case 'th_TH': return 'ไทย (Thai)'
+        case 'hi_IN': return 'हिन्दी (Hindi)'
     }
 }
 

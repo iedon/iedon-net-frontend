@@ -275,7 +275,8 @@ export default {
         description: 'คำอธิบาย',
         name: 'ชื่อ',
         addOrEdit: 'เพิ่มหรือแก้ไขโหนด', add: 'เพิ่มโหนด',
-        callbackUrl: 'URL callback'
+        callbackUrl: 'URL callback',
+        allowedPolicies: 'นโยบายการกำหนดเส้นทางที่มีให้เลือก'
       }
     },
     metrics: {

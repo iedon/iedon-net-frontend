@@ -275,7 +275,8 @@ export default {
         description: 'Περιγραφή',
         name: 'Όνομα',
         addOrEdit: 'Προσθήκη ή επεξεργασία κόμβου', add: 'Προσθήκη κόμβου',
-        callbackUrl: 'URL callback'
+        callbackUrl: 'URL callback',
+        allowedPolicies: 'Διαθέσιμες πολιτικές δρομολόγησης'
       }
     },
     metrics: {

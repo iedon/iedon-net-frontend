@@ -275,7 +275,8 @@ export default {
         description: 'Beschreibung',
         name: 'Name',
         addOrEdit: 'Knoten hinzufügen oder bearbeiten', add: 'Knoten hinzufügen',
-        callbackUrl: 'Callback-URL'
+        callbackUrl: 'Callback-URL',
+        allowedPolicies: 'Verfügbare Routing-Policies'
       }
     },
     metrics: {

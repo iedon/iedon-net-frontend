@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
 import { GlobalOutlined, CloseOutlined, CheckCircleOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import { loggedIn, nullOrEmpty } from '../../common/helper'
-import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
+import { makeRequest, RouterMetadata, RoutersResponse, RoutingPolicy } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 
 const t = useI18n().t
@@ -137,6 +137,13 @@ const modalForm = ref({
     ipv6LinkLocal: '',
     linkTypes: ['wireguard'],
     extensions: ['mp-bgp', 'extended-nexthop'],
+    allowedPolicies: [
+        RoutingPolicy.FULL,
+        RoutingPolicy.TRANSIT,
+        RoutingPolicy.PEER,
+        RoutingPolicy.DOWNSTREAM,
+        RoutingPolicy.UPSTREAM
+    ],
     uuid: ''
 })
 
@@ -147,7 +154,9 @@ const addOrEdit = async () => {
         nullOrEmpty(modalForm.value.agentSecret) ||
         nullOrEmpty(modalForm.value.callbackUrl) ||
         !Array.isArray(modalForm.value.linkTypes) ||
-        modalForm.value.linkTypes.length < 1) {
+        modalForm.value.linkTypes.length < 1 ||
+        !Array.isArray(modalForm.value.allowedPolicies) ||
+        modalForm.value.allowedPolicies.length < 1) {
         Modal.error({
             centered: true,
             title: t('pages.manage.nodes.addOrEdit'),
@@ -175,6 +184,7 @@ const addOrEdit = async () => {
             ipv6LinkLocal: modalForm.value.ipv6LinkLocal || null,
             linkTypes: modalForm.value.linkTypes,
             extensions: modalForm.value.extensions,
+            allowedPolicies: modalForm.value.allowedPolicies,
         }
         if (modalForm.value.uuid !== '') Object.assign(data, { router: modalForm.value.uuid })
         await makeRequest(t, '/admin', data)
@@ -206,6 +216,13 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
             ipv6LinkLocal: '',
             linkTypes: ['wireguard'],
             extensions: ['mp-bgp', 'extended-nexthop'],
+            allowedPolicies: [
+                RoutingPolicy.FULL,
+                RoutingPolicy.TRANSIT,
+                RoutingPolicy.PEER,
+                RoutingPolicy.DOWNSTREAM,
+                RoutingPolicy.UPSTREAM
+            ],
             uuid: ''
         }
     } else {
@@ -223,6 +240,7 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
         modalForm.value.ipv6LinkLocal = record.ipv6LinkLocal
         modalForm.value.linkTypes = record.linkTypes
         modalForm.value.extensions = record.extensions
+        modalForm.value.allowedPolicies = [...record.allowedPolicies]
         modalForm.value.uuid = record.uuid
     }
 }
@@ -344,6 +362,15 @@ const showAddOrEdit = async (record?: RouterMetadata) => {
                     <a-checkbox-group v-model:value="modalForm.extensions">
                         <a-checkbox value="mp-bgp">{{ t('pages.peering[\'mp-bgp\']') }}</a-checkbox>
                         <a-checkbox value="extended-nexthop">{{ t('pages.peering[\'extended-nexthop\']') }}</a-checkbox>
+                    </a-checkbox-group>
+                </a-form-item>
+                <a-form-item :label="t('pages.manage.nodes.allowedPolicies')">
+                    <a-checkbox-group v-model:value="modalForm.allowedPolicies">
+                        <a-checkbox :value="RoutingPolicy.FULL">{{ t('pages.peering.routingPolicyTypes.FULL') }}</a-checkbox>
+                        <a-checkbox :value="RoutingPolicy.TRANSIT">{{ t('pages.peering.routingPolicyTypes.TRANSIT') }}</a-checkbox>
+                        <a-checkbox :value="RoutingPolicy.PEER">{{ t('pages.peering.routingPolicyTypes.PEER') }}</a-checkbox>
+                        <a-checkbox :value="RoutingPolicy.DOWNSTREAM">{{ t('pages.peering.routingPolicyTypes.DOWNSTREAM') }}</a-checkbox>
+                        <a-checkbox :value="RoutingPolicy.UPSTREAM">{{ t('pages.peering.routingPolicyTypes.UPSTREAM') }}</a-checkbox>
                     </a-checkbox-group>
                 </a-form-item>
             </a-form>

@@ -275,7 +275,8 @@ export default {
         description: 'Mô tả',
         name: 'Tên',
         addOrEdit: 'Thêm hoặc chỉnh sửa nút', add: 'Thêm nút',
-        callbackUrl: 'URL callback'
+        callbackUrl: 'URL callback',
+        allowedPolicies: 'Các chính sách định tuyến khả dụng'
       }
     },
     metrics: {

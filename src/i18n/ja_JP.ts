@@ -275,7 +275,8 @@ export default {
         description: '説明',
         name: '名前',
         addOrEdit: 'ノード追加・編集', add: 'ノード追加',
-        callbackUrl: 'コールバックURL'
+        callbackUrl: 'コールバックURL',
+        allowedPolicies: '利用可能なルーティングポリシー'
       }
     },
     metrics: {

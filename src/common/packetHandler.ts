@@ -341,6 +341,7 @@ export type RouterMetadata = {
   extensions:
   (| 'mp-bgp'
     | 'extended-nexthop')[];
+  allowedPolicies: RoutingPolicy[];
   metric?: {
     version: string; // e.g., "iEdon-PeerAPI-Agent/1.0 (linux; amd64; go1.24.4)"
     kernel: string; // e.g., "Linux 6.11.11-2-pve amd64"

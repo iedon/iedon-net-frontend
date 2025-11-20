@@ -275,7 +275,8 @@ export default {
         description: '描述',
         name: '名称',
         addOrEdit: '添加或编辑节点', add: '添加节点',
-        callbackUrl: '回调 URL'
+        callbackUrl: '回调 URL',
+        allowedPolicies: '可用路由策略'
       }
     },
     metrics: {
