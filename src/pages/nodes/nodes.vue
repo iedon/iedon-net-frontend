@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, Ref, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { RouteLocationAsPathGeneric, useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -178,7 +178,7 @@ const isMaintenanceMode = () => {
     return siteConfig.value.maintenanceText && siteConfig.value.maintenanceText.trim() !== ''
 }
 
-const redirectToPeering = (r: RouterMetadata) => {
+const redirectToPeering = (r: RouterMetadata, linkType?: string) => {
     // Check maintenance mode first
     if (isMaintenanceMode()) {
         Modal.error({
@@ -220,7 +220,12 @@ const redirectToPeering = (r: RouterMetadata) => {
         router.replace({ path: '/signin' })
         return
     }
-    router.push({ path: `/nodes/${r.uuid}` })
+
+    const route: RouteLocationAsPathGeneric = { path: `/nodes/${r.uuid}` }
+    if (linkType) {
+        route.query = { linkType }
+    }
+    router.push(route)
 }
 
 // Computed properties for filtering
@@ -551,6 +556,7 @@ const setRegionFilter = (region: string) => {
                 <div v-if="r.linkTypes && r.linkTypes.length > 0" class="connection-section">
                     <div class="connection-badges">
                         <div v-for="linkType in r.linkTypes" :key="linkType" class="connection-badge"
+                            @click.stop="redirectToPeering(r, linkType)"
                             :class="getConnectionBadgeClass(linkType)">
                             <component :is="getConnectionIcon(linkType)" class="connection-badge-icon" />
                             <span class="connection-badge-text">{{ getConnectionTypeLabel(linkType) }}</span>

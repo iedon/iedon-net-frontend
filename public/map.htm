@@ -129,6 +129,11 @@
                     nodeId: 124,
                     coordinates: [ -78.878738, 42.880230 ]
                 },
+                'AU-SYD': {
+                    name: '🇦🇺 <b>Sydney, Australia</b><br/><small>172.23.91.126, fd42:4242:2189:126::1</small>',
+                    nodeId: 126,
+                    coordinates: [ 151.209900, -33.865143 ]
+                }
             };
             const node_conns = {
                 'CN-NTG': [ 'US-LAX', 'US-SJC', 'DE-FRA', 'JP-TYO', 'JP-KOT', 'HK-HKG', 'SG-SIN', 'CN-CZX', 'CN-SHA' ],
@@ -140,7 +145,8 @@
                 'UK-LON': [ 'US-LAX', 'US-SJC', 'JP-TYO', 'SG-SIN', 'HK-HKG', 'DE-FRA' ],
                 'DE-FRA': [ 'HK-HKG', 'SG-SIN' ],
                 'JP-KOT': [ 'HK-HKG', 'SG-SIN' ],
-                'CN-SHA': [ 'HK-HKG' ]
+                'CN-SHA': [ 'HK-HKG' ],
+                'AU-SYD': [ 'SG-SIN', 'HK-HKG', 'US-LAX', 'US-SJC', 'US-NYC', 'DE-FRA', 'JP-TYO', 'JP-KOT' ]
             };
             const data = [];
             Object.keys(nodes).forEach(key => {

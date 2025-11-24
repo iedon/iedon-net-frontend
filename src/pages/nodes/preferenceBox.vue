@@ -77,6 +77,16 @@ onMounted(() => {
             props.preferenceForm.routingPolicy = fallbackOption.value
         }
     }, { immediate: true })
+    try {
+        const urlParams = new URLSearchParams(window.location.search)
+        const linkTypeParam = urlParams.get('linkType')
+        const matchedLinkType = props.router.linkTypes.find(type => type === linkTypeParam)
+        if (matchedLinkType) {
+            props.preferenceForm.linkType = matchedLinkType
+        }
+    } catch (e) {
+        console.error('Failed to parse URL parameters', e)
+    }
 })
 
 onUnmounted(() => {

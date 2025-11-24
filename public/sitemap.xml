@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://iedon.net/</loc>
-    <lastmod>2025-11-20</lastmod>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://iedon.net/nodes</loc>
-    <lastmod>2025-11-20</lastmod>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://iedon.net/signin</loc>
-    <lastmod>2025-11-20</lastmod>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -32,7 +32,7 @@
   </url>
   <url>
     <loc>https://iedon.net/post/3</loc>
-    <lastmod>2025-08-10</lastmod>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -62,7 +62,7 @@
   </url>
   <url>
     <loc>https://iedon.net/post/9</loc>
-    <lastmod>2025-08-10</lastmod>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -74,7 +74,7 @@
   </url>
   <url>
     <loc>https://iedon.net/post/11</loc>
-    <lastmod>2025-08-10</lastmod>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -110,19 +110,25 @@
   </url>
   <url>
     <loc>https://iedon.net/post/22</loc>
-    <lastmod>2025-09-06</lastmod>
+    <lastmod>2025-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://iedon.net/post/23</loc>
-    <lastmod>2025-10-17</lastmod>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://iedon.net/post/24</loc>
-    <lastmod>2025-11-14</lastmod>
+    <lastmod>2025-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://iedon.net/post/25</loc>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

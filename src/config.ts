@@ -40,9 +40,10 @@ export default {
     'a331daff-40bd-478c-ac0d-a7b14bbcbaae': 'https://lg.iedon.net/detail/us-nyc/',
     '4d05d0ac-bbb5-4e91-9577-288fc8b6885e': 'https://lg.iedon.net/detail/cn-ntg/',
     'fc2f74f8-31d4-46f6-b595-7e705aca96d3': 'https://lg.iedon.net/detail/cn-sha/',
+    '19a3050b-df69-4476-993a-27afcc7f467f': 'https://lg.iedon.net/detail/au-syd/',
   },
   grafana: {
-    urlPrefix: 'https://grafana.iedon.net/d/iew2sc5/network-overview?kiosk=true&orgId=2&from=now-1h&refresh=5m&to=now&timezone=utc',
+    urlPrefix: 'https://grafana.iedon.net/d/iew2sc5/network-overview?kiosk=true&orgId=2&from=now-12h&refresh=5m&to=now&timezone=utc',
     queryStringForLocating: {
       router: 'var-router_public',
       session: 'var-peer',
