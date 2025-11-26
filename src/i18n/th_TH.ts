@@ -217,6 +217,7 @@ export default {
         viewMetrics: 'ดูเมตริก',
         newPeeringSession: 'สร้างเซสชัน Peering ใหม่',
         showMyConnectivityInMap: 'แสดงใน Map.dn42',
+        probeStatus: 'สถานะการเชื่อมต่อ',
         statusCode: {
           '0': 'ลบแล้ว',
           '1': 'ปิดใช้งาน',
@@ -283,6 +284,22 @@ export default {
       sessionMetrics: 'เมตริกเซสชัน',
       viewInGrafana: 'ดูใน Grafana',
       lastError: 'ข้อผิดพลาดล่าสุด',
+      probeStatus: {
+        title: 'การวิเคราะห์การเชื่อมต่อ',
+        hint: 'การตรวจสอบทรานซิต IPv4/IPv6 อัตโนมัติจากอุปกรณ์ตรวจวัดของเราเตอร์',
+        labels: {
+          testedOk: 'ทดสอบแล้ว OK',
+          noRouting: 'ไม่มีการกำหนดเส้นทาง',
+          nat: 'ตรวจพบ NAT',
+          notAvailable: 'ไม่มีข้อมูล'
+        },
+        descriptions: {
+          testedOk: 'การทดสอบการเชื่อมต่อทั้งหมดผ่านสำเร็จ',
+          noRouting: 'ตรวจพบการตั้งค่า IP transit ผิดพลาด เราเตอร์ปลายทางเข้าถึงได้แต่การกำหนดเส้นทางล้มเหลว',
+          nat: 'ตรวจพบการตั้งค่าผิดพลาด ทราฟฟิกดูเหมือนผ่าน NAT',
+          notAvailable: 'ยังไม่มีข้อมูลสถานะจากการตรวจวัด'
+        }
+      },
       back: 'กลับ',
       clickToCopy: 'คลิกเพื่อคัดลอก',
       refresh: 'รีเฟรช',

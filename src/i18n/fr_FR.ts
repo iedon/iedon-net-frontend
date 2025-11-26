@@ -217,6 +217,7 @@ export default {
         viewMetrics: 'Voir les métriques',
         newPeeringSession: 'Nouvelle session de peering',
         showMyConnectivityInMap: 'Afficher sur Map.dn42',
+        probeStatus: 'Statut de connectivité',
         statusCode: {
           '0': 'Supprimé',
           '1': 'Désactivé',
@@ -283,6 +284,22 @@ export default {
       sessionMetrics: 'Métriques de session',
       viewInGrafana: 'Voir dans Grafana',
       lastError: 'Dernière erreur',
+      probeStatus: {
+        title: 'Diagnostic de connectivité',
+        hint: 'Vérifications automatiques du transit IPv4/IPv6 réalisées par les sondes des routeurs.',
+        labels: {
+          testedOk: 'Test OK',
+          noRouting: 'Pas de routage',
+          nat: 'NAT détecté',
+          notAvailable: 'N/D'
+        },
+        descriptions: {
+          testedOk: 'Tous les tests de connectivité se sont déroulés avec succès.',
+          noRouting: 'Transit IP défaillant détecté ; le routeur distant répond mais le routage échoue.',
+          nat: 'Mauvaise configuration détectée, le trafic semble passer par un NAT.',
+          notAvailable: 'Aucune information de statut disponible pour le moment depuis les sondes.'
+        }
+      },
       back: 'Retour',
       clickToCopy: 'Cliquer pour copier',
       refresh: 'Rafraîchir',

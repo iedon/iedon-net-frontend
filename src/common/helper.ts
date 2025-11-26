@@ -131,6 +131,51 @@ export const formatBytes = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
+export type ProbeSignal = {
+  seen?: boolean
+  healthy?: boolean | null
+  nat?: boolean | null
+}
+
+export type ProbeStatusKey = 'testedOk' | 'noRouting' | 'nat' | 'notAvailable'
+
+export type DerivedProbeStatus = {
+  version: 'ipv4' | 'ipv6'
+  key: ProbeStatusKey
+}
+
+const PROBE_PRIORITY: Record<ProbeStatusKey, number> = {
+  testedOk: 3,
+  noRouting: 2,
+  nat: 1,
+  notAvailable: 0
+}
+
+export const PROBE_STATUS_COLORS: Record<ProbeStatusKey, string> = {
+  testedOk: '#52c41a',
+  noRouting: '#ff4d4f',
+  nat: '#faad14',
+  notAvailable: '#d9d9d9'
+}
+
+const evaluateSignal = (signal?: ProbeSignal): ProbeStatusKey => {
+  if (!signal || signal.seen === false || signal.seen === undefined) return 'notAvailable'
+  if (signal.nat) return 'nat'
+  if (signal.healthy) return 'testedOk'
+  if (signal.healthy === false) return 'noRouting'
+  return 'notAvailable'
+}
+
+export const deriveProbeStatuses = (probe?: { ipv4?: ProbeSignal; ipv6?: ProbeSignal } | null): DerivedProbeStatus[] => {
+  if (!probe) return []
+  return (['ipv4', 'ipv6'] as const).map(version => ({
+    version,
+    key: evaluateSignal(probe[version])
+  }))
+}
+
+export const getProbeStatusWeight = (key: ProbeStatusKey) => PROBE_PRIORITY[key]
+
 export const showMyConnectivityInMap = () => {
     window.open(`${config.mapDn42Url}/${localStorage.getItem('asn') ? `#${localStorage.getItem('asn')}` : ''}`, '_blank')?.focus();
 }

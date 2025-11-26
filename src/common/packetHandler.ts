@@ -139,6 +139,10 @@ export type CurrentSessionMetadata = {
   mtu: number;
   policy: RoutingPolicy;
   lastError: string | null;
+  probe: {
+    ipv4: { seen: boolean; healthy: boolean | null; nat: boolean | null };
+    ipv6: { seen: boolean; healthy: boolean | null; nat: boolean | null };
+  };
   createdAt: string;
   updatedAt: string;
 };
@@ -380,6 +384,10 @@ export type SessionMetadata = {
   credential: string,
   policy: RoutingPolicy,
   lastError: string | null,
+  probe: {
+    ipv4: { seen: boolean; healthy: boolean | null; nat: boolean | null };
+    ipv6: { seen: boolean; healthy: boolean | null; nat: boolean | null };
+  };
   data:
   | { info: string; passthrough: string }
   | '',

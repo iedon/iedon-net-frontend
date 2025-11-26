@@ -11,7 +11,7 @@ import {
     DeleteOutlined
 } from '@ant-design/icons-vue'
 import { SessionStatus, RouterMetadata, SessionMetadata } from '../common/packetHandler'
-import { formatRelativeTime } from '../common/helper'
+import { formatRelativeTime, deriveProbeStatuses, PROBE_STATUS_COLORS, getProbeStatusWeight, themeName } from '../common/helper'
 import RouterLocationAvatar from './RouterLocationAvatar.vue'
 
 const t = useI18n().t
@@ -121,6 +121,12 @@ const columns = computed(() => {
             sorter: (a: Session, b: Session) => {
                 return getStatusSortValue(b) - getStatusSortValue(a) // Descending order (better status first)
             }
+        },
+        {
+            title: t('pages.manage.session.probeStatus'),
+            dataIndex: 'probe',
+            key: 'probe',
+            sorter: (a: Session, b: Session) => getProbeSortValue(b) - getProbeSortValue(a)
         }
     )
 
@@ -254,11 +260,29 @@ const getStatusSortValue = (session: Session) => {
     }
     return session.status * 1000
 }
+
+const getProbeStatusDisplay = (session: Session) => {
+    const statuses = deriveProbeStatuses(session.probe || null)
+    if (!statuses.length) return []
+    return statuses.map(status => ({
+        ...status,
+        label: t(`pages.metrics.probeStatus.labels.${status.key}`),
+        description: t(`pages.metrics.probeStatus.descriptions.${status.key}`),
+        color: PROBE_STATUS_COLORS[status.key]
+    }))
+}
+
+const getProbeSortValue = (session: Session) => {
+    const statuses = deriveProbeStatuses(session.probe || null)
+    if (!statuses.length) return 0
+    return statuses.reduce((acc, status) => acc + getProbeStatusWeight(status.key), 0)
+}
 </script>
 
 <template>
-    <a-table :columns="columns" :data-source="filteredSessions" :loading="loading" bordered size="small"
-        :customRow="customRow" :rowClassName="() => 'clickable'" :scroll="{ x: 'max-content' }">
+    <a-table class="session-table" :class="themeName" :columns="columns" :data-source="filteredSessions"
+        :loading="loading" bordered size="small" :customRow="customRow" :rowClassName="() => 'clickable'"
+        :scroll="{ x: 'max-content' }">
         <template #bodyCell="{ column, record }">
             <!-- Node Column -->
             <template v-if="column.key === 'node'">
@@ -310,6 +334,27 @@ const getStatusSortValue = (session: Session) => {
                         {{ t(`pages.manage.session.statusCode['${record.status}']`) }}
                     </a-tag>
                 </template>
+            </template>
+
+            <!-- Probe Status Column -->
+            <template v-else-if="column.key === 'probe'">
+                <template v-if="getProbeStatusDisplay(record).length">
+                    <div class="probe-status-compact">
+                        <a-tooltip
+                            v-for="probeStatus in getProbeStatusDisplay(record)"
+                            :key="`${record.uuid}-${probeStatus.version}`"
+                            :title="probeStatus.description"
+                        >
+                            <span class="probe-pill">
+                                <span class="probe-dot" :style="{ backgroundColor: probeStatus.color }"></span>
+                                <span class="probe-pill-label">
+                                    {{ probeStatus.version === 'ipv4' ? 'V4' : 'V6' }} · {{ probeStatus.label }}
+                                </span>
+                            </span>
+                        </a-tooltip>
+                    </div>
+                </template>
+                <span v-else class="small-text">{{ t('pages.metrics.probeStatus.labels.notAvailable') }}</span>
             </template>
 
             <!-- IPv4 Column -->
@@ -491,5 +536,44 @@ const getStatusSortValue = (session: Session) => {
 
 :deep(.ant-btn-group .ant-btn .anticon) {
     font-size: 12px;
+}
+
+
+.session-table {
+    width: 100%;
+}
+
+.probe-status-compact {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.probe-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #434343;
+}
+
+.probe-pill-label {
+    white-space: nowrap;
+}
+
+.probe-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.session-table.dark .probe-pill {
+    color: #d9d9d9;
+}
+
+.session-table.dark .probe-dot {
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.25);
 }
 </style>

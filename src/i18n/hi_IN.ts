@@ -217,6 +217,7 @@ export default {
         viewMetrics: 'मेट्रिक्स देखें',
         newPeeringSession: 'नया पीयरिंग सत्र',
         showMyConnectivityInMap: 'Map.dn42 में दिखाएँ',
+        probeStatus: 'कनेक्टिविटी स्थिति',
         statusCode: {
           '0': 'हटाया गया',
           '1': 'अक्षम',
@@ -283,6 +284,22 @@ export default {
       sessionMetrics: 'सत्र मेट्रिक्स',
       viewInGrafana: 'Grafana में देखें',
       lastError: 'अंतिम त्रुटि',
+      probeStatus: {
+        title: 'कनेक्टिविटी डायग्नोस्टिक्स',
+        hint: 'राउटर प्रोब से स्वचालित IPv4/IPv6 ट्रांज़िट जांचें।',
+        labels: {
+          testedOk: 'परीक्षण सफल',
+          noRouting: 'रूटिंग नहीं',
+          nat: 'NAT मिला',
+          notAvailable: 'उपलब्ध नहीं'
+        },
+        descriptions: {
+          testedOk: 'सभी कनेक्टिविटी परीक्षण सफल रहे।',
+          noRouting: 'IP ट्रांज़िट कॉन्फ़िगरेशन टूटा हुआ है; दूरस्थ राउटर उपलब्ध है लेकिन रूटिंग विफल होती है।',
+          nat: 'ग़लत कॉन्फ़िगरेशन का पता चला, ट्रैफ़िक NAT के माध्यम से जाता दिखाई देता है।',
+          notAvailable: 'प्रोब से अभी स्थिति जानकारी उपलब्ध नहीं है।'
+        }
+      },
       back: 'वापस जाएँ',
       clickToCopy: 'कॉपी करने के लिए क्लिक करें',
       refresh: 'रिफ्रेश करें',

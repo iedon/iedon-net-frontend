@@ -217,6 +217,7 @@ export default {
         viewMetrics: '메트릭 보기',
         newPeeringSession: '새 피어링 세션',
         showMyConnectivityInMap: 'Map.dn42에서 보기',
+        probeStatus: '연결 상태',
         statusCode: {
           '0': '삭제됨',
           '1': '비활성화됨',
@@ -283,6 +284,22 @@ export default {
       sessionMetrics: '세션 메트릭',
       viewInGrafana: 'Grafana에서 보기',
       lastError: '마지막 오류',
+      probeStatus: {
+        title: '연결 진단',
+        hint: '라우터 프로브가 수행하는 IPv4/IPv6 트랜짓 자동 점검입니다.',
+        labels: {
+          testedOk: '테스트 통과',
+          noRouting: '라우팅 없음',
+          nat: 'NAT 감지',
+          notAvailable: '정보 없음'
+        },
+        descriptions: {
+          testedOk: '모든 연결 테스트가 성공적으로 완료되었습니다.',
+          noRouting: 'IP 트랜짓 설정에 문제가 있어 원격 라우터에는 도달하지만 라우팅이 실패합니다.',
+          nat: '잘못된 설정이 감지되었으며 트래픽이 NAT 를 통과하는 것으로 보입니다.',
+          notAvailable: '프로브에서 아직 상태 정보를 수집하지 못했습니다.'
+        }
+      },
       back: '뒤로',
       clickToCopy: '클릭하여 복사',
       refresh: '새로고침',

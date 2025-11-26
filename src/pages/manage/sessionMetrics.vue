@@ -188,6 +188,20 @@
                                 <global-outlined />
                             </div>
                             <div class="detail-card-title">{{ t('pages.metrics.networkInfo') }}</div>
+                            <div class="probe-status-inline" v-if="probeStatusDisplay.length">
+                                <a-tooltip
+                                    v-for="status in probeStatusDisplay"
+                                    :key="`probe-inline-${status.version}`"
+                                    :title="status.description"
+                                >
+                                    <a-tag color="default" class="probe-inline-tag">
+                                        <span class="probe-dot" :style="{ backgroundColor: status.color }"></span>
+                                        <span class="probe-pill-label">
+                                            {{ status.version === 'ipv4' ? 'V4' : 'V6' }} · {{ status.label }}
+                                        </span>
+                                    </a-tag>
+                                </a-tooltip>
+                            </div>
                         </div>
                         <div class="detail-card-content">
                             <div class="detail-item" v-if="routerInfo?.ipv4 || sessionMetadata?.ipv4"
@@ -686,7 +700,8 @@ import {
 import { VChart } from '../../components/EChartsLoader'
 
 // Application imports
-import { loggedIn, formatDate, formatRelativeTime, themeName, isAdmin, formatBytes, registerPageTitle } from '../../common/helper'
+import { loggedIn, formatDate, formatRelativeTime, themeName, isAdmin, formatBytes, registerPageTitle, deriveProbeStatuses, PROBE_STATUS_COLORS } from '../../common/helper'
+import type { ProbeStatusKey } from '../../common/helper'
 import { makeRequest, SessionMetric, RouterMetadata, RoutersResponse, CurrentSessionMetadata, GetCurrentSessionResponse, RoutingPolicy, SessionStatus, BGPMetric } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
 import config from '../../config'
@@ -871,6 +886,16 @@ const hasAnyInterfaceData = computed(() => {
 // Check if there's any BGP data to display
 const hasAnyBgpData = computed(() => {
     return sessionMetrics.value?.bgp && sessionMetrics.value.bgp.length > 0
+})
+
+const probeStatusDisplay = computed(() => {
+    if (!sessionMetadata.value) return []
+    return deriveProbeStatuses(sessionMetadata.value.probe || null).map(status => ({
+        ...status,
+        label: t(`pages.metrics.probeStatus.labels.${status.key}`),
+        description: t(`pages.metrics.probeStatus.descriptions.${status.key}`),
+        color: PROBE_STATUS_COLORS[status.key]
+    }))
 })
 
 // =============================================================================

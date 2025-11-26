@@ -217,6 +217,7 @@ export default {
         viewMetrics: 'Ver métricas',
         newPeeringSession: 'Nova sessão de peering',
         showMyConnectivityInMap: 'Mostrar no Map.dn42',
+          probeStatus: 'Status de Conectividade',
         statusCode: {
           '0': 'Excluído',
           '1': 'Desabilitado',
@@ -283,6 +284,22 @@ export default {
       sessionMetrics: 'Métricas da sessão',
       viewInGrafana: 'Ver no Grafana',
       lastError: 'Último erro',
+        probeStatus: {
+          title: 'Diagnósticos de conectividade',
+          hint: 'Verificações automáticas de trânsito IPv4/IPv6 a partir de probes de roteador.',
+          labels: {
+            testedOk: 'Testado OK',
+            noRouting: 'Sem roteamento',
+            nat: 'NAT detectado',
+            notAvailable: 'N/A'
+          },
+          descriptions: {
+            testedOk: 'Todos os testes de conectividade foram concluídos com sucesso.',
+            noRouting: 'Roteamento quebrado detectado; o roteador remoto é acessível, mas o roteamento falha.',
+            nat: 'Detecção de configuração incorreta, o tráfego parece passar pelo NAT.',
+            notAvailable: 'As informações de status ainda não estão disponíveis a partir dos probes.'
+          }
+        },
       back: 'Voltar',
       clickToCopy: 'Clique para copiar',
       refresh: 'Atualizar',

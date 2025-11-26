@@ -217,6 +217,7 @@ export default {
         viewMetrics: '檢視指標',
         newPeeringSession: '新增互聯會話',
         showMyConnectivityInMap: '在 Map.dn42 顯示',
+        probeStatus: '連線狀態',
         statusCode: {
           '0': '已刪除',
           '1': '已停用',
@@ -283,6 +284,22 @@ export default {
       sessionMetrics: '會話指標',
       viewInGrafana: '在 Grafana 中檢視',
       lastError: '最新錯誤',
+      probeStatus: {
+        title: '連線診斷',
+        hint: '由路由器探針自動執行的 IPv4/IPv6 Transit 檢查。',
+        labels: {
+          testedOk: '測試通過',
+          noRouting: '沒有路由',
+          nat: '偵測到 NAT',
+          notAvailable: '暫無'
+        },
+        descriptions: {
+          testedOk: '所有連線測試皆已成功通過。',
+          noRouting: '偵測到 IP transit 設定錯誤；能連到遠端路由器但路由失敗。',
+          nat: '偵測到設定錯誤，流量疑似經過 NAT。',
+          notAvailable: '尚未收到探針提供的狀態資訊。'
+        }
+      },
       back: '返回',
       clickToCopy: '點擊複製',
       refresh: '重新整理',

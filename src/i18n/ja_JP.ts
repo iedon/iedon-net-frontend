@@ -217,6 +217,7 @@ export default {
         viewMetrics: 'メトリクス表示',
         newPeeringSession: '新規ピアリングセッション',
         showMyConnectivityInMap: 'Map.dn42で表示',
+        probeStatus: '接続ステータス',
         statusCode: {
           '0': '削除済み',
           '1': '無効',
@@ -283,6 +284,22 @@ export default {
       sessionMetrics: 'セッションメトリクス',
       viewInGrafana: 'Grafana で表示',
       lastError: '直近のエラー',
+      probeStatus: {
+        title: '接続診断',
+        hint: 'ルーターのプローブによる IPv4/IPv6 トランジット自動チェックです。',
+        labels: {
+          testedOk: '正常',
+          noRouting: 'ルーティング無し',
+          nat: 'NAT 検出',
+          notAvailable: 'N/A'
+        },
+        descriptions: {
+          testedOk: 'すべての接続テストが正常に完了しました。',
+          noRouting: 'IP トランジット設定に問題があります。遠隔ルーターには到達できますがルーティングに失敗します。',
+          nat: '設定ミスを検出。トラフィックが NAT を経由している可能性があります。',
+          notAvailable: 'プローブからのステータス情報はまだ利用できません。'
+        }
+      },
       back: '戻る',
       clickToCopy: 'クリックでコピー',
       refresh: '更新',

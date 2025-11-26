@@ -217,6 +217,7 @@ export default {
         viewMetrics: '查看指标',
         newPeeringSession: '新建互联会话',
         showMyConnectivityInMap: '在 Map.dn42 显示',
+        probeStatus: '连通状态',
         statusCode: {
           '0': '已删除',
           '1': '已禁用',
@@ -283,6 +284,22 @@ export default {
       sessionMetrics: '会话指标',
       viewInGrafana: '在 Grafana 中查看',
       lastError: '最新错误',
+      probeStatus: {
+        title: '连通性诊断',
+        hint: '来自路由器探针的 IPv4/IPv6 自动连通性检测。',
+        labels: {
+          testedOk: '测试通过',
+          noRouting: '无路由',
+          nat: '检测到 NAT',
+          notAvailable: '暂无'
+        },
+        descriptions: {
+          testedOk: '所有连通性检测均已成功通过。',
+          noRouting: '检测到 IP transit 配置异常；可连通远端路由器但路由失败。',
+          nat: '检测到配置错误，流量疑似经过 NAT。',
+          notAvailable: '尚未收到探针状态信息。'
+        }
+      },
       back: '返回',
       clickToCopy: '点击复制',
       refresh: '刷新',

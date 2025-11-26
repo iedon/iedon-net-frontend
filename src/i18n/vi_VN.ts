@@ -217,6 +217,7 @@ export default {
         viewMetrics: 'Xem chỉ số',
         newPeeringSession: 'Phiên peering mới',
         showMyConnectivityInMap: 'Hiển thị trên Map.dn42',
+        probeStatus: 'Trạng thái kết nối',
         statusCode: {
           '0': 'Đã xóa',
           '1': 'Đã tắt',
@@ -281,9 +282,25 @@ export default {
     },
     metrics: {
       sessionMetrics: 'Chỉ số phiên',
-      back: 'Quay lại',
       viewInGrafana: 'Xem trên Grafana',
       lastError: 'Lỗi gần nhất',
+      probeStatus: {
+        title: 'Chẩn đoán kết nối',
+        hint: 'Kiểm tra transit IPv4/IPv6 tự động từ các probe của router.',
+        labels: {
+          testedOk: 'Đã kiểm tra OK',
+          noRouting: 'Không có định tuyến',
+          nat: 'Phát hiện NAT',
+          notAvailable: 'Không có'
+        },
+        descriptions: {
+          testedOk: 'Tất cả bài kiểm tra kết nối đã vượt qua thành công.',
+          noRouting: 'Phát hiện cấu hình IP transit lỗi; router từ xa truy cập được nhưng định tuyến thất bại.',
+          nat: 'Phát hiện cấu hình sai, lưu lượng có vẻ đi qua NAT.',
+          notAvailable: 'Chưa có thông tin trạng thái từ các probe.'
+        }
+      },
+      back: 'Quay lại',
       clickToCopy: 'Nhấn để sao chép',
       refresh: 'Làm mới',
       sessionId: 'ID phiên',

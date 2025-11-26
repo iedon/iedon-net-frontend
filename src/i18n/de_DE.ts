@@ -217,6 +217,7 @@ export default {
         viewMetrics: 'Metriken anzeigen',
         newPeeringSession: 'Neue Peering-Sitzung',
         showMyConnectivityInMap: 'In Map.dn42 anzeigen',
+        probeStatus: 'Verbindungsstatus',
         statusCode: {
           '0': 'Gelöscht',
           '1': 'Deaktiviert',
@@ -283,6 +284,22 @@ export default {
       sessionMetrics: 'Sitzungsmetriken',
       viewInGrafana: 'In Grafana anzeigen',
       lastError: 'Letzter Fehler',
+      probeStatus: {
+        title: 'Konnektivitätsdiagnose',
+        hint: 'Automatisierte IPv4/IPv6-Transitprüfungen der Router-Probes.',
+        labels: {
+          testedOk: 'Test OK',
+          noRouting: 'Kein Routing',
+          nat: 'NAT erkannt',
+          notAvailable: 'N/V'
+        },
+        descriptions: {
+          testedOk: 'Alle Konnektivitätstests wurden erfolgreich bestanden.',
+          noRouting: 'Fehlerhafte IP-Transit-Konfiguration; der entfernte Router ist erreichbar, aber das Routing schlägt fehl.',
+          nat: 'Fehlkonfiguration erkannt, der Verkehr scheint über NAT zu laufen.',
+          notAvailable: 'Noch keine Statusinformationen aus den Probes verfügbar.'
+        }
+      },
       back: 'Zurück',
       clickToCopy: 'Klicken zum Kopieren',
       refresh: 'Aktualisieren',

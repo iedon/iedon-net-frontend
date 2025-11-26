@@ -217,6 +217,7 @@ export default {
         viewMetrics: 'Προβολή μετρήσεων',
         newPeeringSession: 'Νέα συνεδρία Peering',
         showMyConnectivityInMap: 'Εμφάνιση στο Map.dn42',
+        probeStatus: 'Κατάσταση συνδεσιμότητας',
         statusCode: {
           '0': 'Διαγράφηκε',
           '1': 'Απενεργοποιήθηκε',
@@ -283,6 +284,22 @@ export default {
       sessionMetrics: 'Μετρήσεις συνεδρίας',
       viewInGrafana: 'Προβολή στο Grafana',
       lastError: 'Τελευταίο σφάλμα',
+      probeStatus: {
+        title: 'Διαγνωστικά συνδεσιμότητας',
+        hint: 'Αυτόματοι έλεγχοι διέλευσης IPv4/IPv6 από probes του δρομολογητή.',
+        labels: {
+          testedOk: 'Έλεγχος OK',
+          noRouting: 'Χωρίς δρομολόγηση',
+          nat: 'Εντοπίστηκε NAT',
+          notAvailable: 'Μ/Δ'
+        },
+        descriptions: {
+          testedOk: 'Όλοι οι έλεγχοι συνδεσιμότητας ολοκληρώθηκαν με επιτυχία.',
+          noRouting: 'Εντοπίστηκε εσφαλμένο IP transit· ο απομακρυσμένος δρομολογητής είναι προσβάσιμος αλλά η δρομολόγηση αποτυγχάνει.',
+          nat: 'Εντοπίστηκε λάθος ρύθμιση, η κίνηση φαίνεται να περνά μέσω NAT.',
+          notAvailable: 'Δεν υπάρχουν ακόμη πληροφορίες κατάστασης από τα probes.'
+        }
+      },
       back: 'Επιστροφή',
       clickToCopy: 'Κλικ για αντιγραφή',
       refresh: 'Ανανέωση',
