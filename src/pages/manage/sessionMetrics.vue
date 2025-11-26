@@ -890,7 +890,8 @@ const hasAnyBgpData = computed(() => {
 
 const probeStatusDisplay = computed(() => {
     if (!sessionMetadata.value) return []
-    return deriveProbeStatuses(sessionMetadata.value.probe || null).map(status => ({
+    const bgpChannels = sessionMetadata.value.bgpStatus || sessionMetrics.value?.bgp || null
+    return deriveProbeStatuses(sessionMetadata.value.probe || null, bgpChannels).map(status => ({
         ...status,
         label: t(`pages.metrics.probeStatus.labels.${status.key}`),
         description: t(`pages.metrics.probeStatus.descriptions.${status.key}`),

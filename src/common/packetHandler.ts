@@ -143,6 +143,12 @@ export type CurrentSessionMetadata = {
     ipv4: { seen: boolean; healthy: boolean | null; nat: boolean | null };
     ipv6: { seen: boolean; healthy: boolean | null; nat: boolean | null };
   };
+  bgpStatus?: {
+    name: string;
+    state: string;
+    info: string;
+    type: 'mpbgp' | 'ipv4' | 'ipv6' | '';
+  }[];
   createdAt: string;
   updatedAt: string;
 };

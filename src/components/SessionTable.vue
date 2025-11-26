@@ -262,7 +262,7 @@ const getStatusSortValue = (session: Session) => {
 }
 
 const getProbeStatusDisplay = (session: Session) => {
-    const statuses = deriveProbeStatuses(session.probe || null)
+    const statuses = deriveProbeStatuses(session.probe || null, session.bgpStatus || null)
     if (!statuses.length) return []
     return statuses.map(status => ({
         ...status,
@@ -273,7 +273,7 @@ const getProbeStatusDisplay = (session: Session) => {
 }
 
 const getProbeSortValue = (session: Session) => {
-    const statuses = deriveProbeStatuses(session.probe || null)
+    const statuses = deriveProbeStatuses(session.probe || null, session.bgpStatus || null)
     if (!statuses.length) return 0
     return statuses.reduce((acc, status) => acc + getProbeStatusWeight(status.key), 0)
 }
