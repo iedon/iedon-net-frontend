@@ -290,15 +290,15 @@ export default {
         hint: 'Automated IPv4/IPv6 transit checks from router probes.',
         labels: {
           testedOk: 'OK',
-          noRouting: 'No routing',
-          nat: 'NAT detected',
+          noRouting: 'No Routing',
+          nat: 'NAT Detected',
           notAvailable: 'N/A'
         },
         descriptions: {
           testedOk: 'All connectivity tests have passed successfully.',
-          noRouting: 'Broken IP transit detected; remote router is reachable but routing fails.',
-          nat: 'Misconfiguration detected, traffic appears to traverse NAT.',
-          notAvailable: 'Status information is not yet available from probes.'
+          noRouting: 'The peering has a broken IP transit configuration. Some peers may not desire to offer IP transit, in which case this status can be safely ignored.',
+          nat: 'Misconfiguration detected. Network address translation is being used for transit packets.',
+          notAvailable: 'Status information not available.'
         }
       },
       back: 'Back',

@@ -8,10 +8,14 @@ import {
     PauseOutlined,
     CheckCircleOutlined,
     EditOutlined,
-    DeleteOutlined
+    DeleteOutlined,
+    CloseCircleOutlined,
+    ExclamationCircleOutlined,
+    ClockCircleOutlined,
+    ReloadOutlined
 } from '@ant-design/icons-vue'
 import { SessionStatus, RouterMetadata, SessionMetadata } from '../common/packetHandler'
-import { formatRelativeTime, deriveProbeStatuses, PROBE_STATUS_COLORS, getProbeStatusWeight, themeName } from '../common/helper'
+import { formatRelativeTime, deriveProbeStatuses, getProbeStatusWeight, themeName, ProbeStatusKey } from '../common/helper'
 import RouterLocationAvatar from './RouterLocationAvatar.vue'
 
 const t = useI18n().t
@@ -87,22 +91,10 @@ const columns = computed(() => {
             sorter: (a: Session, b: Session) => ('' + a.type).localeCompare(b.type)
         },
         {
-            title: 'IPv4',
-            dataIndex: 'ipv4',
-            key: 'ipv4',
-            sorter: (a: Session, b: Session) => ('' + (a.ipv4 || '')).localeCompare((b.ipv4 || ''))
-        },
-        {
-            title: 'IPv6',
-            dataIndex: 'ipv6',
-            key: 'ipv6',
-            sorter: (a: Session, b: Session) => ('' + (a.ipv6 || '')).localeCompare((b.ipv6 || ''))
-        },
-        {
-            title: 'IPv6 Link Local',
-            dataIndex: 'ipv6LinkLocal',
-            key: 'ipv6LinkLocal',
-            sorter: (a: Session, b: Session) => ('' + (a.ipv6LinkLocal || '')).localeCompare((b.ipv6LinkLocal || ''))
+            title: 'IP Addresses',
+            dataIndex: 'addresses',
+            key: 'addresses',
+            sorter: (a: Session, b: Session) => getAddressSortValue(a).localeCompare(getAddressSortValue(b))
         },
         {
             title: t('pages.metrics.createdAt'),
@@ -219,6 +211,12 @@ const getBgpStatusDisplay = (session: Session) => {
         return null
     }
 
+    // sort by type: ipv4, ipv6, mpbgp
+    session.bgpStatus.sort((a, b) => {
+        const typeOrder = { 'ipv4': 1, 'ipv6': 2, 'mpbgp': 3, '': 4 }
+        return (typeOrder[a.type || ''] || 5) - (typeOrder[b.type || ''] || 5)
+    })
+
     return session.bgpStatus.map((bgp, index) => {
         const firstWord = bgp.info ? bgp.info.split(' ')[0] : 'Unknown'
         const statusText = t(`pages.metrics.bgpStatus['${bgp.info?.split(' ')[0] || 'Unknown'}']`)
@@ -229,53 +227,77 @@ const getBgpStatusDisplay = (session: Session) => {
                 text: statusText,
                 color: firstWord === 'Established' ? 'green' : 'red',
                 key: `${session.uuid}-bgp-${index}`,
-                type: 'ipv4'
+                type: 'ipv4',
+                connected: firstWord === 'Established'
             }
         } else if (bgp.type === 'ipv6') {
             return {
                 text: statusText,
                 color: firstWord === 'Established' ? 'green' : 'red',
                 key: `${session.uuid}-bgp-${index}`,
-                type: 'ipv6'
+                type: 'ipv6',
+                connected: firstWord === 'Established'
             }
         } else {
             // For mpbgp or empty type, keep current format
             return {
                 text: statusText,
                 color: firstWord === 'Established' ? 'green' : 'red',
-                key: `${session.uuid}-bgp-${index}`
+                key: `${session.uuid}-bgp-${index}`,
+                connected: firstWord === 'Established'
             }
         }
     })
 }
 
+const getAddressSortValue = (session: Session) => {
+    return [session.ipv4 || '', session.ipv6 || '', session.ipv6LinkLocal || ''].join('|')
+}
+
 // Helper function for sorting status
 const getStatusSortValue = (session: Session) => {
+    const probeScore = getProbeSortValue(session)
     const bgpDisplay = getBgpStatusDisplay(session)
     if (bgpDisplay) {
         const establishedCount = bgpDisplay.filter(bgp => bgp.text === 'Established').length
         const totalCount = bgpDisplay.length
-        // Create a composite sort value: session status * 1000 + established count * 10 + total count
-        return session.status * 1000 + establishedCount * 10 + totalCount
+        // Composite sort value: session status * 1000 + established count * 10 + total count + probe signal
+        return session.status * 1000 + establishedCount * 10 + totalCount + probeScore
     }
-    return session.status * 1000
+    return session.status * 1000 + probeScore
+}
+
+const PROBE_STATUS_ICONS: Record<ProbeStatusKey, any> = {
+    testedOk: CheckCircleOutlined,
+    noRouting: CloseCircleOutlined,
+    nat: ExclamationCircleOutlined,
+    notAvailable: ClockCircleOutlined
 }
 
 const getProbeStatusDisplay = (session: Session) => {
-    const statuses = deriveProbeStatuses(session.probe || null, session.bgpStatus || null)
+    const statuses = deriveProbeStatuses(session.probe || null)
     if (!statuses.length) return []
     return statuses.map(status => ({
         ...status,
         label: t(`pages.metrics.probeStatus.labels.${status.key}`),
         description: t(`pages.metrics.probeStatus.descriptions.${status.key}`),
-        color: PROBE_STATUS_COLORS[status.key]
+        color: PROBE_STATUS_COLORS[status.key],
+        icon: PROBE_STATUS_ICONS[status.key],
+        timestamp: status.timestamp
     }))
 }
 
 const getProbeSortValue = (session: Session) => {
-    const statuses = deriveProbeStatuses(session.probe || null, session.bgpStatus || null)
+    const statuses = deriveProbeStatuses(session.probe || null)
     if (!statuses.length) return 0
     return statuses.reduce((acc, status) => acc + getProbeStatusWeight(status.key), 0)
+}
+
+const PROBE_STATUS_COLORS: Record<ProbeStatusKey, string> = {
+  testedOk: 'green',
+  noRouting: 'red',
+  nat: 'orange',
+  notAvailable: 'default'
 }
 </script>
 
@@ -304,35 +326,69 @@ const getProbeSortValue = (session: Session) => {
                 <span class="small-text">
                     {{ t(`pages.peering['${record.type}']`) }}
                 </span>
-            </template> <!-- Status Column -->
+            </template>
+
+            <!-- IP Addresses Column -->
+            <template v-else-if="column.key === 'addresses'">
+                <div class="ip-stack small-text">
+                    <div class="ip-row">
+                        <span class="ip-label">IPv4</span>
+                        <span v-if="record.ipv4" class="ip-value">{{ record.ipv4 }}</span>
+                        <span v-else class="ip-empty"><close-outlined /></span>
+                    </div>
+                    <div class="ip-row">
+                        <span class="ip-label">IPv6</span>
+                        <span v-if="record.ipv6" class="ip-value">{{ record.ipv6 }}</span>
+                        <span v-else class="ip-empty"><close-outlined /></span>
+                    </div>
+                    <div class="ip-row">
+                        <span class="ip-label">Link</span>
+                        <span v-if="record.ipv6LinkLocal" class="ip-value">{{ record.ipv6LinkLocal }}</span>
+                        <span v-else class="ip-empty"><close-outlined /></span>
+                    </div>
+                </div>
+            </template>
+            
+            <!-- Status Column -->
             <template v-else-if="column.key === 'status'">
                 <template v-if="getBgpStatusDisplay(record)">
                     <!-- Show detailed BGP status when available -->
-                    <span v-for="bgpStatus in getBgpStatusDisplay(record)" :key="bgpStatus.key">
-                        <a-tag v-if="bgpStatus.type === 'ipv4'" :color="bgpStatus.color"
-                            style="margin-right: 4px; display: inline-flex; align-items: center;">
+                    <div class="bgpStatus" v-for="bgpStatus in getBgpStatusDisplay(record)" :key="bgpStatus.key">
+                        <a-tag v-if="bgpStatus.type === 'ipv4'" :bordered="false" :color="bgpStatus.color"
+                            class="status-tag">
+                            <template #icon v-if="!bgpStatus.connected">
+                                <reload-outlined :spin="true" />
+                            </template>
                             <span>V4</span>
                             <a-divider type="vertical"
-                                :style="`margin: 0 4px;border-color:${bgpStatus.color};font-size:10px`" />
+                                :style="`margin: 0 4px;font-size:10px`" />
                             <span>{{ bgpStatus.text }}</span>
                         </a-tag>
-                        <a-tag v-else-if="bgpStatus.type === 'ipv6'" :color="bgpStatus.color"
-                            style="margin-right: 4px; display: inline-flex; align-items: center;">
+                        <a-tag v-else-if="bgpStatus.type === 'ipv6'" :bordered="false" :color="bgpStatus.color"
+                            class="status-tag">
+                            <template #icon v-if="!bgpStatus.connected">
+                                <reload-outlined :spin="true" />
+                            </template>
                             <span>V6</span>
                             <a-divider type="vertical"
-                                :style="`margin: 0 4px;border-color:${bgpStatus.color};font-size:10px`" />
+                                :style="`margin: 0 4px;font-size:10px`" />
                             <span>{{ bgpStatus.text }}</span>
                         </a-tag>
-                        <a-tag v-else :color="bgpStatus.color" style="margin-right: 4px;">
+                        <a-tag v-else :color="bgpStatus.color" :bordered="false" class="status-tag">
+                            <template #icon v-if="!bgpStatus.connected">
+                                <reload-outlined :spin="true" />
+                            </template>
                             {{ bgpStatus.text }}
                         </a-tag>
-                    </span>
+                    </div>
                 </template>
                 <template v-else>
                     <!-- Show regular status -->
-                    <a-tag :color="getStatusColor(record.status)">
-                        {{ t(`pages.manage.session.statusCode['${record.status}']`) }}
-                    </a-tag>
+                     <div class="bgpStatus">
+                        <a-tag :bordered="false" :color="getStatusColor(record.status)" class="status-tag">
+                            {{ t(`pages.manage.session.statusCode['${record.status}']`) }}
+                        </a-tag>
+                    </div>
                 </template>
             </template>
 
@@ -343,36 +399,23 @@ const getProbeSortValue = (session: Session) => {
                         <a-tooltip
                             v-for="probeStatus in getProbeStatusDisplay(record)"
                             :key="`${record.uuid}-${probeStatus.version}`"
-                            :title="probeStatus.description"
+                            :title="`${probeStatus.description}${probeStatus.timestamp ? ` (${new Date(probeStatus.timestamp * 1000).toLocaleString()})` : '' }`"
                         >
-                            <span class="probe-pill">
-                                <span class="probe-dot" :style="{ backgroundColor: probeStatus.color }"></span>
-                                <span class="probe-pill-label">
-                                    {{ probeStatus.version === 'ipv4' ? 'V4' : 'V6' }} · {{ probeStatus.label }}
-                                </span>
-                            </span>
+                            <a-tag :bordered="false" :color="probeStatus.color" class="probe-tag compact">
+                                <template #icon>
+                                    <component :is="probeStatus.icon" v-if="probeStatus.color !== 'default' && probeStatus.color !== 'green'" />
+                                </template>
+                                <span>{{ probeStatus.version === 'ipv4' ? 'V4' : 'V6' }}</span>
+                                <a-divider type="vertical"
+                                    :style="`margin: 0 4px;font-size:10px`" />
+                                <span>{{ probeStatus.label }}</span>
+                            </a-tag>
                         </a-tooltip>
                     </div>
                 </template>
-                <span v-else class="small-text">{{ t('pages.metrics.probeStatus.labels.notAvailable') }}</span>
-            </template>
-
-            <!-- IPv4 Column -->
-            <template v-else-if="column.key === 'ipv4'">
-                <span v-if="record.ipv4" class="small-text">{{ record.ipv4 }}</span>
-                <close-outlined v-else />
-            </template>
-
-            <!-- IPv6 Column -->
-            <template v-else-if="column.key === 'ipv6'">
-                <span v-if="record.ipv6" class="small-text">{{ record.ipv6 }}</span>
-                <close-outlined v-else />
-            </template>
-
-            <!-- IPv6 Link Local Column -->
-            <template v-else-if="column.key === 'ipv6LinkLocal'">
-                <span v-if="record.ipv6LinkLocal" class="small-text">{{ record.ipv6LinkLocal }}</span>
-                <close-outlined v-else />
+                <span v-else class="small-text muted">
+                    {{ t('pages.metrics.probeStatus.labels.notAvailable') }}
+                </span>
             </template>
 
             <!-- Created At Column -->
@@ -543,37 +586,78 @@ const getProbeSortValue = (session: Session) => {
     width: 100%;
 }
 
-.probe-status-compact {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-}
-
-.probe-pill {
+.status-tag {
+    margin-right: 0;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    font-size: 10px;
+}
+
+:deep(.probe-tag) {
+    display: inline-flex;
+    align-items: center;
+}
+
+:deep(.probe-tag.compact) {
     font-size: 11px;
-    color: #434343;
 }
 
-.probe-pill-label {
-    white-space: nowrap;
+.muted {
+    color: rgba(0, 0, 0, 0.45);
 }
 
-.probe-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+.session-table.dark .muted {
+    color: rgba(255, 255, 255, 0.55);
 }
 
-.session-table.dark .probe-pill {
-    color: #d9d9d9;
+.bgpStatus, .probe-status-compact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.session-table.dark .probe-dot {
-    box-shadow: 0 0 2px rgba(255, 255, 255, 0.25);
+.bgpStatus .ant-tag:first-child, .probe-status-compact .ant-tag:first-child {
+    margin-bottom: 4px;
+}
+
+.bgpStatus .ant-tag:last-child, .probe-status-compact .ant-tag:last-child {
+    margin-top: 4px;
+}
+
+.ip-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ip-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ip-label {
+    font-weight: 600;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 10px;
+}
+
+.ip-value {
+    font-size: 12px;
+}
+
+.ip-empty {
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.25);
+}
+
+.session-table.dark .ip-label {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.session-table.dark .ip-empty {
+    color: rgba(255, 255, 255, 0.35);
 }
 </style>

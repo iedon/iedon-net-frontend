@@ -120,6 +120,18 @@ export type GetCurrentSessionResponse = {
   session: CurrentSessionMetadata;
 };
 
+export enum ProbeHealthStatus {
+  TestedOk = 0,
+  NoRouting = 1,
+  NotAvailable = 2
+};
+
+export type ProbeSignal = {
+  timestamp?: number | null,
+  status?: ProbeHealthStatus | null
+  nat?: boolean | null
+};
+
 export type CurrentSessionMetadata = {
   uuid: string;
   asn: number;
@@ -140,8 +152,8 @@ export type CurrentSessionMetadata = {
   policy: RoutingPolicy;
   lastError: string | null;
   probe: {
-    ipv4: { seen: boolean; healthy: boolean | null; nat: boolean | null };
-    ipv6: { seen: boolean; healthy: boolean | null; nat: boolean | null };
+    ipv4: ProbeSignal;
+    ipv6: ProbeSignal;
   };
   bgpStatus?: {
     name: string;
@@ -391,8 +403,8 @@ export type SessionMetadata = {
   policy: RoutingPolicy,
   lastError: string | null,
   probe: {
-    ipv4: { seen: boolean; healthy: boolean | null; nat: boolean | null };
-    ipv6: { seen: boolean; healthy: boolean | null; nat: boolean | null };
+    ipv4: ProbeSignal;
+    ipv6: ProbeSignal;
   };
   data:
   | { info: string; passthrough: string }

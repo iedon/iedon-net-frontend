@@ -1,7 +1,7 @@
 import { computed, h, Ref, ref, VNode } from 'vue'
 import { notification, NotificationPlacement } from 'ant-design-vue'
 import config from '../config'
-import { makeRequest, PostResponse, SiteConfigDataResponse, TokenRefreshResponse } from './packetHandler'
+import { makeRequest, PostResponse, ProbeHealthStatus, ProbeSignal, SiteConfigDataResponse, TokenRefreshResponse } from './packetHandler'
 import dayjs from 'dayjs'
 
 export const splitMessageToVNodes = (message: string) => message.split('\n').map(line => h('p', line.trim()))
@@ -131,23 +131,12 @@ export const formatBytes = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
-export type ProbeSignal = {
-  seen?: boolean
-  healthy?: boolean | null
-  nat?: boolean | null
-}
-
 export type ProbeStatusKey = 'testedOk' | 'noRouting' | 'nat' | 'notAvailable'
 
 export type DerivedProbeStatus = {
   version: 'ipv4' | 'ipv6'
-  key: ProbeStatusKey
-}
-
-export type BgpStatusChannel = {
-  type?: 'mpbgp' | 'ipv4' | 'ipv6' | ''
-  state?: string
-  info?: string
+  key: ProbeStatusKey,
+  timestamp: number | null
 }
 
 const PROBE_PRIORITY: Record<ProbeStatusKey, number> = {
@@ -157,52 +146,20 @@ const PROBE_PRIORITY: Record<ProbeStatusKey, number> = {
   notAvailable: 0
 }
 
-export const PROBE_STATUS_COLORS: Record<ProbeStatusKey, string> = {
-  testedOk: '#52c41a',
-  noRouting: '#ff4d4f',
-  nat: '#faad14',
-  notAvailable: '#d9d9d9'
-}
-
-/*
 const evaluateSignal = (signal?: ProbeSignal): ProbeStatusKey => {
-  if (!signal || signal.seen === false || signal.seen === undefined) return 'notAvailable'
+  if (!signal) return 'notAvailable'
   if (signal.nat) return 'nat'
-  if (signal.healthy) return 'testedOk'
-  if (signal.healthy === false) return 'noRouting'
+  if (signal.status === ProbeHealthStatus.TestedOk) return 'testedOk'
+  if (signal.status === ProbeHealthStatus.NoRouting) return 'noRouting'
   return 'notAvailable'
 }
-*/
 
-const isEstablishedChannel = (channels: BgpStatusChannel[] | null | undefined, version: 'ipv4' | 'ipv6') => {
-  if (!channels || !channels.length) return false
-  return channels.some(channel => {
-    if (!channel) return false
-    const channelType = channel.type || ''
-    const matchesVersion = channelType === version || channelType === 'mpbgp' || channelType === ''
-    if (!matchesVersion) return false
-    const normalizedState = (channel.state || channel.info || '').split(' ')[0]
-    return normalizedState === 'Established'
-  })
-}
-
-const evaluateSignal = (signal: ProbeSignal | undefined, version: 'ipv4' | 'ipv6', channels?: BgpStatusChannel[] | null): ProbeStatusKey => {
-  const fallback = version && isEstablishedChannel(channels, version) ? 'noRouting' : 'notAvailable'
-  if (!signal || signal.seen === false || signal.seen === undefined) return fallback
-  if (signal.nat) return 'nat'
-  if (signal.healthy) return 'testedOk'
-  if (signal.healthy === false) return 'noRouting'
-  return fallback
-}
-
-export const deriveProbeStatuses = (
-  probe?: { ipv4?: ProbeSignal; ipv6?: ProbeSignal } | null,
-  bgpChannels?: BgpStatusChannel[] | null
-): DerivedProbeStatus[] => {
+export const deriveProbeStatuses = (probe?: { ipv4?: ProbeSignal; ipv6?: ProbeSignal } | null): DerivedProbeStatus[] => {
   if (!probe) return []
   return (['ipv4', 'ipv6'] as const).map(version => ({
     version,
-    key: evaluateSignal(probe[version], version, bgpChannels)
+    key: evaluateSignal(probe[version]),
+    timestamp: probe[version]?.timestamp || null
   }))
 }
 

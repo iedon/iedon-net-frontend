@@ -295,9 +295,9 @@ export default {
         },
         descriptions: {
           testedOk: '所有連線測試皆已成功通過。',
-          noRouting: '偵測到 IP transit 設定錯誤；能連到遠端路由器但路由失敗。',
-          nat: '偵測到設定錯誤，流量疑似經過 NAT。',
-          notAvailable: '尚未收到探針提供的狀態資訊。'
+          noRouting: '對等互聯的 IP 傳輸設定已損壞。部分對等方可能不希望提供 IP 傳輸，在此情況下可以安全地忽略此狀態。',
+          nat: '偵測到設定錯誤。傳輸封包正在使用網路位址轉換。',
+          notAvailable: '狀態資訊不可用。'
         }
       },
       back: '返回',

@@ -295,9 +295,9 @@ export default {
         },
         descriptions: {
           testedOk: '所有连通性检测均已成功通过。',
-          noRouting: '检测到 IP transit 配置异常；可连通远端路由器但路由失败。',
-          nat: '检测到配置错误，流量疑似经过 NAT。',
-          notAvailable: '尚未收到探针状态信息。'
+          noRouting: '对等互联的 IP 传输配置已损坏。某些对等方可能不希望提供 IP 传输，在这种情况下可以安全地忽略此状态。',
+          nat: '检测到配置错误。传输数据包正在使用网络地址转换。',
+          notAvailable: '状态信息不可用。'
         }
       },
       back: '返回',

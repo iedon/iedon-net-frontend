@@ -295,9 +295,9 @@ export default {
         },
         descriptions: {
           testedOk: 'Tất cả bài kiểm tra kết nối đã vượt qua thành công.',
-          noRouting: 'Phát hiện cấu hình IP transit lỗi; router từ xa truy cập được nhưng định tuyến thất bại.',
-          nat: 'Phát hiện cấu hình sai, lưu lượng có vẻ đi qua NAT.',
-          notAvailable: 'Chưa có thông tin trạng thái từ các probe.'
+          noRouting: 'Peering có cấu hình truyền tải IP bị hỏng. Một số peer có thể không muốn cung cấp truyền tải IP, trong trường hợp này trạng thái này có thể được bỏ qua một cách an toàn.',
+          nat: 'Phát hiện cấu hình sai. Đang sử dụng dịch địa chỉ mạng cho các gói truyền tải.',
+          notAvailable: 'Thông tin trạng thái không khả dụng.'
         }
       },
       back: 'Quay lại',

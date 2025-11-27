@@ -295,9 +295,9 @@ export default {
         },
         descriptions: {
           testedOk: 'Todas las pruebas de conectividad se completaron correctamente.',
-          noRouting: 'Se detectó un tránsito IP defectuoso; el router remoto responde pero el routing falla.',
-          nat: 'Se detectó una mala configuración, el tráfico parece pasar por NAT.',
-          notAvailable: 'Aún no hay información de estado proporcionada por las sondas.'
+          noRouting: 'El peering tiene una configuración de tránsito IP defectuosa. Algunos peers pueden no desear ofrecer tránsito IP, en cuyo caso este estado puede ignorarse con seguridad.',
+          nat: 'Configuración incorrecta detectada. Se está utilizando traducción de direcciones de red para paquetes de tránsito.',
+          notAvailable: 'Información de estado no disponible.'
         }
       },
       back: 'Volver',

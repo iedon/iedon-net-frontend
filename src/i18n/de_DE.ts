@@ -295,9 +295,9 @@ export default {
         },
         descriptions: {
           testedOk: 'Alle Konnektivitätstests wurden erfolgreich bestanden.',
-          noRouting: 'Fehlerhafte IP-Transit-Konfiguration; der entfernte Router ist erreichbar, aber das Routing schlägt fehl.',
-          nat: 'Fehlkonfiguration erkannt, der Verkehr scheint über NAT zu laufen.',
-          notAvailable: 'Noch keine Statusinformationen aus den Probes verfügbar.'
+          noRouting: 'Das Peering hat eine fehlerhafte IP-Transit-Konfiguration. Einige Peers möchten möglicherweise keinen IP-Transit anbieten, in diesem Fall kann dieser Status sicher ignoriert werden.',
+          nat: 'Fehlkonfiguration erkannt. Netzwerkadressübersetzung wird für Transitpakete verwendet.',
+          notAvailable: 'Statusinformationen nicht verfügbar.'
         }
       },
       back: 'Zurück',

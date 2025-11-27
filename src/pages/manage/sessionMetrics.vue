@@ -132,8 +132,7 @@
                                 <span class="detail-label">{{ t('pages.metrics.interfaceName') }}</span>
                                 <span class="detail-value copyable"
                                     @click="copyToClipboard(sessionMetadata?.interface || '', 'Interface Name')">
-                                    <span>{{ sessionMetadata.interface || t('pages.metrics.notAvailable')
-                                    }}</span>
+                                    <span>{{ sessionMetadata.interface || t('pages.metrics.notAvailable')}}</span>
                                 </span>
                             </div>
                             <div class="detail-item" v-if="sessionMetadata?.mtu || !sessionMetadata">
@@ -197,7 +196,7 @@
                                     <a-tag color="default" class="probe-inline-tag">
                                         <span class="probe-dot" :style="{ backgroundColor: status.color }"></span>
                                         <span class="probe-pill-label">
-                                            {{ status.version === 'ipv4' ? 'V4' : 'V6' }} · {{ status.label }}
+                                            {{ status.version === 'ipv4' ? 'V4' : 'V6' }} {{ status.label }}
                                         </span>
                                     </a-tag>
                                 </a-tooltip>
@@ -361,7 +360,9 @@
                                 </div>
                             </div>
                         </div>
-                    </div> <!-- RTT Metric -->
+                    </div>
+                    
+                    <!-- RTT Metric -->
                     <div class="metric-item" @click="scrollToRttChart" style="cursor: pointer;"
                         :title="t('pages.metrics.clickToViewChart')">
                         <div class="metric-icon rtt"
@@ -700,7 +701,7 @@ import {
 import { VChart } from '../../components/EChartsLoader'
 
 // Application imports
-import { loggedIn, formatDate, formatRelativeTime, themeName, isAdmin, formatBytes, registerPageTitle, deriveProbeStatuses, PROBE_STATUS_COLORS } from '../../common/helper'
+import { loggedIn, formatDate, formatRelativeTime, themeName, isAdmin, formatBytes, registerPageTitle, deriveProbeStatuses } from '../../common/helper'
 import type { ProbeStatusKey } from '../../common/helper'
 import { makeRequest, SessionMetric, RouterMetadata, RoutersResponse, CurrentSessionMetadata, GetCurrentSessionResponse, RoutingPolicy, SessionStatus, BGPMetric } from '../../common/packetHandler'
 import RouterLocationAvatar from '../../components/RouterLocationAvatar.vue'
@@ -888,10 +889,16 @@ const hasAnyBgpData = computed(() => {
     return sessionMetrics.value?.bgp && sessionMetrics.value.bgp.length > 0
 })
 
+const PROBE_STATUS_COLORS: Record<ProbeStatusKey, string> = {
+  testedOk: '#52c41a',
+  noRouting: '#ff4d4f',
+  nat: '#faad14',
+  notAvailable: '#d9d9d9'
+}
+
 const probeStatusDisplay = computed(() => {
     if (!sessionMetadata.value) return []
-    const bgpChannels = sessionMetadata.value.bgpStatus || sessionMetrics.value?.bgp || null
-    return deriveProbeStatuses(sessionMetadata.value.probe || null, bgpChannels).map(status => ({
+    return deriveProbeStatuses(sessionMetadata.value.probe || null).map(status => ({
         ...status,
         label: t(`pages.metrics.probeStatus.labels.${status.key}`),
         description: t(`pages.metrics.probeStatus.descriptions.${status.key}`),

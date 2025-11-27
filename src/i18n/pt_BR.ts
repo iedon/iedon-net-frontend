@@ -295,9 +295,9 @@ export default {
           },
           descriptions: {
             testedOk: 'Todos os testes de conectividade foram concluídos com sucesso.',
-            noRouting: 'Roteamento quebrado detectado; o roteador remoto é acessível, mas o roteamento falha.',
-            nat: 'Detecção de configuração incorreta, o tráfego parece passar pelo NAT.',
-            notAvailable: 'As informações de status ainda não estão disponíveis a partir dos probes.'
+            noRouting: 'O peering tem uma configuração de trânsito IP defeituosa. Alguns peers podem não desejar oferecer trânsito IP, caso em que este status pode ser ignorado com segurança.',
+            nat: 'Configuração incorreta detectada. A tradução de endereços de rede está sendo usada para pacotes de trânsito.',
+            notAvailable: 'Informações de status não disponíveis.'
           }
         },
       back: 'Voltar',
