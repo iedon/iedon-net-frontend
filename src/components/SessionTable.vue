@@ -79,6 +79,7 @@ const columns = computed(() => {
             title: 'ASN',
             dataIndex: 'asn',
             key: 'asn',
+            align: 'center',
             sorter: (a: Session, b: Session) => Number(a.asn || 0) - Number(b.asn || 0)
         })
     }
@@ -88,18 +89,21 @@ const columns = computed(() => {
             title: t('pages.manage.session.type'),
             dataIndex: 'type',
             key: 'type',
+            align: 'center',
             sorter: (a: Session, b: Session) => ('' + a.type).localeCompare(b.type)
         },
         {
-            title: 'IP Addresses',
+            title: 'IP',
             dataIndex: 'addresses',
             key: 'addresses',
+            align: 'center',
             sorter: (a: Session, b: Session) => getAddressSortValue(a).localeCompare(getAddressSortValue(b))
         },
         {
             title: t('pages.metrics.createdAt'),
             dataIndex: 'createdAt',
             key: 'createdAt',
+            align: 'center',
             sorter: (a: Session, b: Session) => {
                 const aTime = new Date(a.createdAt || 0).getTime()
                 const bTime = new Date(b.createdAt || 0).getTime()
@@ -110,6 +114,7 @@ const columns = computed(() => {
             title: t('pages.manage.session.status'),
             dataIndex: 'status',
             key: 'status',
+            align: 'center',
             sorter: (a: Session, b: Session) => {
                 return getStatusSortValue(b) - getStatusSortValue(a) // Descending order (better status first)
             }
@@ -118,6 +123,7 @@ const columns = computed(() => {
             title: t('pages.manage.session.probeStatus'),
             dataIndex: 'probe',
             key: 'probe',
+            align: 'center',
             sorter: (a: Session, b: Session) => getProbeSortValue(b) - getProbeSortValue(a)
         }
     )
@@ -628,6 +634,7 @@ const PROBE_STATUS_COLORS: Record<ProbeStatusKey, string> = {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    margin: auto 20px;
 }
 
 .ip-row {
