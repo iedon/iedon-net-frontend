@@ -133,6 +133,21 @@
                     name: '🇦🇺 <b>Sydney, Australia</b><br/><small>172.23.91.126, fd42:4242:2189:126::1</small>',
                     nodeId: 126,
                     coordinates: [ 151.209900, -33.865143 ]
+                },
+                'PL-WAW': {
+                    name: '🇵🇱 <b>Warsaw, Poland</b><br/><small>172.23.91.123, fd42:4242:2189:123::1</small>',
+                    nodeId: 123,
+                    coordinates: [ 21.012229, 52.229676 ]
+                },
+                'FR-CDG': {
+                    name: '🇫🇷 <b>Paris, France</b><br/><small>172.23.91.176, fd42:4242:2189:176::1</small>',
+                    nodeId: 176,
+                    coordinates: [ 2.352222, 48.856613 ]
+                },
+                'NL-AMS': {
+                    name: '🇳🇱 <b>Amsterdam, Netherlands</b><br/><small>172.23.91.177, fd42:4242:2189:177::1</small>',
+                    nodeId: 177,
+                    coordinates: [ 4.904139, 52.367573 ]
                 }
             };
             const node_conns = {
@@ -146,7 +161,8 @@
                 'DE-FRA': [ 'HK-HKG', 'SG-SIN' ],
                 'JP-KOT': [ 'HK-HKG', 'SG-SIN' ],
                 'CN-SHA': [ 'HK-HKG' ],
-                'AU-SYD': [ 'SG-SIN', 'HK-HKG', 'US-LAX', 'US-SJC', 'US-NYC', 'DE-FRA', 'JP-TYO', 'JP-KOT' ]
+                'AU-SYD': [ 'SG-SIN', 'HK-HKG', 'US-LAX', 'US-SJC', 'US-NYC', 'DE-FRA', 'JP-TYO', 'JP-KOT' ],
+                'PL-WAW': [ 'DE-FRA', 'UK-LON', 'FR-CDG', 'NL-AMS', 'US-LAX', 'US-SJC', 'JP-TYO', 'SG-SIN', 'AU-SYD' ]
             };
             const data = [];
             Object.keys(nodes).forEach(key => {

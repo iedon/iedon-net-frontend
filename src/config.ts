@@ -41,6 +41,9 @@ export default {
     '4d05d0ac-bbb5-4e91-9577-288fc8b6885e': 'https://lg.iedon.net/detail/cn-ntg/',
     'fc2f74f8-31d4-46f6-b595-7e705aca96d3': 'https://lg.iedon.net/detail/cn-sha/',
     '19a3050b-df69-4476-993a-27afcc7f467f': 'https://lg.iedon.net/detail/au-syd/',
+    'd19f9dce-8f6b-4fe8-b5f3-501e4cae46db': 'https://lg.iedon.net/detail/pl-waw/',
+    '511a86f4-5d68-4d1d-ae22-8241c728f0de': 'https://lg.iedon.net/detail/fr-cdg/',
+    '5740da18-03a7-4fe3-8fc8-f06e8060eff1': 'https://lg.iedon.net/detail/nl-ams/',
   },
   grafana: {
     urlPrefix: 'https://grafana.iedon.net/d/iew2sc5/network-overview?kiosk=true&orgId=2&from=now-12h&refresh=5m&to=now&timezone=utc',

@@ -367,7 +367,7 @@ const PROBE_STATUS_COLORS: Record<ProbeStatusKey, string> = {
                             </template>
                             <span>V4</span>
                             <a-divider type="vertical"
-                                :style="`margin: 0 4px;font-size:10px`" />
+                                :style="`margin: 0 4px;font-size:10px;border-color:transparent`" />
                             <span>{{ bgpStatus.text }}</span>
                         </a-tag>
                         <a-tag v-else-if="bgpStatus.type === 'ipv6'" :bordered="false" :color="bgpStatus.color"
@@ -377,7 +377,7 @@ const PROBE_STATUS_COLORS: Record<ProbeStatusKey, string> = {
                             </template>
                             <span>V6</span>
                             <a-divider type="vertical"
-                                :style="`margin: 0 4px;font-size:10px`" />
+                                :style="`margin: 0 4px;font-size:10px;border-color:transparent`" />
                             <span>{{ bgpStatus.text }}</span>
                         </a-tag>
                         <a-tag v-else :color="bgpStatus.color" :bordered="false" class="status-tag">
@@ -413,7 +413,7 @@ const PROBE_STATUS_COLORS: Record<ProbeStatusKey, string> = {
                                 </template>
                                 <span>{{ probeStatus.version === 'ipv4' ? 'V4' : 'V6' }}</span>
                                 <a-divider type="vertical"
-                                    :style="`margin: 0 4px;font-size:10px`" />
+                                    :style="`margin: 0 4px;font-size:10px;border-color:transparent`" />
                                 <span>{{ probeStatus.label }}</span>
                             </a-tag>
                         </a-tooltip>

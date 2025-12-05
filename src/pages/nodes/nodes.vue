@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, Ref, ref } from 'vue'
+import { computed, onMounted, onUnmounted, Ref, ref, watch, WatchHandle } from 'vue'
 import { RouteLocationAsPathGeneric, useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
@@ -19,7 +19,9 @@ import {
     ThunderboltOutlined,
     DesktopOutlined,
     TwitterOutlined,
-    DownOutlined
+    DownOutlined,
+    AppstoreOutlined,
+    BarsOutlined
 } from '@ant-design/icons-vue'
 import { makeRequest, RouterMetadata, RoutersResponse } from '../../common/packetHandler'
 import { loggedIn, formatBytes, siteConfig, registerPageTitle } from '../../common/helper'
@@ -45,6 +47,9 @@ const routers: Ref<RouterMetadata[]> = ref([])
 const expandedMetrics = ref<Set<string>>(new Set())
 const searchKeywords = ref('')
 const selectedRegion = ref<string>('all')
+const LAYOUT_STORAGE_KEY = 'nodesLayoutMode'
+const layoutMode = ref<'list' | 'grid'>('list')
+const isListView = computed(() => layoutMode.value === 'list')
 
 // Region mapping configuration - optimized for performance
 const REGION_MAPPING = new Map([
@@ -125,6 +130,13 @@ const getRouterRegion = (router: RouterMetadata): string => {
     return REGION_MAPPING.get(router.location.toUpperCase()) || 'Other Region'
 }
 
+const getRouterRegionLabel = (router: RouterMetadata): string => {
+    const regionKey = getRouterRegion(router)
+    const translationKey = `pages.nodes.regions.${regionKey}`
+    const translated = t(translationKey)
+    return translated !== translationKey ? translated : regionKey
+}
+
 const fetchRouters = async () => {
     try {
         loading.value = true
@@ -144,15 +156,34 @@ const fetchRouters = async () => {
     }
 }
 
+let layoutWatchHandler: WatchHandle | null = null
 onMounted(async () => {
     registerPageTitle(t('pages.nodes.nodes'))
     try {
         const oldRouters = localStorage.getItem('routers')
         if (oldRouters) routers.value = JSON.parse(oldRouters)
+        const savedLayout = localStorage.getItem(LAYOUT_STORAGE_KEY)
+        if (savedLayout === 'grid' || savedLayout === 'list') {
+            layoutMode.value = savedLayout
+        }
     } catch (error) {
         console.error(error)
     }
+    layoutWatchHandler = watch(layoutMode, (mode) => {
+        try {
+            localStorage.setItem(LAYOUT_STORAGE_KEY, mode)
+        } catch (error) {
+            console.error(error)
+        }
+    })
     await fetchRouters()
+})
+
+onUnmounted(() => {
+    if (layoutWatchHandler) {
+        layoutWatchHandler()
+        layoutWatchHandler = null
+    }
 })
 
 const copyRouterDescription = async (r: RouterMetadata) => {
@@ -379,6 +410,10 @@ const setRegionFilter = (region: string) => {
         searchKeywords.value = ''
     }
 }
+
+const setLayoutMode = (mode: 'list' | 'grid') => {
+    layoutMode.value = mode
+}
 </script>
 
 <template>
@@ -398,6 +433,20 @@ const setRegionFilter = (region: string) => {
         <div class="search-section">
             <a-input-search v-model:value="searchKeywords" :placeholder="t('pages.nodes.search')" class="search-input"
                 size="large" enter-button :disabled="loading" />
+            <div class="layout-toggle">
+                <a-tooltip :title="t('pages.nodes.listView')">
+                    <a-button shape="circle" :type="isListView ? 'primary' : 'default'" :disabled="loading"
+                        @click="setLayoutMode('list')" :aria-label="t('pages.nodes.listView')">
+                        <bars-outlined />
+                    </a-button>
+                </a-tooltip>
+                <a-tooltip :title="t('pages.nodes.gridView')">
+                    <a-button shape="circle" :type="!isListView ? 'primary' : 'default'" :disabled="loading"
+                        @click="setLayoutMode('grid')" :aria-label="t('pages.nodes.gridView')">
+                        <appstore-outlined />
+                    </a-button>
+                </a-tooltip>
+            </div>
         </div>
 
         <!-- Region Filter Section -->
@@ -511,8 +560,59 @@ const setRegionFilter = (region: string) => {
         </div>
 
         <!-- Routers Grid -->
-        <div v-else-if="filteredRouters.length > 0" class="routers-grid">
-            <div v-for="r in filteredRouters" :key="r.uuid" class="router-card" @click="redirectToPeering(r)">
+        <div v-else-if="filteredRouters.length > 0">
+            <div v-if="isListView" class="router-list">
+                <div v-for="r in filteredRouters" :key="r.uuid" class="router-row" @click="redirectToPeering(r)">
+                    <div class="router-row-left">
+                        <router-location-avatar :router="r"
+                            :color="isRouterOffline(r) || isMaintenanceMode() ? 'red' : ''" class="router-row-avatar" />
+                        <div class="router-row-details">
+                            <h3 class="router-name">{{ r.name }}</h3>
+                            <div class="router-row-meta">
+                                <span>{{ getRouterRegionLabel(r) }}</span>
+                                <span class="router-row-dot">•</span>
+                                <span :class="['status-chip', getStatusInfo(r).color]">
+                                    {{ getStatusInfo(r).status }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="router-row-capacity">
+                        <usergroup-add-outlined class="row-capacity-icon" />
+                        <span>{{ r.sessionCount }} / {{ r.sessionCapacity }}</span>
+                        <a-progress :percent="Math.round((r.sessionCount / r.sessionCapacity) * 100)"
+                            :show-info="false" size="small"
+                            :stroke-color="r.sessionCount >= r.sessionCapacity ? '#ff4d4f' : '#52c41a'" />
+                    </div>
+                    <div v-if="r.linkTypes && r.linkTypes.length" class="router-row-links">
+                        <div v-for="linkType in (r.linkTypes || []).slice(0, 3)" :key="`${r.uuid}-${linkType}`"
+                            class="connection-badge" :class="getConnectionBadgeClass(linkType)"
+                            @click.stop="redirectToPeering(r, linkType)">
+                            <component :is="getConnectionIcon(linkType)" class="connection-badge-icon" />
+                            <span class="connection-badge-text">{{ getConnectionTypeLabel(linkType) }}</span>
+                        </div>
+                        <span v-if="r.linkTypes.length > 3" class="router-row-extra">
+                            +{{ r.linkTypes.length - 3 }}
+                        </span>
+                    </div>
+                    <div class="router-row-actions">
+                        <a-tooltip :title="t('pages.nodes.copyRouterInfo')">
+                            <a-button type="text" size="small" @click.stop="copyRouterDescription(r)"
+                                :aria-label="t('pages.nodes.copyRouterInfo')">
+                                <copy-outlined />
+                            </a-button>
+                        </a-tooltip>
+                        <a-tooltip :title="t('pages.nodes.connect')">
+                            <a-button type="primary" size="small" @click.stop="redirectToPeering(r)"
+                                :aria-label="t('pages.nodes.connect')">
+                                <api-outlined />
+                            </a-button>
+                        </a-tooltip>
+                    </div>
+                </div>
+            </div>
+            <div v-else class="routers-grid">
+                <div v-for="r in filteredRouters" :key="r.uuid" class="router-card" @click="redirectToPeering(r)">
                 <!-- Card Header -->
                 <div class="card-header">
                     <div class="router-info">
@@ -527,13 +627,15 @@ const setRegionFilter = (region: string) => {
                         </div>
                     </div>
                     <div class="card-actions">
-                        <a-tooltip title="Copy Router Info">
-                            <a-button type="text" size="small" @click.stop="copyRouterDescription(r)">
+                        <a-tooltip :title="t('pages.nodes.copyRouterInfo')">
+                            <a-button type="text" size="small" @click.stop="copyRouterDescription(r)"
+                                :aria-label="t('pages.nodes.copyRouterInfo')">
                                 <copy-outlined />
                             </a-button>
                         </a-tooltip>
-                        <a-tooltip title="Connect">
-                            <a-button type="text" size="small" @click.stop="redirectToPeering(r)">
+                        <a-tooltip :title="t('pages.nodes.connect')">
+                            <a-button type="text" size="small" @click.stop="redirectToPeering(r)"
+                                :aria-label="t('pages.nodes.connect')">
                                 <api-outlined />
                             </a-button>
                         </a-tooltip>
@@ -628,6 +730,7 @@ const setRegionFilter = (region: string) => {
                 <div v-if="r.description" class="description-section">
                     <a-divider class="description-divider" />
                     <div class="description-content" v-html="md.render(r.description)"></div>
+                </div>
                 </div>
             </div>
         </div>
@@ -789,12 +892,20 @@ const setRegionFilter = (region: string) => {
 .search-section {
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
     margin-bottom: 24px;
 }
 
 .search-input {
     max-width: 500px;
     width: 100%;
+}
+
+.layout-toggle {
+    display: flex;
+    gap: 8px;
 }
 
 /* Region Filter Section */
@@ -877,6 +988,134 @@ const setRegionFilter = (region: string) => {
     margin-bottom: 40px;
     align-items: start;
     max-width: none;
+}
+
+.router-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.router-row {
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr) minmax(150px, 1fr) minmax(220px, 1.5fr) auto;
+    gap: 16px;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dark .router-row {
+    background: #1a1a1a;
+    border-color: #2a2a2a;
+}
+
+.router-row:hover {
+    border-color: #1890ff;
+    transform: translateY(-2px);
+}
+
+.dark .router-row:hover {
+    border-color: #40a9ff;
+}
+
+.router-row-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.router-row-avatar {
+    flex-shrink: 0;
+}
+
+.router-row-details {
+    min-width: 0;
+}
+
+.router-row-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #666;
+}
+
+.dark .router-row-meta {
+    color: #aaa;
+}
+
+.router-row-dot {
+    opacity: 0.5;
+}
+
+.status-chip {
+    font-weight: 600;
+}
+
+.status-chip.success {
+    color: #52c41a;
+}
+
+.status-chip.warning {
+    color: #faad14;
+}
+
+.status-chip.processing {
+    color: #1890ff;
+}
+
+.status-chip.default {
+    color: #666;
+}
+
+.dark .status-chip.default {
+    color: #aaa;
+}
+
+.router-row-capacity {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.dark .router-row-capacity {
+    color: #ffffff;
+}
+
+.row-capacity-icon {
+    color: #1890ff;
+    font-size: 16px;
+}
+
+.router-row-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.router-row-extra {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+}
+
+.dark .router-row-extra {
+    color: #aaa;
+}
+
+.router-row-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
 }
 
 /* Router Card */
@@ -1299,6 +1538,10 @@ const setRegionFilter = (region: string) => {
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
         gap: 20px;
     }
+
+    .router-row {
+        grid-template-columns: minmax(200px, 1fr) minmax(140px, 0.8fr) minmax(200px, 1fr) auto;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1333,6 +1576,19 @@ const setRegionFilter = (region: string) => {
     .routers-grid {
         grid-template-columns: 1fr;
         gap: 16px;
+    }
+
+    .router-list {
+        gap: 10px;
+    }
+
+    .router-row {
+        grid-template-columns: 1fr;
+        padding: 14px;
+    }
+
+    .router-row-actions {
+        justify-content: flex-start;
     }
 
     .router-card {
@@ -1391,6 +1647,10 @@ const setRegionFilter = (region: string) => {
     .routers-grid {
         grid-template-columns: 1fr;
         gap: 12px;
+    }
+
+    .router-row {
+        padding: 12px;
     }
 
     .router-card {
