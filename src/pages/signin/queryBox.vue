@@ -50,7 +50,7 @@ const isLoading = computed(() => props.loading)
             </button>
         </form>
 
-        <div class="signup"><a href="https://dn42.dev" target="_blank">{{ t('pages.signIn.signUp') }}</a></div>
+        <div class="signup"><a href="https://dn42.jp" target="_blank">{{ t('pages.signIn.signUp') }}</a></div>
     </a-spin>
 </template>
 

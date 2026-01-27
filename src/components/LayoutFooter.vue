@@ -20,7 +20,7 @@ const currentYear = new Date().getFullYear()
     <a-layout-footer id="footer" :class="themeName">
       <div class="md" v-if="siteConfig.footerText" v-html="md.render(siteConfig.footerText)"></div>
       <p class="mono">iEdon PeerAPI Suite (Frontend V{{ config.version }})</p>
-      <p class="mono">&copy; {{currentYear}}&nbsp;&nbsp;<a href="https://dn42.dev" target="_blank" title="DN42 Wiki">DN42 Participant</a>&nbsp;&nbsp;{{siteConfig.netName}}({{siteConfig.netAsn}})</p>
+      <p class="mono">&copy; {{currentYear}}&nbsp;&nbsp;<a href="https://dn42.jp" target="_blank" title="DN42 Wiki">DN42 Participant</a>&nbsp;&nbsp;{{siteConfig.netName}}({{siteConfig.netAsn}})</p>
     </a-layout-footer>
 </template>
 

@@ -123,6 +123,12 @@
                                     :title="t('pages.metrics.clickToCopy')">{{ sessionId }}</span>
                             </div>
                             <div class="detail-item">
+                                <span class="detail-label">ASN</span>
+                                <span class="detail-value">
+                                    <span>{{ sessionMetadata.asn }}</span>
+                                </span>
+                            </div>
+                            <div class="detail-item">
                                 <span class="detail-label">{{ t('pages.metrics.interaceType') }}</span>
                                 <span class="detail-value">
                                     <span>{{ t(`pages.peering.${sessionMetadata.type}`) }}</span>
